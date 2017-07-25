@@ -1,0 +1,2 @@
+# SPOJ
+Small SPOJ Problems
