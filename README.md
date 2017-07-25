@@ -1,2 +1,3 @@
 # SPOJ
-Small SPOJ Problems
+
+A collection of small SPOJ problems in Haskell
