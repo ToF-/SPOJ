@@ -1,56 +1,73 @@
 module Arith where
 import Data.Char
+import Data.Text as T
+import Prelude as P
 
 
-format x s = reverse (take x (reverse s ++ repeat ' ')) 
+format :: Int -> Text -> Text
+format x s = justifyRight x ' ' s
 
-line x = take x (repeat '-')
-
-addition x y = map (format w) [a,b,line (max (length b) (length c)),c]
+alignDash :: [Text] -> [Text]
+alignDash [] = []
+alignDash (a:b:c:ss) | b == pack "-" = (a:line:c:alignDash ss)
+                     | otherwise = (a:alignDash (b:c:ss))
     where
-    a = show x
-    b = '+':show y
-    c = show (x + y)
-    w = maximum $ map length [a,b,c]
+    line = T.replicate (maxLength a c) (pack "-")
+    maxLength :: Text -> Text -> Int
+    maxLength s t = P.max (T.length s) (T.length t)
+alignDash s = s
 
-subtraction x y = map (format w) [a,b,line (max (length b) (length c)),c]
+
+align :: [Text] -> [Text]
+align ss = P.map (stripEnd.format w) (alignDash ss)
     where
-    a = show x
-    b = '-':show y
-    c = show (x - y)
-    w = maximum $ map length [a,b,c]
+    w = P.maximum (P.map T.length ss)
 
-multiplication x y = [format w a,format w b]++ms++[format w c]
-    where
-    a = show x
-    b = '*':show y
-    c = show (x * y)
-    w1 = length b
-    w  = maximum (map length [a,b,c])
-    ms = case y > 9 of
-        True -> format w (line (max (length b) (length (head (mms))))) : sms ++ [format w (line (max (length (last mms)) (length c)))]
-        False -> [] ++ [line w]
-    mms = map show (mults x y)
-    sms = zipWith pad [0..] mms
 
-    pad p s = format (w-p) s
+addition x y = align $ P.map pack [     show x
+                                  , '+':show y
+                                  , "-"
+                                  , show (x+y)]
+subtraction x y = align $ P.map pack [    show x
+                                     ,'-':show y
+                                     ,"-"
+                                     ,show (x-y)]
 
-mults :: Integer -> Integer -> [Integer] 
-mults x y = map (*x) (reverse (map (fromIntegral.digitToInt) (show y)))  
 
-operation s = case sym of
-    '+' -> addition x y
-    '-' -> subtraction x y
-    '*' -> multiplication x y
+multiplication x y | y < 10 = align $ P.map pack[    show x
+                                                ,'*':show y
+                                                ,"-"
+                                                ,show (x*y)]
+                   | otherwise = align $ P.map pack ( 
+                                                 [    show x
+                                                 ,'*':show y
+                                                 ,"-"]
+                                                ++ (mults x y)
+                                                ++ ["-"
+                                                   ,show (x*y)])
+                                        
+mults :: Integer -> Integer -> [String] 
+mults x y = P.zipWith pad [0..] ms
     where 
-    sx  = takeWhile (isDigit) s
-    l   = drop (length sx) s
-    sym = head l
-    sy  = tail l
-    x   = read sx
-    y   = read sy
+    ms = P.map (*x) (P.reverse (P.map (fromIntegral.digitToInt) (show y)))  
+    pad p x = show x ++ P.take p (repeat ' ')
 
-solve (n:ss) = concatMap ((++[""]).operation) ss 
+operation :: Text -> [Text]
+operation s = r ++ [T.empty]
+    where
+    r = case sym of
+        '+' -> addition x y
+        '-' -> subtraction x y
+        '*' -> multiplication x y
+    sx  = T.takeWhile (isDigit) s
+    l   = T.drop (T.length sx) s
+    sym = T.head l
+    sy  = T.tail l
+    x   = read (unpack sx)
+    y   = read (unpack sy)
 
-process = unlines . solve . lines
+solve (n:ss) = P.concatMap operation ss 
+
+process :: String -> String
+process = unpack . T.unlines . solve . T.lines . pack
 
