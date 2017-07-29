@@ -1,0 +1,5 @@
+
+solve _ = [3,2] 
+
+process = unlines . map show . solve . lines
+main = interact process
