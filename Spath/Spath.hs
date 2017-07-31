@@ -38,3 +38,35 @@ lookupRoads :: Number -> RoadMap -> [Road]
 lookupRoads n rm = case lookup n rm of
     Nothing -> []
     Just rs -> rs
+
+data Heap a = Empty | Heap a [Heap a]
+    deriving (Eq,Show)
+
+emptyHeap :: Heap a
+emptyHeap = Empty
+
+isEmpty :: Heap a -> Bool
+isEmpty Empty = True
+isEmpty _     = False
+
+findMin :: Heap a -> Maybe a
+findMin (Heap v _) = Just v
+findMin Empty = Nothing
+
+merge :: Ord(a) => Heap a -> Heap a -> Heap a
+merge h Empty = h
+merge Empty h = h
+merge h1@(Heap x sh1) h2@(Heap y sh2) 
+    | x < y     = Heap x (h2:sh1)
+    | otherwise = Heap y (h1:sh2)
+
+fromList :: Ord(a) => [a] -> Heap a
+fromList [] = Empty
+fromList (x:xs) = merge (Heap x []) (fromList xs)
+
+deleteMin :: Ord(a) => Heap a -> Heap a
+deleteMin (Heap x hs) = mergePairs hs
+    where
+    mergePairs [] = Empty
+    mergePairs [h] = h
+    mergePairs (h1:h2:hs) = merge (merge h1 h2) (mergePairs hs)
