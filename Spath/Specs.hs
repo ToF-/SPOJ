@@ -2,12 +2,6 @@ import Test.Hspec
 import Spath
 
 main = hspec $ do
-    describe "city index" $ do
-        it "collects  the index number of a given city" $ do
-            let ci = addCity "Bar" $ addCity "Foo" emptyCityIndex
-                
-            lookupCity "Foo" ci  `shouldBe` 1
-            lookupCity "Bar" ci  `shouldBe` 2
 
     describe "roads" $ do
         it "collects the roads from a city to other cities" $ do

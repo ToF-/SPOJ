@@ -1,41 +1,25 @@
 module Spath where
+import Data.Map as M
 
 solve _ = [3,2,3,2] 
 
-process = unlines . map show . solve . lines
+process = unlines . Prelude.map show . solve . lines
 
-type CityIndex = [(Name,Number)]
-type RoadMap = [(Number,[Road])]
+type RoadMap = Map Number [Road]
 type Road = (Number,Distance)
 type Name = String
 type Number = Int
 type Distance = Int
 
-emptyCityIndex :: CityIndex
-emptyCityIndex = []
-
-addCity :: Name -> CityIndex -> CityIndex
-addCity s [] = (s,1):[]
-addCity s cs@((_,n):_) = (s,n+1):cs
-
-lookupCity :: Name -> CityIndex -> Number
-lookupCity s ci = case lookup s ci of
-    Nothing -> 0
-    Just n  -> n
 
 emptyRoads :: RoadMap
-emptyRoads = []
+emptyRoads = empty
 
 addRoad :: Number -> Number -> Distance -> RoadMap -> RoadMap
-addRoad f t d [] = [(f,[(t,d)])]
-addRoad f t d ((f',rs):rm) | f'==f     = ((f,insertRoad t d rs)):rm
-                           | otherwise = (f',rs):addRoad f t d rm 
-    where
-    insertRoad :: Number -> Distance -> [Road] -> [Road]
-    insertRoad n d rs = (n,d):rs
+addRoad f t d rm = insertWith (++) f [(t,d)] rm
 
 lookupRoads :: Number -> RoadMap -> [Road]
-lookupRoads n rm = case lookup n rm of
+lookupRoads n rm = case M.lookup n rm of
     Nothing -> []
     Just rs -> rs
 
@@ -62,7 +46,7 @@ merge h1@(Heap x sh1) h2@(Heap y sh2)
 
 fromList :: Ord(a) => [a] -> Heap a
 fromList [] = Empty
-fromList (x:xs) = merge (Heap x []) (fromList xs)
+fromList (x:xs) = merge (Heap x []) (Spath.fromList xs)
 
 deleteMin :: Ord(a) => Heap a -> Heap a
 deleteMin (Heap x hs) = mergePairs hs
