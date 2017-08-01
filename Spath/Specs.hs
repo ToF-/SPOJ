@@ -4,6 +4,9 @@ import Data.Map as M
 
 main = hspec $ do
 
+    let g = graphFromList [(1, [(2, 100.0),(3, 150.0)])
+                          ,(2, [(4, 500.0)])
+                          ,(3, [(4,  50.0)])]
     describe "heap" $ do
         it "can be empty" $ do
             isEmpty S.empty  `shouldBe` True
@@ -34,9 +37,13 @@ main = hspec $ do
 
     describe "edge weighted graph" $ do
         it "can be build from a list of valued edges" $ do
-            let g = graphFromList [(1, [(2, 100.0),(3, 150.0)])
-                                  ,(2, [(4, 400.0)])
-                                  ,(3, [(4,  50.0)])]
-            neighbors 1 g `shouldBe` Just [(2, 100.0)
-                                          ,(3, 150.0)]
+            neighbors 1 g `shouldBe` Just [(2, 100)
+                                          ,(3, 150)]
     
+    describe "shortest paths" $ do
+        it "gives a map a paths to every destination from a node" $ do
+            toList (shortestPath 1000000 1 g) `shouldBe`
+                 [(1,(  0, Nothing))
+                 ,(2,(100, Just 1 ))
+                 ,(3,(150, Just 1 ))
+                 ,(4,(200, Just 3 ))]                            

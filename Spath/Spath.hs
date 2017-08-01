@@ -7,6 +7,7 @@ process = unlines . Prelude.map show . solve . lines
 
 
 type EdgeWeightedGraph a b = Map a [(a,b)] 
+type PathMap a b = Map a (b, Maybe a)
 data Heap a = Empty | Heap a [Heap a]
     deriving (Eq,Show)
 
@@ -46,3 +47,13 @@ graphFromList = M.fromList
 
 neighbors :: Ord(a) => a -> EdgeWeightedGraph a b -> Maybe [(a,b)]
 neighbors = M.lookup
+
+shortestPath ::  Ord(a) => Ord(b) => Num(b )=> b -> a -> EdgeWeightedGraph a b -> PathMap a b 
+shortestPath m a g = fst $ findShortestPath g (M.empty, initial m a g)
+
+initial :: Ord(a) => Ord (b) => Num (b) => b -> a -> EdgeWeightedGraph a b -> Heap (b,a)
+initial m a g = heapFromList [(if n == a then 0 else m,n)| n <- keys g]
+
+findShortestPath :: EdgeWeightedGraph a b -> (PathMap a b, Heap (b,a)) -> (PathMap a b, Heap (b,a))
+findShortestPath g (p,h) = case Spath.findMin h of
+    Just (maxBound,_) -> (p,h)
