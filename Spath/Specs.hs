@@ -1,62 +1,25 @@
 import Test.Hspec
-import Spath as S
-import Data.Map as M
+import Spath
 
 main = hspec $ do
-
-    let g = graphFromList [(1, [(2, 100.0),(3, 150.0)])
-                          ,(2, [(4, 500.0)])
-                          ,(3, [(4,  50.0)])]
-    describe "edge heap" $ do
-        it "can be empty" $ do
-            isEmptyEH S.EmptyEH  `shouldBe` True 
-            isEmptyEH (EH (42,100) []) `shouldBe` False
-
-        it "has a min value" $ do
-            S.findMinEH (EH (42,100) [EH (17,200) []]) `shouldBe` Just (42,100)
-            S.findMinEH (S.EmptyEH :: EdgeHeap Int Int) `shouldBe` Nothing
-
-        it "can be merged, and still be ordered" $ do
-            let h = EH (42,100) []
-                i = EH (3,4807) []
-            mergeEH h i `shouldBe` EH (42,100) [EH (3,4807) []]
-
-        it "can be merged and keep only one key for several priporities" $ do
-            let h = EH (42,100) [EH (3,200) []]
-                i = EH (3,4807) []
-            mergeEH h i `shouldBe` EH (42,100) [EH (3,200) []]
-
-    describe "heap" $ do
-
-        it "can be merged, and still be ordered" $ do
-            let h = Heap 42 []
-                i = Heap 4807 []
-            S.findMin (merge h i) `shouldBe` Just 42
-
-        it "can be insert a value" $ do
-            let h = S.insert 42 S.empty
-            S.findMin h `shouldBe` Just 42
-
-        it "can be built from a list" $ do
-            let h = S.heapFromList [42,17,4807]
-            S.findMin h `shouldBe` Just 17
-
-        it "can have is min deleted and still be ordered" $ do
-            let h = S.heapFromList [42,17,4807,3]
-            S.findMin h `shouldBe` Just 3
-            let h'=S.deleteMin h
-            S.findMin h' `shouldBe` Just 17
-
-    describe "edge weighted graph" $ do
-        it "can be build from a list of valued edges" $ do
-            neighbors 1 g `shouldBe` Just [(2, 100)
-                                          ,(3, 150)]
-    
-    describe "shortest paths" $ do
-        let g = graphFromList [(1, [])]
-        it "gives a map a paths to every destination from a node" $ do
-            toList (shortestPath 1000000 1 g) `shouldBe` []
-                 -- [(1,(  0, Nothing))
-                 -- ,(2,(100, Just 1 ))
-                 -- ,(3,(150, Just 1 ))
-                 -- ,(4,(200, Just 3 ))]                            
+    describe "PSQueue" $ do
+        describe "binding" $ do
+            let b = (42, 100)
+            it "has a key" $ do
+                key b `shouldBe` 42
+            it "has a priority" $ do
+                prio b `shouldBe` 100
+        describe "max key" $ do
+            it "is the maximum key" $ do
+                let p = Winner (42, 100) (Loser (17,200) Start 42 Start) 42
+                max_key p `shouldBe` 42
+        describe "play" $ do
+            it "takes 2 PSQ with keys in p1 < keys in p2 and return the union of p1 and p2" $ do
+                let p = Winner (17, 200) Start 17
+                    q = Winner (42, 100) Start 42
+                    r = Winner (65, 150) Start 65
+                (p `play` q) `shouldBe` Winner (42,100) (Loser (17,200) Start 17 Start) 42
+                (q `play` r) `shouldBe` Winner (42,100) (Loser (65,150) Start 42 Start) 65
+                (p `play` Void) `shouldBe` p
+            
+                

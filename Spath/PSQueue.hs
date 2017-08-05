@@ -76,3 +76,18 @@ adjust f k q = case tour_view q of
         | k <= max_key tl -> (adjust f k tl) `match` tr
         | otherwise       -> tl `match` (adjust f k tr)
 
+printPSQ :: Ord(k) => Ord (p) => Show(k) => Show(p) => PSQ k p -> IO ()
+printPSQ = printPSQ' 0
+    where
+    printPSQ' :: Show(k) => Show(p) => Ord(k) => Ord(p) => Int -> PSQ k p -> IO ()
+    printPSQ' n q = case tour_view q of
+        Null -> return ()
+        Singleton b -> do
+            putStrLn (show b) 
+        tl `Match` tr -> do
+            putStr (take n (repeat 'l'))
+            printPSQ' (n+1) tl
+            putStr (take n (repeat 'r'))
+            printPSQ' (n+1) tr
+    
+
