@@ -118,7 +118,7 @@ t >< Void = t
     | otherwise        = Winner b' (balance b  t m t') m'
 
 data Key = A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
-    deriving (Eq,Ord,Show)
+    deriving (Eq,Ord,Show,Enum)
 
 t = Winner (L,1) (
     balance (P,3) (
@@ -176,3 +176,5 @@ delete k psq = case view psq of
     tl `Match` tr | k <= maxKey tl -> (delete k tl) >< tr
                   | otherwise     -> tl >< (delete k tr)
         
+fromList :: (Ord k, Ord p) => [(k,p)] -> PSQ k p
+fromList = foldl (flip insert) empty
