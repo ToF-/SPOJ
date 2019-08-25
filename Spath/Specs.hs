@@ -13,7 +13,7 @@ instance Arbitrary Prio where
     arbitrary = fmap PR (choose (0,1000))
 
 main = hspec $ do
-    let bindings = fmap (take 3) arbitrary :: Gen [(Key,Prio)]
+    let bindings = fmap (take 100) arbitrary :: Gen [(Key,Prio)]
     describe "Priority Search Queue" $ do
         it "finds a key that is in the Queue" $ do
             forAll bindings $ \bs ->
@@ -26,3 +26,19 @@ main = hspec $ do
                     l = toOrdList q
                     Min b _ = minView q
                 in q == Void || prio b == minimum (map prio l)
+
+        it "deletes the maximal priority" $ do
+            forAll bindings $ \bs ->
+                let q = fromList bs
+                    Min b r = minView q
+                in q == Void || lookupPSQ (key b) (delMin q) == Nothing 
+
+        it "adjusts any priority" $ do
+            forAll bindings $ \bs ->
+                let q = fromList bs
+                    ks = map key (toOrdList q)
+                    ps = map prio (toOrdList q)
+                    r = foldl (\q k -> adjust (\(PR n) -> PR (n+1)) k q) q ks
+                    ts = map prio (toOrdList r)
+                in ts == map (\(PR n) -> PR (n+1)) ps
+
