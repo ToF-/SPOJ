@@ -15,12 +15,15 @@ data MinView k p = Empty
                  | Min (k,p) (PSQ k p)
     deriving (Eq, Show)
 
+omega :: Double
+omega = 3.75
+
 isBalanced :: PSQ k p -> Bool
 isBalanced Void = True 
 isBalanced (Winner b Start k) = True
 isBalanced (Winner b (Loser _ _ l k r) _) 
-    | size l > size r = (fromIntegral (size l) / fromIntegral (size r)) < fromIntegral omega
-    | otherwise = (fromIntegral (size r) / fromIntegral (size l)) < fromIntegral omega
+    | size l > size r = (fromIntegral (size l) / fromIntegral (size r)) < omega
+    | otherwise = (fromIntegral (size r) / fromIntegral (size l)) < omega
 
 
 
@@ -46,13 +49,11 @@ empty = Void
 node :: (k,p) -> LTree k p -> k -> LTree k p -> LTree k p 
 node b l k r = Loser (1 + size l + size r) b l k r
 
-omega = 4
-
 balance :: (Ord k,Ord p) => (k,p) -> LTree k p -> k -> LTree k p -> LTree k p
 balance b l k r
     | size l + size r < 2       = node b l k r
-    | size r > omega * (size l) = balanceLeft  b l k r
-    | size l > omega * (size r) = balanceRight b l k r
+    | fromIntegral (size r) > omega * fromIntegral (size l) = balanceLeft  b l k r
+    | fromIntegral (size l) > omega * fromIntegral (size r) = balanceRight b l k r
     | otherwise                 = node b l k r
 
 balanceLeft :: (Ord k,Ord p) => (k,p) -> LTree k p -> k -> LTree k p -> LTree k p
@@ -63,7 +64,7 @@ balanceLeft b l k r@(Loser _ _ rl _ rr)
 balanceRight :: (Ord k,Ord p) => (k,p) -> LTree k p -> k -> LTree k p -> LTree k p
 balanceRight b l@(Loser _ _ ll _ lr) k r
     | size lr < size ll  = singleRight b l k r
-    | otherwise          = doubleLeft b l k r
+    | otherwise          = doubleRight b l k r
 
 
 singleLeft :: (Ord k,Ord p) => (k,p) -> LTree k p -> k -> LTree k p -> LTree k p 
