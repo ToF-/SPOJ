@@ -10,13 +10,12 @@ data Prio = PR Int
     deriving (Eq,Show,Ord)
 
 instance Arbitrary Prio where
-    arbitrary = fmap (\n -> PR (n * n)) (choose (0,1000))
+    arbitrary = fmap PR (choose (0,1000))
 
 main = hspec $ do
-    let bindings = fmap (take 5) arbitrary :: Gen [(Key,Prio)]
+    let bindings = fmap (take 100) arbitrary :: Gen [(Key,Prio)]
     describe "Priority Search Queue" $ do
-        it "gives the item with the highest priority" $ do
+        it "finds a key that is in the Queue" $ do
             forAll bindings $ \bs ->
-               let psq = fromList bs
-                   Min (k,p) _ = minView psq
-               in psq == Void || p == minimum (map prio bs) 
+               let q = fromList bs
+               in all (\k -> lookupPSQ k q /= Nothing) $ map key bs 

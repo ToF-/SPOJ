@@ -75,7 +75,7 @@ singleLeft b1 t1 k1 (Loser _ b2 t2 k2 t3)
 singleRight :: (Ord k, Ord p) => (k,p) -> LTree k p -> k -> LTree k p -> LTree k p
 singleRight b1 (Loser _ b2 t1 k1 t2) k2 t3
     | key b2 > k1 && prio b1 <= prio b2 = balance b1 t1 k1 (balance b2 t2 k2 t3)
-    | otherwise                       = balance b1 t1 k1 (balance b1 t2 k2 t3)
+    | otherwise                       = balance b2 t1 k1 (balance b1 t2 k2 t3)
 
 doubleLeft :: (Ord k,Ord p) => (k,p) -> LTree k p -> k -> LTree k p -> LTree k p
 doubleLeft b1 t1 k1 (Loser _ b2 t2 k2 t3) = singleLeft b1 t1 k1 (singleRight b2 t2 k2 t3)
@@ -115,8 +115,8 @@ infixl 5 ><
 Void >< t = t
 t >< Void = t
 (Winner b t m) >< (Winner b' t' m')
-    | prio b <= prio b' = Winner b  (balance b' t m t') m'
-    | otherwise        = Winner b' (balance b  t m t') m'
+    | prio b <= prio b' = Winner b  (node b' t m t') m'
+    | otherwise        = Winner b' (node b  t m t') m'
 
 data Key = A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
     deriving (Eq,Ord,Show,Enum)
@@ -162,7 +162,7 @@ adjust f k psq = case view psq of
 insert :: (Ord k, Ord p) => (k,p) -> PSQ k p -> PSQ k p
 insert b psq = case view psq of
     EmptyPSQ -> singleton b
-    Singleton b' | key b <= key b' -> singleton b >< singleton b'
+    Singleton b' | key b < key b' -> singleton b >< singleton b'
                  | key b == key b' -> singleton b
                  | key b >= key b' -> singleton b' >< singleton b
     tl `Match` tr | key b <= maxKey tl -> (insert b tl) >< tr
