@@ -1,5 +1,6 @@
 import Test.Hspec
 import Test.QuickCheck
+import Data.List
 import PSQ
 
 
@@ -41,4 +42,9 @@ main = hspec $ do
                     r = foldl (\q k -> adjust (\(PR n) -> PR (n+1)) k q) q ks
                     ts = map prio (toOrdList r)
                 in ts == map (\(PR n) -> PR (n+1)) ps
+
+        it "is balanced" $ do
+            forAll bindings $ \bs ->
+                let q = fromList (sort bs)
+                in isBalanced q
 

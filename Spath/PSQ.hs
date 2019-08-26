@@ -22,6 +22,7 @@ isBalanced :: PSQ k p -> Bool
 isBalanced Void = True 
 isBalanced (Winner b Start k) = True
 isBalanced (Winner b (Loser _ _ l k r) _) 
+    | size l == 0 || size r == 0 = True
     | size l > size r = (fromIntegral (size l) / fromIntegral (size r)) < omega
     | otherwise = (fromIntegral (size r) / fromIntegral (size l)) < omega
 
@@ -115,8 +116,8 @@ infixl 5 ><
 Void >< t = t
 t >< Void = t
 (Winner b t m) >< (Winner b' t' m')
-    | prio b <= prio b' = Winner b  (node b' t m t') m'
-    | otherwise        = Winner b' (node b  t m t') m'
+    | prio b <= prio b' = Winner b  (balance b' t m t') m'
+    | otherwise        = Winner b' (balance b  t m t') m'
 
 data Key = A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z
     deriving (Eq,Ord,Show,Enum)
