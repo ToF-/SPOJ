@@ -1,15 +1,13 @@
 
 #define MAX_HEAP 10001
 
-struct heap_elem {
-    int id;
-    int value;
+struct heap {
+    int values[MAX_HEAP];
+    int size;
 };
-static struct heap_elem Heap[MAX_HEAP];
-static int HeapSize=0;
 
-void push(int, int);
+void push(struct heap*, int, int);
 
-struct heap_elem pop();
+int pop(struct heap*);
 int dijkstra();
 
