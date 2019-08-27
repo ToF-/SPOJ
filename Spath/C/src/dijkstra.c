@@ -12,10 +12,14 @@ void push(struct heap *h, int key, int value) {
         if (h->values[parent] < value)
             break;
         h->values[current] = h->values[parent];
+        h->keys[current]   = h->keys[parent];
+        h->index[h->keys[current]] = current;
         current = parent;
         parent = current / 2;
     } 
     h->values[current] = value;
+    h->keys[current]   = key;
+    h->index[key]      = current;
 }
 
 int min(struct heap *h, int left, int right) {
@@ -28,16 +32,20 @@ int min(struct heap *h, int left, int right) {
 }
 
 int pop(struct heap *h) {
-    int result = h->values[1];
+    int result = h->keys[1];
     int current = 1;
     while (1) {
         int next = min(h, current * 2, current * 2 + 1);
         if (next == h->size)
             break;
         h->values[current] = h->values[next];
+        h->keys[current]   = h->keys[next];
+        h->index[h->keys[current]] = current;
         current = next;
     }
     h->values[current] = h->values[h->size];
+    h->keys[current]   = h->keys[h->size];
+    h->index[h->keys[current]] = current;
     h->size--;
     return result;
 }

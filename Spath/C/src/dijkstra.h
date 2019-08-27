@@ -3,6 +3,8 @@
 
 struct heap {
     int values[MAX_HEAP];
+    int keys[MAX_HEAP];
+    int index[MAX_HEAP];
     int size;
 };
 

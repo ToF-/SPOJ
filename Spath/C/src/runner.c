@@ -15,27 +15,32 @@ struct heap *Heap;
 
 int test_heap_can_push_and_pop_a_value() {
     push(Heap, 'A', 17);
-    int value = pop(Heap);
-    _assertequals(17, value);
+    int key = pop(Heap);
+    _assertequals('A', key);
     return 0;
 }
 
 int test_heap_pop_the_minimum_value_first() {
-    static int values[1000];
+    static int keys[1000];
     for(int i=0; i < 1000; i++) 
         push(Heap, i, (rand()%100000));
 
     for(int i=0; i < 1000; i++) 
-        values[i] = pop(Heap);
+        keys[i] = pop(Heap);
 
-    for(int i=0; i < 999; i++) 
-        _assert(values[i] <= values[i+1]);
+    for(int i=0; i < 999; i++) {
+        int ki = Heap->index[keys[i]];
+        int kj = Heap->index[keys[i+1]];
+        _assert(Heap->values[ki] <= Heap->values[kj]);
+    }
     return 0;
 }
+
 int all_tests() {
     Heap = malloc(sizeof(struct heap)); 
     _verify(test_heap_can_push_and_pop_a_value);
     free(Heap);
+
     Heap = malloc(sizeof(struct heap)); 
     _verify(test_heap_pop_the_minimum_value_first);
     free(Heap);
