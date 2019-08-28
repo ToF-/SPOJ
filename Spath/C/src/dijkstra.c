@@ -5,21 +5,19 @@ void push(struct heap *h, int key, int value) {
     assert(h->size <= MAX_HEAP);
     h->size++;
     
-    int current = h->size;
-    h->values[current] = value;
-    int parent  = current / 2;
-    while(current > 1) {
-        if (h->values[parent] < value)
-            break;
-        h->values[current] = h->values[parent];
-        h->keys[current]   = h->keys[parent];
-        h->index[h->keys[current]] = current;
-        current = parent;
-        parent = current / 2;
+    int here  = h->size;
+    h->values[here] = value;
+    int up  = here / 2;
+    while(here > 1 && h->values[up] >= value) {
+        h->values[here] = h->values[up];
+        h->keys[here]   = h->keys[up];
+        h->index[h->keys[here]] = here;
+        here = up;
+        up = here / 2;
     } 
-    h->values[current] = value;
-    h->keys[current]   = key;
-    h->index[key]      = current;
+    h->values[here] = value;
+    h->keys[here]   = key;
+    h->index[key]      = here;
 }
 
 int min(struct heap *h, int left, int right) {
@@ -33,19 +31,18 @@ int min(struct heap *h, int left, int right) {
 
 int pop(struct heap *h) {
     int result = h->keys[1];
-    int current = 1;
-    while (1) {
-        int next = min(h, current * 2, current * 2 + 1);
-        if (next == h->size)
-            break;
-        h->values[current] = h->values[next];
-        h->keys[current]   = h->keys[next];
-        h->index[h->keys[current]] = current;
-        current = next;
+    int here = 1;
+    int down = min(h, here * 2, here * 2 + 1);
+    while (down != h->size) {
+        h->values[here] = h->values[down];
+        h->keys[here]   = h->keys[down];
+        h->index[h->keys[here]] = here;
+        here = down;
+        down = min(h, here * 2, here * 2 + 1);
     }
-    h->values[current] = h->values[h->size];
-    h->keys[current]   = h->keys[h->size];
-    h->index[h->keys[current]] = current;
+    h->values[here] = h->values[h->size];
+    h->keys[here]   = h->keys[h->size];
+    h->index[h->keys[here]] = here;
     h->size--;
     return result;
 }
