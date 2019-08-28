@@ -13,22 +13,26 @@ int tests_run = 0;
 
 struct heap *Heap;
 
-int test_heap_can_push_and_pop_a_value() {
-    push(Heap, 'A', 17);
-    int key = pop(Heap);
-    _assertequals('A', key);
+int test_heap_can_update_and_pop_a_value() {
+    int key;
+    update(Heap, 'A', 17); 
+    key = pop(Heap); 
+    _assertequals(0, Heap->size);
+    update(Heap, 'B', 42); update(Heap, 'A', 17); update(Heap, 'B', 4); 
+    pop(Heap); 
+    pop(Heap); 
     return 0;
 }
 
 int test_heap_pop_the_minimum_value_first() {
-    static int keys[1000];
-    for(int i=0; i < 1000; i++) 
-        push(Heap, i, (rand()%100000));
-
-    for(int i=0; i < 1000; i++) 
+    static int keys[50];
+    for(int i=0; i < 50; i++) 
+        update(Heap, 'A'+i, (rand()%600));
+    
+    for(int i=0; i < 50; i++) 
         keys[i] = pop(Heap);
 
-    for(int i=0; i < 999; i++) {
+    for(int i=0; i < 49; i++) {
         int ki = Heap->index[keys[i]];
         int kj = Heap->index[keys[i+1]];
         _assert(Heap->values[ki] <= Heap->values[kj]);
@@ -37,13 +41,13 @@ int test_heap_pop_the_minimum_value_first() {
 }
 
 int all_tests() {
-    Heap = malloc(sizeof(struct heap)); 
-    _verify(test_heap_can_push_and_pop_a_value);
-    free(Heap);
+    Heap = create_heap(10000); 
+    _verify(test_heap_can_update_and_pop_a_value);
+    destroy_heap(Heap);
 
-    Heap = malloc(sizeof(struct heap)); 
+    Heap = create_heap(10000); 
     _verify(test_heap_pop_the_minimum_value_first);
-    free(Heap);
+    destroy_heap(Heap);
     return 0;
 }
 
