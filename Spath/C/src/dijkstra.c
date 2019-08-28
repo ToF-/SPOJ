@@ -1,23 +1,28 @@
 #include <assert.h>
 #include "dijkstra.h"
 
+#define UP(x) (x / 2)
+#define LEFT(x) (x * 2)
+#define RIGHT(x) (x * 2 + 1)
+#define TOP 1
+
 void push(struct heap *h, int key, int value) {
     assert(h->size <= MAX_HEAP);
     h->size++;
     
-    int here  = h->size;
-    h->values[here] = value;
-    int up  = here / 2;
-    while(here > 1 && h->values[up] >= value) {
-        h->values[here] = h->values[up];
-        h->keys[here]   = h->keys[up];
-        h->index[h->keys[here]] = here;
-        here = up;
-        up = here / 2;
+    int current  = h->size;
+    h->values[current] = value;
+    int up  = UP(current);
+    while(current > TOP && h->values[up] >= value) {
+        h->values[current] = h->values[up];
+        h->keys[current]   = h->keys[up];
+        h->index[h->keys[current]] = current;
+        current = up;
+        up = UP(current);
     } 
-    h->values[here] = value;
-    h->keys[here]   = key;
-    h->index[key]      = here;
+    h->values[current] = value;
+    h->keys[current]   = key;
+    h->index[key]      = current;
 }
 
 int min(struct heap *h, int left, int right) {
@@ -30,19 +35,19 @@ int min(struct heap *h, int left, int right) {
 }
 
 int pop(struct heap *h) {
-    int result = h->keys[1];
-    int here = 1;
-    int down = min(h, here * 2, here * 2 + 1);
+    int result = h->keys[TOP];
+    int current = TOP;
+    int down = min(h, LEFT(current), RIGHT(current));
     while (down != h->size) {
-        h->values[here] = h->values[down];
-        h->keys[here]   = h->keys[down];
-        h->index[h->keys[here]] = here;
-        here = down;
-        down = min(h, here * 2, here * 2 + 1);
+        h->values[current] = h->values[down];
+        h->keys[current]   = h->keys[down];
+        h->index[h->keys[current]] = current;
+        current = down;
+        down = min(h, LEFT(current), RIGHT(current));
     }
-    h->values[here] = h->values[h->size];
-    h->keys[here]   = h->keys[h->size];
-    h->index[h->keys[here]] = here;
+    h->values[current] = h->values[h->size];
+    h->keys[current]   = h->keys[h->size];
+    h->index[h->keys[current]] = current;
     h->size--;
     return result;
 }
