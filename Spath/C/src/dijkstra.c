@@ -79,3 +79,47 @@ int pop(struct heap *h) {
     h->size--;
     return result;
 }
+
+struct graph *create_graph() {
+    return calloc(1, sizeof(struct graph));
+} 
+
+void add_vertex(struct graph *g, int id) {
+    if (g->capacity < id+1) {
+        int new_size = g->capacity * 2 > id ? g->capacity * 2 : id+4;
+        g->vertices = realloc(g->vertices, new_size * sizeof(struct vertex*));
+        for(int i = g->capacity; i<new_size; i++)
+            g->vertices[i] = NULL;
+        g->capacity = new_size; 
+    }
+    if (! g->vertices[id]) {
+        g->vertices[id] = calloc(1, sizeof(struct vertex *));
+        g->size++; 
+    }
+}
+
+void add_edge(struct graph *g, int a, int b, int weight) {
+    add_vertex(g, a);
+    add_vertex(g, b);
+    struct vertex *v = g->vertices[a];
+    if (v->size >= v->capacity) {
+        v->capacity = v->capacity ? v->capacity * 2 : 4;
+        v->edges = realloc(v->edges, v->capacity * sizeof(struct edge*));
+    }
+    struct edge *e = calloc(1, sizeof(struct edge));
+    e->vertex = b;
+    e->weight = weight;
+    v->edges[v->size++] = e;
+}
+
+void destroy_vertex(struct vertex *v) {
+    free(v->edges);
+    free(v);
+}
+
+void destroy_graph(struct graph *g) {
+    for(int i=0; i<g->size; i++) {
+        destroy_vertex(g->vertices[i]);
+    }
+    free(g);
+}

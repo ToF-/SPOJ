@@ -13,6 +13,9 @@ int tests_run = 0;
 
 struct heap *Heap;
 
+struct graph *Graph;
+
+
 int test_heap_can_update_and_pop_a_value() {
     int key;
     update(Heap, 'A', 17); 
@@ -40,6 +43,15 @@ int test_heap_pop_the_minimum_value_first() {
     return 0;
 }
 
+int test_graph_properties() {
+    _assertequals(6,Graph->size);
+    _assertequals(2,Graph->vertices[1]->edges[0]->vertex);
+    _assertequals(10,Graph->vertices[1]->edges[0]->weight);
+    _assertequals(3,Graph->vertices[1]->edges[1]->vertex);
+    _assertequals(15,Graph->vertices[1]->edges[1]->weight);
+    return 0;
+}
+
 int all_tests() {
     Heap = create_heap(10000); 
     _verify(test_heap_can_update_and_pop_a_value);
@@ -48,6 +60,19 @@ int all_tests() {
     Heap = create_heap(10000); 
     _verify(test_heap_pop_the_minimum_value_first);
     destroy_heap(Heap);
+
+    Graph = create_graph();
+    add_edge(Graph, 0, 1, 7);
+    add_edge(Graph, 0, 2, 9);
+    add_edge(Graph, 0, 5, 14);
+    add_edge(Graph, 1, 2, 10);
+    add_edge(Graph, 1, 3, 15);
+    add_edge(Graph, 2, 3, 11);
+    add_edge(Graph, 2, 5, 2);
+    add_edge(Graph, 3, 4, 6);
+    add_edge(Graph, 4, 5, 9);
+    _verify(test_graph_properties);
+    destroy_graph(Graph);
     return 0;
 }
 
