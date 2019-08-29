@@ -9,6 +9,7 @@ char Cities[MAXCITIES][MAXNAME];
 int get_int(char *line) {
     int result;
     fgets(line, MAXLINE, stdin);
+    sscanf(line, "%d", &result);
     return result;
 }
 
@@ -30,48 +31,52 @@ int lookup_city(char *city) {
     return 0;
 }
 
-int get_two_Cities(char *line, int *a, int *b) {
+void get_two_cities(char *line, int *a, int *b) {
     fgets(line, MAXLINE, stdin);
     char name_a[MAXNAME];
     char name_b[MAXNAME];
     sscanf(line, "%s %s", name_a, name_b);
     *a = lookup_city(name_a);
-    assert(*a != 0);
     *b = lookup_city(name_b);
-    assert(*b != 0);
-    return 0;
 }
 
-void get_vertex_and_distance(Line)
+void get_vertex_and_distance(char *line, int *node, int *distance) {
+    fgets(line, MAXLINE, stdin);
+    int n;
+    int d;
+    sscanf(line, "%d %d", &n, &d);
+    *node=n-1;
+    *distance=d;
+}
+
 int main() {
     int max_tests = get_int(Line);
     for(int i=0; i < max_tests; i++) {
+        
+        struct graph *g = create_graph();
         int max_vertices = get_int(Line);
-        for(int j=1; j<=max_vertices; j++) {
-            get_city(Line, j);
+        for(int node=0; node<max_vertices; node++) {
+            get_city(Line, node);
             int max_edges = get_int(Line);
             for(int i=0; i<max_edges; i++) {
-                get_vertex_and_distance(Line);
-                
+                int dest;
+                int distance;
+                get_vertex_and_distance(Line, &dest, &distance);
+                assert(dest>=0 && dest<max_vertices);
+                add_edge(g, node, dest, distance); 
+            }
         }
-}
-    struct path *path = create_path(10);
-    struct heap *heap = create_heap(10000); 
-    struct graph *graph = create_graph();
-    add_edge(graph, 0, 1, 7);
-    add_edge(graph, 0, 2, 9);
-    add_edge(graph, 0, 5, 14);
-    add_edge(graph, 1, 2, 10);
-    add_edge(graph, 1, 3, 15);
-    add_edge(graph, 2, 3, 11);
-    add_edge(graph, 2, 5, 2);
-    add_edge(graph, 3, 4, 6);
-    add_edge(graph, 4, 5, 9);
-    dijkstra(graph, 0, 4, path);
-    printf("%d steps, distance:%d  ", path->size, path->total);
-    for(int i=0; i < path->size; i++) 
-        printf("%d ", path->steps[i]);
-    destroy_graph(graph);
-    destroy_path(path);
+        int start;
+        int end;
+        int distances = get_int(Line);
+        for(int i=0; i<distances; i++) {
+            get_two_cities(Line, &start, &end);
+            struct path *path = create_path(max_vertices);
+            dijkstra(g, start, end, path); 
+            printf("%d\n", path->total);
+            destroy_path(path);
+        }
+        destroy_graph(g);
+    }
     return 0;
 }

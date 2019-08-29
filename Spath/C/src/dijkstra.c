@@ -164,7 +164,6 @@ void dijkstra(struct graph *g, int a, int b, struct path *p) {
         v->distance = INT_MAX;
         v->prev = 0;
         v->visited = 0;
-        assert(g->size == 6); 
     } 
     struct vertex *v = g->vertices[a];
     v->distance = 0;
