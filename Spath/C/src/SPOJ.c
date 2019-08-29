@@ -244,6 +244,54 @@ void dijkstra(struct graph *g, int a, int b, struct path *p) {
     destroy_heap(h); 
 }
 
+#include <string.h>
+#define MAXLINE 80
+#define MAXCITIES 10001
+#define MAXNAME 11
+
+char Line[80];
+char Cities[MAXCITIES][MAXNAME];
+
+int get_int(char *line) {
+    int result;
+    fgets(line, MAXLINE, stdin);
+    return result;
+}
+
+int get_str(char *line) {
+    fgets(line, MAXLINE, stdin);
+    return strlen(line);
+}
+
+int get_Cities(char *line, int max_Cities) {
+    assert(max_Cities <= MAXCITIES);
+    int i;
+    for(i=1; i<=max_Cities; i++) {
+        fgets(line, MAXLINE, stdin);
+        sscanf(line, "%s", Cities[i]);
+    }
+    return i;
+}
+
+int lookup_city(char *city) {
+    for (int i=1; i < MAXCITIES; i++) 
+        if (!strcmp(city, Cities[i]))
+            return i;
+    return 0;
+}
+
+int get_two_Cities(char *line, int *a, int *b) {
+    fgets(line, MAXLINE, stdin);
+    char name_a[MAXNAME];
+    char name_b[MAXNAME];
+    sscanf(line, "%s %s", name_a, name_b);
+    *a = lookup_city(name_a);
+    assert(*a != 0);
+    *b = lookup_city(name_b);
+    assert(*b != 0);
+    return 0;
+}
+
 
 int main() {
     struct path *path = create_path(10);
