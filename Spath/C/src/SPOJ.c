@@ -1,4 +1,58 @@
-#include "dijkstra.h"
+
+#define MAX_HEAP 10001
+
+struct heap {
+    int capacity;
+    int size;
+    int *values;
+    int *keys;
+    int *index;
+};
+
+struct edge {
+    int vertex;
+    int weight;
+};
+
+struct vertex {
+    struct edge **edges;
+    int size;
+    int capacity;
+    int distance;
+    int prev;
+    int visited;
+};
+
+struct graph {
+    struct vertex **vertices;
+    int size;
+    int capacity;
+};
+
+struct path {
+    int capacity;
+    int size;
+    int total;
+    int *steps;
+};
+
+void update(struct heap*, int, int);
+
+int pop(struct heap*);
+
+struct heap *create_heap(int);
+void destroy_heap(struct heap *);
+
+struct graph *create_graph();
+void destroy_graph(struct graph *g);
+
+void add_vertex(struct graph *, int);
+void add_edge(struct graph *, int, int, int);
+
+void get_path(struct graph *, struct path *, int);
+void dijkstra(struct graph *, int, int, struct path *);
+struct path *create_path(int);
+void destroy_path();
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -190,3 +244,25 @@ void dijkstra(struct graph *g, int a, int b, struct path *p) {
     destroy_heap(h); 
 }
 
+
+int main() {
+    struct path *path = create_path(10);
+    struct heap *heap = create_heap(10000); 
+    struct graph *graph = create_graph();
+    add_edge(graph, 0, 1, 7);
+    add_edge(graph, 0, 2, 9);
+    add_edge(graph, 0, 5, 14);
+    add_edge(graph, 1, 2, 10);
+    add_edge(graph, 1, 3, 15);
+    add_edge(graph, 2, 3, 11);
+    add_edge(graph, 2, 5, 2);
+    add_edge(graph, 3, 4, 6);
+    add_edge(graph, 4, 5, 9);
+    dijkstra(graph, 0, 4, path);
+    printf("%d steps, distance:%d  ", path->size, path->total);
+    for(int i=0; i < path->size; i++) 
+        printf("%d ", path->steps[i]);
+    destroy_graph(graph);
+    destroy_path(path);
+    return 0;
+}

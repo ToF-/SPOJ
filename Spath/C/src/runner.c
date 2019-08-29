@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "minunit.h"
 #include "dijkstra.h"
-
+#define TEST 1
 int tests_run = 0;
 
 #define FAIL() printf("\nfailure in %s() line %d\n", __func__, __LINE__)
@@ -69,6 +69,7 @@ int test_dijkstra() {
     _assertequals(2, path->steps[1]);
     _assertequals(3, path->steps[2]);
     _assertequals(4, path->steps[3]);
+    destroy_path(path);
     return 0;
 }
 
@@ -95,6 +96,8 @@ int all_tests() {
 
     _verify(test_dijkstra);
     destroy_graph(Graph);
+
+    
     return 0;
 }
 

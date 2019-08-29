@@ -16,3 +16,9 @@ spath.o: spath.c dijkstra.c
 
 spath: spath.o dijkstra.o 
 	${CC} -o $@ spath.o dijkstra.o 
+
+main: dijkstra.c
+	cat dijkstra.h > SPOJ.c
+	tail -n +2 dijkstra.c >>SPOJ.c	
+	cat main.c >>SPOJ.c
+	${CC} SPOJ.c
