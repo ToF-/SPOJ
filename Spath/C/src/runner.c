@@ -52,6 +52,26 @@ int test_graph_properties() {
     return 0;
 }
 
+int test_dijkstra() {
+    struct path *path = create_path(10);
+    _assertequals(6,Graph->size);
+    _assertequals(1,Graph->vertices[0]->edges[0]->vertex);
+    _assertequals(2,Graph->vertices[0]->edges[1]->vertex);
+    _assertequals(5,Graph->vertices[0]->edges[2]->vertex);
+    _assertequals(10,Graph->vertices[1]->edges[0]->weight);
+    _assertequals(3,Graph->vertices[1]->edges[1]->vertex);
+    _assertequals(15,Graph->vertices[1]->edges[1]->weight);
+    printf("dijkstra\n");
+    dijkstra(Graph, 0, 4, path);
+    _assertequals(4,path->size);
+    _assertequals(26,path->total);
+    _assertequals(0, path->steps[0]);
+    _assertequals(2, path->steps[1]);
+    _assertequals(3, path->steps[2]);
+    _assertequals(4, path->steps[3]);
+    return 0;
+}
+
 int all_tests() {
     Heap = create_heap(10000); 
     _verify(test_heap_can_update_and_pop_a_value);
@@ -72,6 +92,8 @@ int all_tests() {
     add_edge(Graph, 3, 4, 6);
     add_edge(Graph, 4, 5, 9);
     _verify(test_graph_properties);
+
+    _verify(test_dijkstra);
     destroy_graph(Graph);
     return 0;
 }

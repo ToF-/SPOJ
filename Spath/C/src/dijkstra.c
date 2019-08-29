@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "dijkstra.h"
 
 #define UP(x) (x / 2)
@@ -87,13 +88,13 @@ struct graph *create_graph() {
 void add_vertex(struct graph *g, int id) {
     if (g->capacity < id+1) {
         int new_size = g->capacity * 2 > id ? g->capacity * 2 : id+4;
-        g->vertices = realloc(g->vertices, new_size * sizeof(struct vertex*));
+        g->vertices = realloc(g->vertices, new_size * sizeof(struct vertex));
         for(int i = g->capacity; i<new_size; i++)
             g->vertices[i] = NULL;
         g->capacity = new_size; 
     }
     if (! g->vertices[id]) {
-        g->vertices[id] = calloc(1, sizeof(struct vertex *));
+        g->vertices[id] = calloc(1, sizeof(struct vertex));
         g->size++; 
     }
 }
@@ -104,7 +105,7 @@ void add_edge(struct graph *g, int a, int b, int weight) {
     struct vertex *v = g->vertices[a];
     if (v->size >= v->capacity) {
         v->capacity = v->capacity ? v->capacity * 2 : 4;
-        v->edges = realloc(v->edges, v->capacity * sizeof(struct edge*));
+        v->edges = realloc(v->edges, v->capacity * sizeof(struct edge));
     }
     struct edge *e = calloc(1, sizeof(struct edge));
     e->vertex = b;
@@ -122,4 +123,64 @@ void destroy_graph(struct graph *g) {
         destroy_vertex(g->vertices[i]);
     }
     free(g);
+}
+
+struct path *create_path(int capacity) {
+    struct path *result = calloc(1, sizeof(struct path));
+    result->capacity = capacity;
+    result->size = 0;
+    result->steps = calloc(capacity, sizeof(int));
+    return result;
+}
+
+void get_path(struct graph *g, struct path *p, int end) {
+    int node = end;
+    struct vertex *v = g->vertices[node];
+    p->size = 0;
+    if (v->distance == INT_MAX)
+        return;
+    p->total = v->distance;
+    do {
+        v = g->vertices[node];
+        p->steps[p->size++] = node;
+        node = v->prev;
+    } while(v->distance);
+    for(int i=0, j=p->size-1; i<j; i++, j--) {
+        int step = p->steps[i];
+        p->steps[i] = p->steps[j];
+        p->steps[j] = step;
+    }
+}
+
+void dijkstra(struct graph *g, int a, int b, struct path *p) {
+    struct heap *h = create_heap(g->capacity);
+    for(int i = 0; i<g->size; i++) {
+        struct vertex *v = g->vertices[i];
+        v->distance = INT_MAX;
+        v->prev = 0;
+        v->visited = 0;
+        assert(g->size == 6); 
+    } 
+    struct vertex *v = g->vertices[a];
+    v->distance = 0;
+    update(h, a, v->distance);
+    while(h->size) {
+        int node = pop(h);
+        if (node == b) {
+            break;
+        }
+        v = g->vertices[node];
+        v->visited = 1;
+        for(int j=0; j<v->size; j++) {
+            struct edge *e = v->edges[j];
+            struct vertex *u = g->vertices[e->vertex];
+            if(!u->visited && v->distance + e->weight <= u->distance) {
+                u->prev = node;
+                u->distance = v->distance + e->weight;
+                update(h, e->vertex, u->distance);
+            }
+        }
+    }
+    get_path(g,p,b); 
+    destroy_heap(h); 
 }
