@@ -49,8 +49,8 @@ void destroy_graph(struct graph *g);
 void add_vertex(struct graph *, int);
 void add_edge(struct graph *, int, int, int);
 
-void get_path(struct graph *, struct path *, int);
-void dijkstra(struct graph *, int, int, struct path *);
+int get_path(struct graph *, struct path *, int);
+int dijkstra(struct graph *, int, int, struct path *);
 struct path *create_path(int);
 void destroy_path();
 #include <assert.h>
@@ -192,12 +192,13 @@ void destroy_path(struct path *p) {
     free(p);
 }
 
-void get_path(struct graph *g, struct path *p, int end) {
+int get_path(struct graph *g, struct path *p, int end) {
     int node = end;
     struct vertex *v = g->vertices[node];
     p->size = 0;
-    if (v->distance == INT_MAX)
-        return;
+    if (v->distance == INT_MAX) {
+        return 0;
+    }
     p->total = v->distance;
     do {
         v = g->vertices[node];
@@ -209,9 +210,10 @@ void get_path(struct graph *g, struct path *p, int end) {
         p->steps[i] = p->steps[j];
         p->steps[j] = step;
     }
+    return p->size;
 }
 
-void dijkstra(struct graph *g, int a, int b, struct path *p) {
+int dijkstra(struct graph *g, int a, int b, struct path *p) {
     struct heap *h = create_heap(g->capacity);
     for(int i = 0; i<g->size; i++) {
         struct vertex *v = g->vertices[i];
@@ -222,8 +224,9 @@ void dijkstra(struct graph *g, int a, int b, struct path *p) {
     struct vertex *v = g->vertices[a];
     v->distance = 0;
     update(h, a, v->distance);
+    int node;
     while(h->size) {
-        int node = pop(h);
+        node = pop(h);
         if (node == b) {
             break;
         }
@@ -239,8 +242,9 @@ void dijkstra(struct graph *g, int a, int b, struct path *p) {
             }
         }
     }
-    get_path(g,p,b); 
+    int result = node == b ? get_path(g,p,b) : 0 ;
     destroy_heap(h); 
+    return result;
 }
 
 #include <string.h>
@@ -317,8 +321,10 @@ int main() {
         for(int i=0; i<distances; i++) {
             get_two_cities(Line, &start, &end);
             struct path *path = create_path(max_vertices);
-            dijkstra(g, start, end, path); 
-            printf("%d\n", path->total);
+            if (dijkstra(g, start, end, path))
+                printf("%d\n", path->total);
+            else
+                printf("%d\n", 0);
             destroy_path(path);
         }
         destroy_graph(g);

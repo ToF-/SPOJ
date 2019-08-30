@@ -138,12 +138,13 @@ void destroy_path(struct path *p) {
     free(p);
 }
 
-void get_path(struct graph *g, struct path *p, int end) {
+int get_path(struct graph *g, struct path *p, int end) {
     int node = end;
     struct vertex *v = g->vertices[node];
     p->size = 0;
-    if (v->distance == INT_MAX)
-        return;
+    if (v->distance == INT_MAX) {
+        return 0;
+    }
     p->total = v->distance;
     do {
         v = g->vertices[node];
@@ -155,9 +156,10 @@ void get_path(struct graph *g, struct path *p, int end) {
         p->steps[i] = p->steps[j];
         p->steps[j] = step;
     }
+    return p->size;
 }
 
-void dijkstra(struct graph *g, int a, int b, struct path *p) {
+int dijkstra(struct graph *g, int a, int b, struct path *p) {
     struct heap *h = create_heap(g->capacity);
     for(int i = 0; i<g->size; i++) {
         struct vertex *v = g->vertices[i];
@@ -168,8 +170,9 @@ void dijkstra(struct graph *g, int a, int b, struct path *p) {
     struct vertex *v = g->vertices[a];
     v->distance = 0;
     update(h, a, v->distance);
+    int node;
     while(h->size) {
-        int node = pop(h);
+        node = pop(h);
         if (node == b) {
             break;
         }
@@ -185,7 +188,8 @@ void dijkstra(struct graph *g, int a, int b, struct path *p) {
             }
         }
     }
-    get_path(g,p,b); 
+    int result = node == b ? get_path(g,p,b) : 0 ;
     destroy_heap(h); 
+    return result;
 }
 

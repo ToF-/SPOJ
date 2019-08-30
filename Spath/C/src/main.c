@@ -72,8 +72,10 @@ int main() {
         for(int i=0; i<distances; i++) {
             get_two_cities(Line, &start, &end);
             struct path *path = create_path(max_vertices);
-            dijkstra(g, start, end, path); 
-            printf("%d\n", path->total);
+            if (dijkstra(g, start, end, path))
+                printf("%d\n", path->total);
+            else
+                printf("%d\n", 0);
             destroy_path(path);
         }
         destroy_graph(g);

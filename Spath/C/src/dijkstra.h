@@ -49,7 +49,7 @@ void destroy_graph(struct graph *g);
 void add_vertex(struct graph *, int);
 void add_edge(struct graph *, int, int, int);
 
-void get_path(struct graph *, struct path *, int);
-void dijkstra(struct graph *, int, int, struct path *);
+int get_path(struct graph *, struct path *, int);
+int dijkstra(struct graph *, int, int, struct path *);
 struct path *create_path(int);
 void destroy_path();
