@@ -53,3 +53,4 @@ int get_path(struct graph *, struct path *, int);
 int dijkstra(struct graph *, int, int, struct path *);
 struct path *create_path(int);
 void destroy_path();
+void assert_soft(int);

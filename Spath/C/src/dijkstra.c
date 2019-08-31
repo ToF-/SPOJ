@@ -9,7 +9,15 @@
 #define RIGHT(x) (x * 2 + 1)
 #define TOP 1
 #define NONE 0
-
+// #define ASSERT_SOFT 1
+void assert_soft(int cond) {
+#ifdef ASSERT_SOFT 
+    if(!cond)
+        printf("error\n");
+#else
+    assert(cond);
+#endif
+}
 struct heap* create_heap(int size) {
     
     struct heap *h = (struct heap *)malloc(sizeof(struct heap));

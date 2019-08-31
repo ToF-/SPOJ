@@ -53,6 +53,7 @@ int get_path(struct graph *, struct path *, int);
 int dijkstra(struct graph *, int, int, struct path *);
 struct path *create_path(int);
 void destroy_path();
+void assert_soft(int);
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,7 +64,15 @@ void destroy_path();
 #define RIGHT(x) (x * 2 + 1)
 #define TOP 1
 #define NONE 0
-
+// #define ASSERT_SOFT 1
+void assert_soft(int cond) {
+#ifdef ASSERT_SOFT 
+    if(!cond)
+        printf("error\n");
+#else
+    assert(cond);
+#endif
+}
 struct heap* create_heap(int size) {
     
     struct heap *h = (struct heap *)malloc(sizeof(struct heap));
@@ -257,12 +266,19 @@ int dijkstra(struct graph *g, int a, int b, struct path *p) {
 }
 
 #include <string.h>
+#include <stdlib.h>
 #define MAXLINE 80
 #define MAXCITIES 10001
 #define MAXNAME 11
 
 char Line[80];
-char Cities[MAXCITIES][MAXNAME];
+
+struct city {
+    char name[MAXNAME];
+    int index;
+};
+
+struct city Cities[MAXCITIES];
 
 int get_int(char *line) {
     int result;
@@ -277,25 +293,35 @@ int get_str(char *line) {
 }
 
 void get_city(char *line, int city_number) {
-    assert(city_number <= MAXCITIES);
+    assert_soft(city_number <= MAXCITIES);
     fgets(line, MAXLINE, stdin);
-    sscanf(line, "%s", Cities[city_number]);
+    sscanf(line, "%s", Cities[city_number].name);
+    Cities[city_number].index = city_number;
 }
 
-int lookup_city(char *city) {
-    for (int i=1; i < MAXCITIES; i++) 
-        if (!strcmp(city, Cities[i]))
-            return i;
-    return 0;
+int compare_cities(const void *a, const void *b) {
+    struct city *ca = (struct city *)a;
+    struct city *cb = (struct city *)b;
+    return strcmp(ca->name, cb->name);
 }
 
-void get_two_cities(char *line, int *a, int *b) {
+void sort_cities(int max_cities) {
+    qsort(Cities, max_cities, sizeof(struct city), compare_cities);
+}
+
+int lookup_city(char *key,int max_cities) {
+    struct city *c=bsearch (key, Cities, max_cities, sizeof(struct city), compare_cities);
+    return c->index;
+}
+
+
+void get_two_cities(char *line, int *a, int *b, int max_cities) {
     fgets(line, MAXLINE, stdin);
     char name_a[MAXNAME];
     char name_b[MAXNAME];
     sscanf(line, "%s %s", name_a, name_b);
-    *a = lookup_city(name_a);
-    *b = lookup_city(name_b);
+    *a = lookup_city(name_a, max_cities);
+    *b = lookup_city(name_b, max_cities);
 }
 
 void get_vertex_and_distance(char *line, int *node, int *distance) {
@@ -321,7 +347,7 @@ int main() {
                     int dest;
                     int distance;
                     get_vertex_and_distance(Line, &dest, &distance);
-                    assert(dest>=0 && dest<max_vertices);
+                    assert_soft(dest>=0 && dest<max_vertices);
                     add_edge(g, node, dest, distance); 
                 }
             } else {
@@ -330,9 +356,10 @@ int main() {
         }
         int start;
         int end;
+        sort_cities(max_vertices);
         int distances = get_int(Line);
         for(int i=0; i<distances; i++) {
-            get_two_cities(Line, &start, &end);
+            get_two_cities(Line, &start, &end, max_vertices);
             struct path *path = create_path(max_vertices);
             if (dijkstra(g, start, end, path))
                 printf("%d\n", path->total);
