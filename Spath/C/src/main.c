@@ -58,12 +58,16 @@ int main() {
         for(int node=0; node<max_vertices; node++) {
             get_city(Line, node);
             int max_edges = get_int(Line);
-            for(int i=0; i<max_edges; i++) {
-                int dest;
-                int distance;
-                get_vertex_and_distance(Line, &dest, &distance);
-                assert(dest>=0 && dest<max_vertices);
-                add_edge(g, node, dest, distance); 
+            if (max_edges>0) {
+                for(int i=0; i<max_edges; i++) {
+                    int dest;
+                    int distance;
+                    get_vertex_and_distance(Line, &dest, &distance);
+                    assert(dest>=0 && dest<max_vertices);
+                    add_edge(g, node, dest, distance); 
+                }
+            } else {
+                add_vertex(g, node);
             }
         }
         int start;

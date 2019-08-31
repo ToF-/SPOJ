@@ -1,0 +1,28 @@
+1
+4
+foo
+2
+2 100
+3 200
+bar
+1
+1 100
+qux
+1
+1 200
+baz
+0
+12
+foo bar
+foo qux
+foo baz
+bar qux
+bar foo
+bar baz
+qux foo
+qux bar
+qux baz
+baz foo
+baz bar
+baz qux
+

@@ -87,14 +87,15 @@ struct graph *create_graph() {
 
 void add_vertex(struct graph *g, int id) {
     if (g->capacity < id+1) {
-        int new_size = g->capacity * 2 > id ? g->capacity * 2 : id+4;
-        g->vertices = realloc(g->vertices, new_size * sizeof(struct vertex));
-        for(int i = g->capacity; i<new_size; i++)
+        int new_capacity = g->capacity * 2 > id ? g->capacity * 2 : id+4;
+        g->vertices = realloc(g->vertices, new_capacity * sizeof(struct vertex));
+        for(int i = g->capacity; i<new_capacity; i++)
             g->vertices[i] = NULL;
-        g->capacity = new_size; 
+        g->capacity = new_capacity; 
     }
     if (! g->vertices[id]) {
         g->vertices[id] = calloc(1, sizeof(struct vertex));
+        assert(g->vertices[id]->size == 0);
         g->size++; 
     }
 }
@@ -161,13 +162,17 @@ int get_path(struct graph *g, struct path *p, int end) {
 
 int dijkstra(struct graph *g, int a, int b, struct path *p) {
     struct heap *h = create_heap(g->capacity);
+    assert(a != b);
+    assert(g->size > 0);
     for(int i = 0; i<g->size; i++) {
         struct vertex *v = g->vertices[i];
+        assert(v);
         v->distance = INT_MAX;
         v->prev = 0;
         v->visited = 0;
     } 
     struct vertex *v = g->vertices[a];
+    assert(v);
     v->distance = 0;
     update(h, a, v->distance);
     int node;
@@ -180,7 +185,11 @@ int dijkstra(struct graph *g, int a, int b, struct path *p) {
         v->visited = 1;
         for(int j=0; j<v->size; j++) {
             struct edge *e = v->edges[j];
+            assert(e);
+            assert(e->vertex>=0 && e->vertex <g->size);
+            assert(g->vertices[e->vertex]);
             struct vertex *u = g->vertices[e->vertex];
+            assert(u);
             if(!u->visited && v->distance + e->weight <= u->distance) {
                 u->prev = node;
                 u->distance = v->distance + e->weight;
