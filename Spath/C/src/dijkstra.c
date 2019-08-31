@@ -9,21 +9,13 @@
 #define RIGHT(x) (x * 2 + 1)
 #define TOP 1
 #define NONE 0
-#define ASSERT_SOFT 1
-void assert_soft(int cond) {
-#ifdef ASSERT_SOFT 
-    if(!cond)
-        printf("error\n");
-#else
-    assert(cond);
-#endif
-}
+
 struct heap* create_heap(int size) {
     
     struct heap *h = (struct heap *)malloc(sizeof(struct heap));
     h->capacity = size+1;
     h->size = 0;
-    assert_soft(h->capacity > 0 && h->capacity <= MAX_HEAP);
+    // assert(h->capacity > 0 && h->capacity <= MAX_HEAP);
     h->values = (int *)calloc((h->capacity),sizeof(int));
     h->keys   = (int *)calloc((h->capacity),sizeof(int));
     h->index  = (int *)calloc((h->capacity),sizeof(int));
@@ -38,13 +30,12 @@ void destroy_heap(struct heap* h) {
 }
 
 void update(struct heap *h, int key, int value) {
-    assert_soft(h->size <= h->capacity);
+    // assert(h->size <= h->capacity);
     int current = h->index[key];
     if(current == NONE) {
         h->size++;
         current = h->size;
-    } else
-        assert_soft(value <= h->values[current]);
+    } 
     h->values[current] = value;
     int up  = UP(current);
     while(current > TOP && h->values[up] >= value) {
@@ -69,7 +60,7 @@ int min(struct heap *h, int left, int right) {
 }
 
 int pop(struct heap *h) {
-    assert_soft(h->size > 0);
+    // assert(h->size > 0);
     int current = TOP;
     int result = h->keys[current];
     int down = min(h, LEFT(current), RIGHT(current));
@@ -103,7 +94,7 @@ void add_vertex(struct graph *g, int id) {
     }
     if (! g->vertices[id]) {
         g->vertices[id] = calloc(1, sizeof(struct vertex));
-        assert_soft(g->vertices[id]->size == 0);
+        // assert(g->vertices[id]->size == 0);
         g->size++; 
     }
 }
@@ -170,17 +161,17 @@ int get_path(struct graph *g, struct path *p, int end) {
 
 int dijkstra(struct graph *g, int a, int b, struct path *p) {
     struct heap *h = create_heap(g->capacity);
-    assert_soft(a != b);
-    assert_soft(g->size > 0);
+    // assert(a != b);
+    // assert(g->size > 0);
     for(int i = 0; i<g->size; i++) {
         struct vertex *v = g->vertices[i];
-        assert_soft(v);
+        // assert(v);
         v->distance = INT_MAX;
         v->prev = 0;
         v->visited = 0;
     } 
     struct vertex *v = g->vertices[a];
-    assert_soft(v);
+    // assert(v);
     v->distance = 0;
     update(h, a, v->distance);
     int node;
@@ -193,11 +184,11 @@ int dijkstra(struct graph *g, int a, int b, struct path *p) {
         v->visited = 1;
         for(int j=0; j<v->size; j++) {
             struct edge *e = v->edges[j];
-            assert_soft(e);
-            assert_soft(e->vertex>=0 && e->vertex <g->size);
-            assert_soft(g->vertices[e->vertex]);
+            // assert(e);
+            // assert(e->vertex>=0 && e->vertex <g->size);
+            // assert(g->vertices[e->vertex]);
             struct vertex *u = g->vertices[e->vertex];
-            assert(u);
+            // assert(u);
             if(!u->visited && v->distance + e->weight <= u->distance) {
                 u->prev = node;
                 u->distance = v->distance + e->weight;

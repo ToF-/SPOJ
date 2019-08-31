@@ -26,7 +26,6 @@ int get_str(char *line) {
 }
 
 void get_city(char *line, int city_number) {
-    assert_soft(city_number <= MAXCITIES);
     fgets(line, MAXLINE, stdin);
     sscanf(line, "%s", Cities[city_number].name);
     Cities[city_number].index = city_number;
@@ -69,7 +68,6 @@ void get_vertex_and_distance(char *line, int *node, int *distance) {
 int main() {
     int max_tests = get_int(Line);
     for(int i=0; i < max_tests; i++) {
-        
         struct graph *g = create_graph();
         int max_vertices = get_int(Line);
         for(int node=0; node<max_vertices; node++) {
@@ -80,7 +78,6 @@ int main() {
                     int dest;
                     int distance;
                     get_vertex_and_distance(Line, &dest, &distance);
-                    assert_soft(dest>=0 && dest<max_vertices);
                     add_edge(g, node, dest, distance); 
                 }
             } else {
@@ -97,10 +94,11 @@ int main() {
             if (dijkstra(g, start, end, path))
                 printf("%d\n", path->total);
             else
-                printf("%d\n", 0);
+                printf("%d\n", 0); 
             destroy_path(path);
         }
         destroy_graph(g);
+        fgets(Line, MAXLINE, stdin);
     }
     return 0;
 }

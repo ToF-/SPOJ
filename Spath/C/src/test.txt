@@ -21,6 +21,7 @@ warszawa
 2
 gdansk warszawa
 bydgoszcz warszawa
+
 4
 gdansk
 2
