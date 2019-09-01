@@ -41,6 +41,7 @@ void update(struct heap*, int, int);
 int pop(struct heap*);
 
 struct heap *create_heap(int);
+void empty_heap(struct heap *);
 void destroy_heap(struct heap *);
 
 struct graph *create_graph();
@@ -49,8 +50,5 @@ void destroy_graph(struct graph *g);
 void add_vertex(struct graph *, int);
 void add_edge(struct graph *, int, int, int);
 
-int get_path(struct graph *, struct path *, int);
-int dijkstra(struct graph *, int, int, struct path *);
-struct path *create_path(int);
-void destroy_path();
-void assert_soft(int);
+int dijkstra(struct graph *, struct heap *, int, int);
+void print_path(struct graph *, struct heap *, int, int);

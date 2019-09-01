@@ -88,16 +88,13 @@ int main() {
         int end;
         sort_cities(max_vertices);
         int distances = get_int(Line);
+        struct heap *h = create_heap(g->capacity);
         for(int i=0; i<distances; i++) {
             get_two_cities(Line, &start, &end, max_vertices);
-            struct path *path = create_path(max_vertices);
-            if (dijkstra(g, start, end, path))
-                printf("%d\n", path->total);
-            else
-                printf("%d\n", 0); 
-            destroy_path(path);
+            printf("%d\n", dijkstra(g, h,start, end));
         }
         destroy_graph(g);
+        destroy_heap(h);
         fgets(Line, MAXLINE, stdin);
     }
     return 0;

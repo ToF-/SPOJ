@@ -41,6 +41,7 @@ void update(struct heap*, int, int);
 int pop(struct heap*);
 
 struct heap *create_heap(int);
+void empty_heap(struct heap *);
 void destroy_heap(struct heap *);
 
 struct graph *create_graph();
@@ -49,11 +50,8 @@ void destroy_graph(struct graph *g);
 void add_vertex(struct graph *, int);
 void add_edge(struct graph *, int, int, int);
 
-int get_path(struct graph *, struct path *, int);
-int dijkstra(struct graph *, int, int, struct path *);
-struct path *create_path(int);
-void destroy_path();
-void assert_soft(int);
+int dijkstra(struct graph *, struct heap *, int, int);
+void print_path(struct graph *, struct heap *, int, int);
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -103,6 +101,9 @@ void update(struct heap *h, int key, int value) {
     h->index[key] = current;
 }
 
+void empty_heap(struct heap *h) {
+    h->size = 0;
+}
 int min(struct heap *h, int left, int right) {
     int result = h->size;
     if (left <= h->size && h->values[left] < h->values[result])
@@ -176,42 +177,7 @@ void destroy_graph(struct graph *g) {
     free(g);
 }
 
-struct path *create_path(int capacity) {
-    struct path *result = calloc(1, sizeof(struct path));
-    result->capacity = capacity;
-    result->size = 0;
-    result->steps = calloc(capacity, sizeof(int));
-    return result;
-}
-
-void destroy_path(struct path *p) {
-    free(p->steps);
-    free(p);
-}
-
-int get_path(struct graph *g, struct path *p, int end) {
-    int node = end;
-    struct vertex *v = g->vertices[node];
-    p->size = 0;
-    if (v->distance == INT_MAX) {
-        return 0;
-    }
-    p->total = v->distance;
-    do {
-        v = g->vertices[node];
-        p->steps[p->size++] = node;
-        node = v->prev;
-    } while(v->distance);
-    for(int i=0, j=p->size-1; i<j; i++, j--) {
-        int step = p->steps[i];
-        p->steps[i] = p->steps[j];
-        p->steps[j] = step;
-    }
-    return p->size;
-}
-
-int dijkstra(struct graph *g, int a, int b, struct path *p) {
-    struct heap *h = create_heap(g->capacity);
+int dijkstra(struct graph *g, struct heap *h, int a, int b) {
     assert(a != b);
     for(int i = 0; i<g->size; i++) {
         struct vertex *v = g->vertices[i];
@@ -240,11 +206,26 @@ int dijkstra(struct graph *g, int a, int b, struct path *p) {
             }
         }
     }
-    int result = node == b ? get_path(g,p,b) : 0 ;
-    destroy_heap(h); 
+    int result = node == b ? g->vertices[b]->distance : 0 ;
     return result;
 }
 
+void print_path(struct graph *g, struct heap *h, int a , int b ) {
+    empty_heap(h);
+    int node = b;
+    while(1) {
+        update(h, node, g->vertices[node]->distance);
+        if (g->vertices[node]->distance) 
+            node = g->vertices[node]->prev;
+        else
+            break;
+    }
+    while(h->size) {
+        int node = pop(h);
+        printf(" %d", node);
+    }
+    printf("\n");
+}
 #include <string.h>
 #include <stdlib.h>
 #define MAXLINE 80
@@ -335,16 +316,13 @@ int main() {
         int end;
         sort_cities(max_vertices);
         int distances = get_int(Line);
+        struct heap *h = create_heap(g->capacity);
         for(int i=0; i<distances; i++) {
             get_two_cities(Line, &start, &end, max_vertices);
-            struct path *path = create_path(max_vertices);
-            if (dijkstra(g, start, end, path))
-                printf("%d\n", path->total);
-            else
-                printf("%d\n", 0); 
-            destroy_path(path);
+            printf("%d\n", dijkstra(g, h,start, end));
         }
         destroy_graph(g);
+        destroy_heap(h);
         fgets(Line, MAXLINE, stdin);
     }
     return 0;
