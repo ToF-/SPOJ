@@ -5,6 +5,9 @@
 char Bitmap[MAX_SIZE][MAX_SIZE];
 char Distances[MAX_SIZE][MAX_SIZE];
 
+int Width;
+int Height;
+
 struct node {
     int x;
     int y;
@@ -26,5 +29,5 @@ struct heap *create_heap(int);
 void empty_heap(struct heap *);
 void destroy_heap(struct heap *);
 
-int init_distances(int, int);
-int calc_distances(struct heap *, int, int);
+void init_distances(int, int);
+void calc_distances(char **, char **, struct heap *, int, int);

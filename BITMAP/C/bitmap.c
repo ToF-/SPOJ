@@ -57,3 +57,6 @@ struct node pop(struct heap *h) {
     h->size--;
     return result;
 }
+
+void calc_distances(char **bitmap, char **distances, struct heap *h, int max_x, int max_y) {
+}
