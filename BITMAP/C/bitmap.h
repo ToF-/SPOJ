@@ -30,4 +30,4 @@ void empty_heap(struct heap *);
 void destroy_heap(struct heap *);
 
 void init_distances(int, int);
-void calc_distances(char **, char **, struct heap *, int, int);
+void calc_distances(char *, char *, struct heap *, int, int);

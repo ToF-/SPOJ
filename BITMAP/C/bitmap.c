@@ -58,5 +58,5 @@ struct node pop(struct heap *h) {
     return result;
 }
 
-void calc_distances(char **bitmap, char **distances, struct heap *h, int max_x, int max_y) {
+void calc_distances(char *bitmap, char *distances, struct heap *h, int max_x, int max_y) {
 }
