@@ -9,3 +9,4 @@ main = hspec $ do
 
         it "on a line with a single pixel on" $ do
             distances ["10000"]  `shouldBe` [[0,1,2,3,4]]
+
