@@ -1,15 +1,17 @@
 
-IS-TOP(i) : i == 1
-IS-LEAF(i) : N < 2i
-PARENT(i) : i/2
+IS-TOP(i) : i == 0
+IS-LEAF(i) : 
+PARENT(i) : (i-1)/2
+LEFT(i) : 2i+1
+RIGHT(i) : 2i+2
 
 ADD-ELEMENT(x) : 
-    N <- N+1
     A[N] <- x
     i <- N
     while not IS-TOP(i) and A[i] < A[PARENT(i)]
         SWAP(A, i, PARENT(i))
         i <- PARENT(i)
+    N <- N+1
 
 SWAP(a,i,j) : 
     t <- a[i]
@@ -17,18 +19,18 @@ SWAP(a,i,j) :
     a[j] <- t
 
 
-REMOVE->x :
-    r <- A[1]
-    A[1] <- A[N]
-    ADJUST(1)
+REMOVE() - >x :
+    r <- A[0]
+    A[0] <- A[N-1]
+    ADJUST(0)
     RETURN r
 
 ADJUST(i) : 
     if IS-LEAF(i) return
-    if A[2i] < A[2i+1] 
-        c <- 2i+1
+    if A[LEFT(i)] < A[RIGHT(i)]
+        c <- LEFT(i)
     else
-        c <- 2i
+        c <- RIGHT(i)
     if A[i] <= A[c] return
     SWAP(A, i, c)
     ADJUST(c)
