@@ -3,8 +3,6 @@ import Bitmap
 
 main = hspec $ do
     describe "distances compute distances to pixels ON" $ do
-        it "on an empty map" $ do
-            distances [[]] `shouldBe` [[]]
 
         it "on a single pixel map" $ do
             distances ["1"] `shouldBe` [[0]]
