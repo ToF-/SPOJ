@@ -5,4 +5,5 @@ type Bit = Char
 type Distance = Int
 
 distances :: [[Bit]] -> [[Distance]]
-distances _ = [[]]
+distances [[]] = [[]]
+distances ["1"] = [[0]]
