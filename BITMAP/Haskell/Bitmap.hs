@@ -2,9 +2,16 @@ module Bitmap
 where
 
 type Bit = Char
-type Distance = Int
+type Coord = (Int,Int) 
+
+data CoordD = CoordD Coord Int
+data MinHeap a = MinHeap [a]
+
+(-:) :: Coord -> Int -> CoordD
+(-:) = CoordD
+
+toList :: MinHeap CoordD -> [CoordD]
+toList (MinHeap as) = as
 
 
-distances :: [[Bit]] -> [[Distance]]
-distances ["1"] = [[0]]
-distances ["10000"] = [[0,1,2,3,4]]
+
