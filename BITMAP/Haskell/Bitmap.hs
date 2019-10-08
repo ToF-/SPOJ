@@ -1,6 +1,6 @@
 module Bitmap
 where
-import Data.List (sort)
+import Data.List (sortBy)
 
 type Bit = Char
 type Coord = (Int,Int) 
@@ -16,26 +16,30 @@ data MinHeap a = MinHeap [a]
 
 infixl 6 -:
 
+
 toList :: MinHeap CoordD -> [CoordD]
 toList (MinHeap as) = as
 
 fromList :: [CoordD] -> MinHeap CoordD
-fromList = MinHeap
+fromList = MinHeap . sortBy (\(CoordD _ d) (CoordD _ e) -> compare d e)
 
-adjacent :: MinHeap CoordD -> [Coord] -> Coord -> MinHeap CoordD
+isEmpty :: MinHeap a -> Bool
+isEmpty (MinHeap as) = null as
+
+adjacent :: MinHeap CoordD -> [CoordD] -> Coord -> (MinHeap CoordD,[CoordD])
 adjacent mh vs (maxX,maxY) = let (CoordD (x,y) d,mh') = extractMin mh
-    in foldr (addAdjacent d) mh' [cd |  cd <- [(x,y-1),(x,y+1),(x-1,y),(x+1,y)]
-                                     , not (cd `elem` vs)
-                                     , fst cd >= 0
-                                     , snd cd >= 0
-                                     , fst cd < maxX
-                                     , snd cd < maxY ]
+    in foldr (addAdjacent d) (mh',[]) [cd |  cd <- [(x,y-1),(x,y+1),(x-1,y),(x+1,y)]
+                                      , not (cd `elem` (map (\(CoordD cd d) -> cd) vs))
+                                      , fst cd >= 0
+                                      , snd cd >= 0
+                                      , fst cd < maxX
+                                      , snd cd < maxY ]
     where
-    addAdjacent :: Distance -> Coord -> MinHeap CoordD -> MinHeap CoordD
-    addAdjacent d cd (MinHeap as) = MinHeap (as++[cd-:(d+1)])
+    addAdjacent :: Distance -> Coord -> (MinHeap CoordD,[CoordD]) -> (MinHeap CoordD,[CoordD])
+    addAdjacent d cd (MinHeap as,vs) = (MinHeap (as++[cd-:(d+1)]),(cd-:d):vs)
 
 extractMin :: MinHeap CoordD -> (CoordD, MinHeap CoordD)
 extractMin (MinHeap as) = (head as', MinHeap (tail as'))
     where
-    as' = sort as
+    as' = sortBy (\(CoordD _ d) (CoordD _ e) -> compare d e) as
 
