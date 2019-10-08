@@ -1,45 +1,74 @@
 module Bitmap
 where
-import Data.List (sortBy)
+import Data.Ord (comparing)
+import Data.Map as M (empty, Map, lookup, insert) 
 
-type Bit = Char
-type Coord = (Int,Int) 
-type Distance = Int
-
-data CoordD = CoordD Coord Int
-    deriving (Eq, Ord, Show)
-data MinHeap a = MinHeap [a]
+type Cell = (Int,Int)
+type Magnitude = Int
+data Distance = Distance Cell Int
     deriving (Eq, Show)
 
-(-:) :: Coord -> Int -> CoordD
-(-:) = CoordD
+instance Ord Distance where
+    compare = comparing magnitude
 
-infixl 6 -:
+row :: Cell -> Int
+row = fst
 
+col :: Cell -> Int
+col = snd
 
-toList :: MinHeap CoordD -> [CoordD]
-toList (MinHeap as) = as
+(-:) :: Cell -> Magnitude -> Distance
+(-:) = Distance
 
-fromList :: [CoordD] -> MinHeap CoordD
-fromList = MinHeap . sortBy (\(CoordD _ d) (CoordD _ e) -> compare d e)
+cell :: Distance -> Cell
+cell (Distance c _) = c
+
+magnitude :: Distance -> Magnitude
+magnitude (Distance _ m) = m
+
+data MinHeap a = Empty
+               | Min a (MinHeap a)
+    deriving (Eq)
+
+fromList :: Ord a => [a] -> MinHeap a
+fromList as = Prelude.foldr add Empty as
+
+add :: Ord a => a -> MinHeap a -> MinHeap a
+add a Empty = Min a Empty
+add a (Min b h) | a < b = Min a (Min b h)
+                | otherwise = Min b (add a h)
 
 isEmpty :: MinHeap a -> Bool
-isEmpty (MinHeap as) = null as
+isEmpty Empty = True
+isEmpty _ = False
 
-adjacent :: MinHeap CoordD -> [CoordD] -> Coord -> (MinHeap CoordD,[CoordD])
-adjacent mh vs (maxX,maxY) = let (CoordD (x,y) d,mh') = extractMin mh
-    in foldr (addAdjacent d) (mh',[]) [cd |  cd <- [(x,y-1),(x,y+1),(x-1,y),(x+1,y)]
-                                      , not (cd `elem` (map (\(CoordD cd d) -> cd) vs))
-                                      , fst cd >= 0
-                                      , snd cd >= 0
-                                      , fst cd < maxX
-                                      , snd cd < maxY ]
-    where
-    addAdjacent :: Distance -> Coord -> (MinHeap CoordD,[CoordD]) -> (MinHeap CoordD,[CoordD])
-    addAdjacent d cd (MinHeap as,vs) = (MinHeap (as++[cd-:(d+1)]),(cd-:d):vs)
+minView :: MinHeap a -> (a, MinHeap a)
+minView Empty = error "empty minimal heap"
+minView (Min a h) = (a, h)
 
-extractMin :: MinHeap CoordD -> (CoordD, MinHeap CoordD)
-extractMin (MinHeap as) = (head as', MinHeap (tail as'))
-    where
-    as' = sortBy (\(CoordD _ d) (CoordD _ e) -> compare d e) as
+data Grid = Grid Cell (Map Cell Magnitude)
 
+emptyGrid :: Cell -> Grid
+emptyGrid size = Grid size M.empty
+
+toListOfList :: Grid -> [[Magnitude]]
+toListOfList (Grid (maxR, maxC) m) =
+    [ [ case M.lookup (r,c) m of
+            Just d -> d
+            Nothing -> (-1)
+        | c <- [0..maxC-1]]
+    |     r <- [0..maxR-1]]
+
+addDistance :: Distance -> Grid -> Grid
+addDistance (Distance c m) (Grid s g) = (Grid s (M.insert c m g))
+
+updateAdjacent :: Grid -> MinHeap Distance -> Grid 
+updateAdjacent g@(Grid (maxR,maxC) m) h | isEmpty h = g
+                               | otherwise =
+    let (Distance (i,j) d,h') = minView h
+        as = [ c -: (d+1) 
+             | c <- [(i-1,j),(i,j-1),(i,j+1),(i+1,j)]
+             , row c < maxR && row c >= 0 && col c < maxC && col c >= 0 && (M.lookup c m) == Nothing]
+        m' = M.insert (i,j) d m
+        h'' = Prelude.foldr add h' as
+    in updateAdjacent (Grid (maxR, maxC) m') h'' 

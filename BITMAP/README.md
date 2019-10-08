@@ -19,6 +19,7 @@ In the _i_-th line for each test case, _1<=i<=n_, there should be written m inte
 
 ##Example
 ###Sample input:
+
     1
     3 4
     0001
@@ -26,6 +27,7 @@ In the _i_-th line for each test case, _1<=i<=n_, there should be written m inte
     0110
 
 ###Sample output:
+
     3 2 1 0
     2 1 0 0
     1 0 0 1
