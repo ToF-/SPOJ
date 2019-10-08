@@ -26,7 +26,7 @@ In the _i_-th line for each test case, _1<=i<=n_, there should be written m inte
     0011
     0110
 
-###Sample output:
+### Sample output:
 
     3 2 1 0
     2 1 0 0
