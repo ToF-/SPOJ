@@ -22,9 +22,14 @@ toList (MinHeap as) = as
 fromList :: [CoordD] -> MinHeap CoordD
 fromList = MinHeap
 
-adjacent :: MinHeap CoordD -> [Coord] -> MinHeap CoordD
-adjacent mh vs = let (CoordD (x,y) d,mh') = extractMin mh
-    in foldr (addAdjacent d) mh' [cd |  cd <- [(x,y-1),(x,y+1),(x-1,y),(x+1,y)], not (cd `elem` vs) ]
+adjacent :: MinHeap CoordD -> [Coord] -> Coord -> MinHeap CoordD
+adjacent mh vs (maxX,maxY) = let (CoordD (x,y) d,mh') = extractMin mh
+    in foldr (addAdjacent d) mh' [cd |  cd <- [(x,y-1),(x,y+1),(x-1,y),(x+1,y)]
+                                     , not (cd `elem` vs)
+                                     , fst cd >= 0
+                                     , snd cd >= 0
+                                     , fst cd < maxX
+                                     , snd cd < maxY ]
     where
     addAdjacent :: Distance -> Coord -> MinHeap CoordD -> MinHeap CoordD
     addAdjacent d cd (MinHeap as) = MinHeap (as++[cd-:(d+1)])
