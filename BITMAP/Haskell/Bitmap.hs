@@ -33,6 +33,10 @@ data MinHeap a = Empty
 fromList :: Ord a => [a] -> MinHeap a
 fromList as = Prelude.foldr add Empty as
 
+toList :: MinHeap a -> [a]
+toList Empty = []
+toList (Min a h) = a : toList h
+
 add :: Ord a => a -> MinHeap a -> MinHeap a
 add a Empty = Min a Empty
 add a (Min b h) | a < b = Min a (Min b h)
@@ -72,3 +76,13 @@ updateAdjacent g@(Grid (maxR,maxC) m) h | isEmpty h = g
         m' = M.insert (i,j) d m
         h'' = Prelude.foldr add h' as
     in updateAdjacent (Grid (maxR, maxC) m') h'' 
+
+initialDistances :: [String] -> (MinHeap Distance, Grid)
+initialDistances ss = 
+    let maxR = length ss
+        maxC = length (head ss)
+        ds   = [Distance (r,c) 0 | r <- [0..maxR-1], c <- [0..maxC-1], ss!!r!!c == '1']
+        mh = Prelude.foldr add Empty ds
+        g  = Prelude.foldr (\(Distance cs d) (Grid s g) -> (Grid s (M.insert cs d g))) (emptyGrid (maxR,maxC)) ds
+    in (mh,g)
+        

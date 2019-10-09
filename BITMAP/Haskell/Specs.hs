@@ -1,5 +1,6 @@
 import Test.Hspec
 import Bitmap
+import Data.List (sort)
 
 main = hspec $ do
     describe "a cell" $ do
@@ -67,3 +68,12 @@ main = hspec $ do
             toListOfList g'  `shouldBe` [[3,2,1,0]
                                         ,[2,1,0,0]
                                         ,[1,0,0,1]]
+
+    describe "initialDistances" $ do
+        it "gives a list of coords of pixels ON with distance 0" $ do
+            let bitmap = ["0001"
+                         ,"0011"
+                         ,"0110"]
+                ds = sort $ map (-: 0) [(0,3),(1,2),(1,3),(2,1),(2,2)]
+            sort (toList (fst (initialDistances bitmap)))  `shouldBe` ds
+            
