@@ -1,6 +1,6 @@
 module Bitmap where
 import Data.Maybe (fromMaybe)
-import Data.List (intersperse)
+import Data.List (intersperse,nub,sort)
 
 import Data.Map as M (Map, empty, insert, lookup)
 
@@ -24,7 +24,7 @@ setDistances :: [Coord] -> Distance -> DistanceMap -> DistanceMap
 setDistances cs d dm = Prelude.foldr (\ij dm -> set ij d dm) dm cs
 
 adjacent :: Coord -> DistanceMap -> [Coord]
-adjacent (i,j) (DM (h,w) m) = 
+adjacent (i,j) (DM (h,w) m) = nub $ sort $ 
     [ (r,c) | (r,c) <- [(i-1,j),(i,j-1),(i,j+1),(i+1,j)]
             , (r,c) `within` (h,w)
             , M.lookup (r,c) m == Nothing]
