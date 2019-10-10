@@ -39,4 +39,15 @@ main = hspec $ do
                 let dm = set (1,1) 0 $ distanceMap (3,3)
                 nextDistance dm `shouldBe` Just (1,(0,1))
 
+            it "has several nextDistances to set, ordered by distance and then coords" $ do
+                let dm = set (1,1) 0 $ distanceMap (3,3)
+                    dm'= updateNextDistance dm
+                    dm'' = updateNextDistance dm'
+                    dm''' = updateNextDistance dm''
+                    dm'''' = updateNextDistance dm'''
+                nextDistance dm `shouldBe` Just (1,(0,1))
+                nextDistance dm' `shouldBe` Just (1,(1,0))
+                nextDistance dm'' `shouldBe` Just (1,(1,2))
+                nextDistance dm''' `shouldBe` Just (1,(2,1))
+                nextDistance dm'''' `shouldBe` Nothing
                 

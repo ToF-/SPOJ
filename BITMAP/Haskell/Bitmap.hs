@@ -1,6 +1,6 @@
 module Bitmap
 where
-import Data.Map as M
+import Data.Map as M (empty,Map,insert,lookup)
 import Data.Maybe (fromMaybe)
 
 type Size = Coord
@@ -24,7 +24,14 @@ set :: Coord -> Distance -> DistanceMap -> DistanceMap
 set (i,j) d (DM hw m vl) = DM hw m' vl'
     where 
     m' = insert (i,j) d m
-    vl'= Min (d+1,(i-1,j)) EmptyVisitList     
+    vl'= Prelude.foldr insertDistance vl cds
+        where
+        cds :: [(Distance,Coord)]
+        cds = map (\ij -> (d+1,ij)) $ [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+        insertDistance :: (Distance,Coord) -> VisitList (Distance,Coord) -> VisitList (Distance,Coord)
+        insertDistance cd EmptyVisitList = Min cd EmptyVisitList
+        insertDistance cd (Min a vl) | cd < a = Min cd (insertDistance a vl)
+                                     | otherwise = Min a (insertDistance cd vl)
 
 isComplete :: DistanceMap -> Bool
 isComplete (DM (h,w) m _) = 
@@ -43,3 +50,11 @@ nextDistance (DM _ _ vl) = case vl of
     EmptyVisitList -> Nothing
     (Min x _) -> Just x
 
+updateNextDistance :: DistanceMap -> DistanceMap 
+updateNextDistance dm@(DM s m vl) = case extractMin vl of
+    (Nothing,_) -> dm
+    (Just (d,ij),vl') -> DM s m vl'
+
+extractMin :: VisitList a -> (Maybe a,VisitList a)
+extractMin EmptyVisitList = (Nothing,EmptyVisitList)
+extractMin (Min a vl)     = (Just a,vl)
