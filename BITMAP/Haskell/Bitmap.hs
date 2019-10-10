@@ -61,3 +61,10 @@ updateNextDistance dm@(DM s m vl) = case extractMin vl of
 extractMin :: VisitList a -> (Maybe a,VisitList a)
 extractMin EmptyVisitList = (Nothing,EmptyVisitList)
 extractMin (Min a vl)     = (Just a,vl)
+
+establish :: DistanceMap -> DistanceMap
+establish dm | isComplete dm = dm
+establish dm@(DM s m vl) = case nextDistance dm of
+    Just (d,ij) -> establish $ set ij d (updateNextDistance dm)
+    Nothing -> establish dm
+                 
