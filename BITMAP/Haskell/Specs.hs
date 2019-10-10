@@ -11,3 +11,9 @@ main = hspec $ do
         it "can be filled with distances" $ do
             let dm = set (0,0) 4 $ distanceMap (2,2)
             dm `at` (0,0) `shouldBe` Just 4
+
+        it "has a limited size" $ do
+            let dm = set (0,0) 2 $ distanceMap (1,1)
+            dm `at` (0,0) `shouldBe` Just 2
+            dm `at` (-1,-1) `shouldBe` Nothing
+            dm `at` (1,1)  `shouldBe` Nothing

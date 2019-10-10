@@ -12,6 +12,7 @@ distanceMap hw = DM hw M.empty
 
 at :: DistanceMap -> Coord -> Maybe Distance
 (DM hw m) `at` ij | ij `within` hw = M.lookup ij m
+                  | otherwise = Nothing
     where
     (i,j) `within` (h,w) = i < h && j < w && i >= 0 && j >= 0
 
