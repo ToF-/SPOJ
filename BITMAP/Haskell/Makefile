@@ -5,3 +5,9 @@ spoj : Bitmap.hs
 test: spoj
 	runhaskell SPOJBitmap.hs <test.txt >result.txt
 	diff expected.txt result.txt
+
+profile: spoj
+	ghc --make -prof -fprof-auto -rtsopts SPOJBitmap.hs -o bin/spoj
+	bin/spoj +RTS -p <medium.txt
+	cat spoj.prof
+	cat spoj.prof
