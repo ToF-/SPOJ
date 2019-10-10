@@ -29,3 +29,15 @@ main = hspec $ do
                 dm = setDistances cs 0 $ distanceMap (3,3)
             adjacents cs dm `shouldBe` [(0,1),(1,0),(1,2),(2,1)]
 
+        it "can establish all the distances given a list of initial pixels" $ do
+            let cs = [(1,1)] 
+                dm = establish cs $ distanceMap (3,3)
+            toList dm  `shouldBe` [[2,1,2]
+                                  ,[1,0,1]
+                                  ,[2,1,2]]
+            let cs = [(0,3),(1,1),(1,2),(2,0),(2,1)] 
+                dm = establish cs $ distanceMap (3,4)
+            toList dm  `shouldBe` [[2,1,1,0]
+                                  ,[1,0,0,1]
+                                  ,[0,0,1,2]]
+

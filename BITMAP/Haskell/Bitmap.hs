@@ -1,4 +1,5 @@
 module Bitmap where
+import Data.Maybe (fromMaybe)
 
 import Data.Map as M (Map, empty, insert, lookup)
 
@@ -31,3 +32,20 @@ adjacent (i,j) (DM (h,w) m) =
 
 adjacents :: [Coord] -> DistanceMap -> [Coord]
 adjacents cs dm = concatMap (flip adjacent dm) cs
+
+establish :: [Coord] -> DistanceMap -> DistanceMap
+establish cs dm = establish' cs 0 dm
+    where
+    establish' :: [Coord] -> Distance -> DistanceMap -> DistanceMap
+    establish' cs d dm = 
+        let dm' = setDistances cs d dm
+        in case adjacents cs dm' of
+            [] -> dm'
+            cs' -> establish' cs' (succ d) dm'
+
+toList :: DistanceMap -> [[Distance]]
+toList (DM (h,w) m) = 
+    [[fromMaybe (-1) (M.lookup (i,j) m) | j <- [0..w-1]]
+    | i <- [0..h-1]]
+
+
