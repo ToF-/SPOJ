@@ -17,3 +17,9 @@ main = hspec $ do
             dm `at` (0,0) `shouldBe` Just 2
             dm `at` (-1,-1) `shouldBe` Nothing
             dm `at` (1,1)  `shouldBe` Nothing
+
+        it "is incomplete until all distances are set" $ do
+            let dm = set (0,0) 4 $ distanceMap (1,2)
+                dm'= set (0,1) 3 $ dm
+            isComplete dm `shouldBe` False
+            isComplete dm' `shouldBe` True

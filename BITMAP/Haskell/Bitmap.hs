@@ -18,3 +18,10 @@ at :: DistanceMap -> Coord -> Maybe Distance
 
 set :: Coord -> Distance -> DistanceMap -> DistanceMap
 set ij d (DM hw m) = DM hw (insert ij d m)
+
+isComplete :: DistanceMap -> Bool
+isComplete (DM (h,w) m) = 
+    and [ M.lookup (i,j) m /= Nothing
+        | i <- [0..h-1]
+        , j <- [0..w-1]]
+
