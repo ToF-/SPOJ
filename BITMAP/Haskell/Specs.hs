@@ -23,3 +23,13 @@ main = hspec $ do
                 dm'= set (0,1) 3 $ dm
             isComplete dm `shouldBe` False
             isComplete dm' `shouldBe` True
+
+        it "can be listed when complete" $ do
+            let dm = set (0,0) 0 
+                   $ set (0,1) 1
+                   $ set (1,0) 1
+                   $ set (1,1) 2 
+                   $ distanceMap (2,2)
+            toList dm `shouldBe` [[0,1]
+                                 ,[1,2]]
+            toList (distanceMap (1,1)) `shouldBe` [[-1]]

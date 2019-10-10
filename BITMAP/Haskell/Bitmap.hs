@@ -1,6 +1,7 @@
 module Bitmap
 where
 import Data.Map as M
+import Data.Maybe (fromMaybe)
 
 type Size = Coord
 type Coord = (Int,Int)
@@ -25,3 +26,8 @@ isComplete (DM (h,w) m) =
         | i <- [0..h-1]
         , j <- [0..w-1]]
 
+toList :: DistanceMap -> [[Distance]]
+toList (DM (h,w) m) = 
+    [[fromMaybe (-1) (M.lookup (i,j) m) 
+     | j <- [0..w-1]]
+    | i <- [0..h-1]]
