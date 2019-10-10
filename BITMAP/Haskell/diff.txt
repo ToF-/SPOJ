@@ -1,0 +1,293 @@
+diff --git a/BITMAP/Haskell/Bitmap.hs b/BITMAP/Haskell/Bitmap.hs
+index 5d5907b..22be396 100644
+--- a/BITMAP/Haskell/Bitmap.hs
++++ b/BITMAP/Haskell/Bitmap.hs
+@@ -1,99 +1,51 @@
+ module Bitmap where
+-import Data.Map as M (empty,Map,insert,lookup)
+ import Data.Maybe (fromMaybe)
+-import Data.List (intersperse)
+ 
+-type Size = Coord
+-type Coord = (Int,Int)
++import Data.Map as M (Map, empty, insert, lookup)
++
++type Size     = Coord
++type Coord    = (Int,Int)
+ type Distance = Int
+-data DistanceMap = DM Size (M.Map Coord Distance) (VisitList (Distance,Coord))
++data DistanceMap = DM Size (Map Coord Distance)
+     deriving (Show)
+ 
+-data VisitList a = EmptyVisitList
+-                 | Min a (VisitList a)
+-    deriving (Show)
+ 
+ distanceMap :: Size -> DistanceMap
+-distanceMap hw = DM hw M.empty EmptyVisitList
++distanceMap hw = DM hw M.empty
+ 
+ at :: DistanceMap -> Coord -> Maybe Distance
+-(DM hw m _) `at` ij | ij `within` hw = M.lookup ij m
+-                    | otherwise = Nothing
+-
+-(i,j) `within` (h,w) = i < h && j < w && i >= 0 && j >= 0
++(DM _ m) `at` ij = M.lookup ij m 
+ 
+ set :: Coord -> Distance -> DistanceMap -> DistanceMap
+-set (i,j) d (DM hw m vl) = DM hw m' vl'
+-    where 
+-    m' = case M.lookup (i,j) m of
+-        Nothing -> insert (i,j) d m
+-        Just d' -> case d < d' of
+-            True -> insert (i,j) d m
+-            False -> m
+-
+-    vl'= Prelude.foldr insertDistance vl cds
+-        where
+-        cds :: [(Distance,Coord)]
+-        cds = [(d+1,ij)
+-              | ij <- [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+-              , ij `within` hw
+-              , case M.lookup ij m of
+-                    Nothing -> True
+-                    Just d' -> d+1 < d']
+-
+-insertDistance :: (Distance,Coord) -> VisitList (Distance,Coord) -> VisitList (Distance,Coord)
+-insertDistance cd EmptyVisitList = Min cd EmptyVisitList
+-insertDistance cd (Min a vl) | cd < a = Min cd (insertDistance a vl)
+-                             | otherwise = Min a (insertDistance cd vl)
+-
+-isComplete :: DistanceMap -> Bool
+-isComplete (DM (h,w) m _) = 
+-    and [ M.lookup (i,j) m /= Nothing
+-        | i <- [0..h-1]
+-        , j <- [0..w-1]]
+-
+-toList :: DistanceMap -> [[Distance]]
+-toList (DM (h,w) m _) = 
+-    [[fromMaybe (-1) (M.lookup (i,j) m) 
+-     | j <- [0..w-1]]
+-    | i <- [0..h-1]]
++set ij d (DM hw m) = DM hw (M.insert ij d m)
+ 
+-nextDistance :: DistanceMap -> Maybe (Distance,Coord)
+-nextDistance (DM _ _ vl) = case vl of
+-    EmptyVisitList -> Nothing
+-    (Min x _) -> Just x
++setDistances :: [Coord] -> Distance -> DistanceMap -> DistanceMap
++setDistances cs d dm = Prelude.foldr (\ij dm -> set ij d dm) dm cs
+ 
+-updateNextDistance :: DistanceMap -> DistanceMap 
+-updateNextDistance dm@(DM s m vl) = case extractMin vl of
+-    (Nothing,_) -> dm
+-    (Just (d,ij),vl') -> DM s m vl'
+-
+-extractMin :: VisitList a -> (Maybe a,VisitList a)
+-extractMin EmptyVisitList = (Nothing,EmptyVisitList)
+-extractMin (Min a vl)     = (Just a,vl)
++adjacent :: Coord -> DistanceMap -> [Coord]
++adjacent (i,j) (DM (h,w) m) = 
++    [ (r,c) | (r,c) <- [(i-1,j),(i,j-1),(i,j+1),(i+1,j)]
++            , (r,c) `within` (h,w)
++            , M.lookup (r,c) m == Nothing]
++    where
++    (i,j) `within`  (h,w) = i >= 0 && j >= 0 && i < h && j < w
+ 
+-establish :: DistanceMap -> DistanceMap
+-establish dm | isComplete dm = dm
+-establish dm@(DM s m vl) = case nextDistance dm of
+-    Just (d,ij) -> establish $ set ij d (updateNextDistance dm)
+-    Nothing -> establish dm
+-                 
++adjacents :: [Coord] -> DistanceMap -> [Coord]
++adjacents cs dm = concatMap (flip adjacent dm) cs
+ 
+-processCase :: Size -> [String] -> [String]
+-processCase (h,w) bm = map (concat . intersperse " " . (map show)) $ toList $ establish dm
++establish :: [Coord] -> DistanceMap -> DistanceMap
++establish cs dm = establish' cs 0 dm
+     where
+-    dm = Prelude.foldr (\cd dm -> set cd 0 dm) (distanceMap (h,w)) initial
+-    initial = [(i,j)
+-              | i <- [0..h-1]
+-              , j <- [0..w-1]
+-              , bm!!i!!j == '1']
++    establish' :: [Coord] -> Distance -> DistanceMap -> DistanceMap
++    establish' cs d dm = 
++        let dm' = setDistances cs d dm
++        in case adjacents cs dm' of
++            [] -> dm'
++            cs' -> establish' cs' (succ d) dm'
+ 
++toList :: DistanceMap -> [[Distance]]
++toList (DM (h,w) m) = 
++    [[fromMaybe (-1) (M.lookup (i,j) m) | j <- [0..w-1]]
++    | i <- [0..h-1]]
+ 
+-process :: String -> String
+-process = unlines . process' . tail . lines
+-    where
+-    process' [] = []
+-    process' (s:ss) = processCase (h,w) (take h ss) ++ process' (drop h ss)
+-        where
+-        [h,w] = map read $ words s
+ 
+diff --git a/BITMAP/Haskell/Specs.hs b/BITMAP/Haskell/Specs.hs
+index 4e503f5..be7ebce 100644
+--- a/BITMAP/Haskell/Specs.hs
++++ b/BITMAP/Haskell/Specs.hs
+@@ -8,121 +8,36 @@ main = hspec $ do
+             let dm = distanceMap (1,1)
+             dm `at` (0,0) `shouldBe` Nothing
+ 
+-        it "can be filled with distances" $ do
+-            let dm = set (0,0) 4 $ distanceMap (2,2)
+-            dm `at` (0,0) `shouldBe` Just 4
++        it "can be added a distance" $ do
++            let dm = set (0,0) 3 $ distanceMap (1,1)
++            dm `at` (0,0) `shouldBe` Just 3
++
++        it "can tell adjacent unset distances to a cell" $ do
++            let dm = set (1,1) 0 $ distanceMap (3,3)
++            adjacent (1,1) dm `shouldBe` [(0,1),(1,0),(1,2),(2,1)]
++
++            let dm = set (0,1) 0 $ set (0,0) 0 $ distanceMap (1,2)
++            adjacent (0,0) dm `shouldBe` [] 
++
++        it "can set several distances in one go" $ do
++            let dm = setDistances [(0,0),(2,2)] 0 $ distanceMap (3,3)
++            dm `at` (0,0)  `shouldBe` Just 0
++            dm `at` (2,2)  `shouldBe` Just 0
++
++        it "can tell adjacent distances to a set of cells" $ do
++            let cs = [(0,0),(2,2)]
++                dm = setDistances cs 0 $ distanceMap (3,3)
++            adjacents cs dm `shouldBe` [(0,1),(1,0),(1,2),(2,1)]
++
++        it "can establish all the distances given a list of initial pixels" $ do
++            let cs = [(1,1)] 
++                dm = establish cs $ distanceMap (3,3)
++            toList dm  `shouldBe` [[2,1,2]
++                                  ,[1,0,1]
++                                  ,[2,1,2]]
++            let cs = [(0,3),(1,1),(1,2),(2,0),(2,1)] 
++                dm = establish cs $ distanceMap (3,4)
++            toList dm  `shouldBe` [[2,1,1,0]
++                                  ,[1,0,0,1]
++                                  ,[0,0,1,2]]
+ 
+-        it "has a limited size" $ do
+-            let dm = set (0,0) 2 $ distanceMap (1,1)
+-            dm `at` (0,0) `shouldBe` Just 2
+-            dm `at` (-1,-1) `shouldBe` Nothing
+-            dm `at` (1,1)  `shouldBe` Nothing
+-
+-        it "is incomplete until all distances are set" $ do
+-            let dm = set (0,0) 4 $ distanceMap (1,2)
+-                dm'= set (0,1) 3 $ dm
+-            isComplete dm `shouldBe` False
+-            isComplete dm' `shouldBe` True
+-
+-        it "can be listed when complete" $ do
+-            let dm = set (0,0) 0 
+-                   $ set (0,1) 1
+-                   $ set (1,0) 1
+-                   $ set (1,1) 2 
+-                   $ distanceMap (2,2)
+-            toList dm `shouldBe` [[0,1]
+-                                 ,[1,2]]
+-            toList (distanceMap (1,1)) `shouldBe` [[-1]]
+-
+-        describe "when added a distance" $ do
+-            it "has its nextDistance updated" $ do
+-                let dm = set (1,1) 0 $ distanceMap (3,3)
+-                nextDistance dm `shouldBe` Just (1,(0,1))
+-
+-            it "cannot reset a distance unless distance is smaller" $ do
+-                let dm = set (1,1) 3 $ set (1,1) 0 $ distanceMap (3,3)
+-                dm `at` (1,1)  `shouldBe` Just 0
+-                let dm = set (1,1) 1 $ set (1,1) 2 $ distanceMap (3,3)
+-                dm `at` (1,1)  `shouldBe` Just 1
+-                    
+-
+-            it "has several nextDistances to set, ordered by distance and then coords" $ do
+-                let dm = set (1,1) 0 $ distanceMap (3,3)
+-                    dm'= updateNextDistance dm
+-                    dm'' = updateNextDistance dm'
+-                    dm''' = updateNextDistance dm''
+-                    dm'''' = updateNextDistance dm'''
+-                nextDistance dm `shouldBe` Just (1,(0,1))
+-                nextDistance dm' `shouldBe` Just (1,(1,0))
+-                nextDistance dm'' `shouldBe` Just (1,(1,2))
+-                nextDistance dm''' `shouldBe` Just (1,(2,1))
+-                nextDistance dm'''' `shouldBe` Nothing
+-
+-            it "doesn't add off-limit distances to set" $ do
+-                let dm = updateNextDistance $ set (0,0) 0 $ distanceMap (1,1)
+-                nextDistance dm `shouldBe` Nothing
+-
+-            it "doesn't add distances that are already set" $ do
+-                let dm = set (0,0) 0 $ distanceMap (1,2)
+-                    dm'= set (0,1) 1 $ updateNextDistance dm
+-                nextDistance dm' `shouldBe` Nothing
+-
+-            it "doesn't add distances that are already set except for a shorter distance" $ do
+-                let dm = establish $ set (0,0) 0 $ distanceMap (1,4)
+-                    dm'= set (0,3) 0 $ dm
+-                nextDistance dm  `shouldBe` Nothing
+-                nextDistance dm' `shouldBe` Just (1,(0,2))
+-
+-        describe "can establish all the distances" $ do
+-            it "given one initial pixel" $ do
+-                let dm = establish $ set (1,1) 0 $ distanceMap (3,3)
+-                toList dm `shouldBe` [[2,1,2]
+-                                     ,[1,0,1]
+-                                     ,[2,1,2]]
+-
+-            it "given several initial pixels" $ do
+-                let dm = establish $ set (0,0) 0 $ set (2,2) 0 $ distanceMap (3,3)
+-                toList dm `shouldBe` [[0,1,2]
+-                                     ,[1,2,1]
+-                                     ,[2,1,0]]
+-            it "given the case test" $ do
+-                let dm = establish 
+-                        $ set (0,3) 0 
+-                        $ set (1,2) 0 
+-                        $ set (1,3) 0 
+-                        $ set (2,1) 0 
+-                        $ set (2,2) 0 
+-                        $ distanceMap (3,4)
+-                toList dm `shouldBe` [[3,2,1,0]
+-                                     ,[2,1,0,0]
+-                                     ,[1,0,0,1]]
+-
+-
+-    describe "processCase" $ do
+-        it "processes a bitmap, yielding a text output" $ do
+-            let input = ["0001"
+-                        ,"0011"
+-                        ,"0110"]
+-                output= ["3 2 1 0"
+-                        ,"2 1 0 0"
+-                        ,"1 0 0 1"]
+-            processCase (3,4) input `shouldBe` output
+-
+-    describe "process" $ do
+-        it "processes all the cases" $ do
+-            let input = ["2"
+-                        ,"1 1"
+-                        ,"1"
+-                        ,"3 4"
+-                        ,"0001"
+-                        ,"0011"                
+-                        ,"0110"]
+-                output= ["0"
+-                        ,"3 2 1 0"
+-                        ,"2 1 0 0"
+-                        ,"1 0 0 1"]
+-            process (unlines input) `shouldBe` (unlines output)
+-
+-                
+-
+-                

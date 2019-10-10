@@ -1,5 +1,6 @@
 module Bitmap where
 import Data.Maybe (fromMaybe)
+import Data.List (intersperse)
 
 import Data.Map as M (Map, empty, insert, lookup)
 
@@ -48,4 +49,20 @@ toList (DM (h,w) m) =
     [[fromMaybe (-1) (M.lookup (i,j) m) | j <- [0..w-1]]
     | i <- [0..h-1]]
 
+process :: String -> String
+process = unlines . process' . tail . lines
+    where
+    process' [] = []
+    process' (s:ss) = processCase (h,w) (take h ss) ++ process' (drop h ss)
+        where
+        [h,w] = map read $ words s
 
+        processCase :: Size -> [String] -> [String]
+        processCase (h,w) bm = map prettyPrint $ toList $ dm
+            where
+            prettyPrint = concat . intersperse " " . (map show)
+            dm = establish initial $ distanceMap (h,w)
+            initial = [(i,j)
+                    | i <- [0..h-1]
+                    , j <- [0..w-1]
+                    , bm!!i!!j == '1']

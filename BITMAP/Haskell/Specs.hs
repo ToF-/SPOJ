@@ -41,3 +41,17 @@ main = hspec $ do
                                   ,[1,0,0,1]
                                   ,[0,0,1,2]]
 
+    describe "process" $ do
+        it "processes all the cases" $ do
+            let input = ["2"
+                        ,"1 1"
+                        ,"1"
+                        ,"3 4"
+                        ,"0001"
+                        ,"0011"                
+                        ,"0110"]
+                output= ["0"
+                        ,"3 2 1 0"
+                        ,"2 1 0 0"
+                        ,"1 0 0 1"]
+            process (unlines input) `shouldBe` (unlines output)
