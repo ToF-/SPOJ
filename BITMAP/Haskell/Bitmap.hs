@@ -29,7 +29,8 @@ set (i,j) d (DM hw m vl) = DM hw m' vl'
         cds :: [(Distance,Coord)]
         cds = [(d+1,ij)
               | ij <- [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
-              , ij `within` hw]
+              , ij `within` hw
+              , M.lookup ij m == Nothing]
         insertDistance :: (Distance,Coord) -> VisitList (Distance,Coord) -> VisitList (Distance,Coord)
         insertDistance cd EmptyVisitList = Min cd EmptyVisitList
         insertDistance cd (Min a vl) | cd < a = Min cd (insertDistance a vl)

@@ -55,4 +55,10 @@ main = hspec $ do
                 let dm = updateNextDistance $ set (0,0) 0 $ distanceMap (1,1)
                 nextDistance dm `shouldBe` Nothing
 
+            it "doesn't add distances that are already set" $ do
+                let dm = set (0,0) 0 $ distanceMap (1,2)
+                    dm'= set (0,1) 1 $ updateNextDistance dm
+                nextDistance dm' `shouldBe` Nothing
+                
+
                 
