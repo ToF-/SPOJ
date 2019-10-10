@@ -63,6 +63,7 @@ main = hspec $ do
         describe "can establish all the distances" $ do
             it "given one initial pixel" $ do
                 let dm = establish $ set (1,1) 0 $ distanceMap (3,3)
+
                 toList dm `shouldBe` [[2,1,2]
                                      ,[1,0,1]
                                      ,[2,1,2]]
