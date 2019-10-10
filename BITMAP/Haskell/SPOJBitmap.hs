@@ -1,4 +1,3 @@
-module Bitmap where
 import Data.Map as M (empty,Map,insert,lookup)
 import Data.Maybe (fromMaybe)
 import Data.List (intersperse)
@@ -97,3 +96,4 @@ process = unlines . process' . tail . lines
         where
         [h,w] = map read $ words s
 
+main = interact process
