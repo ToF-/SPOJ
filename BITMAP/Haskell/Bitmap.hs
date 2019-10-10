@@ -2,6 +2,7 @@ module Bitmap
 where
 import Data.Map as M (empty,Map,insert,lookup)
 import Data.Maybe (fromMaybe)
+import Data.List (intersperse)
 
 type Size = Coord
 type Coord = (Int,Int)
@@ -30,11 +31,14 @@ set (i,j) d (DM hw m vl) = DM hw m' vl'
         cds = [(d+1,ij)
               | ij <- [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
               , ij `within` hw
-              , M.lookup ij m == Nothing]
-        insertDistance :: (Distance,Coord) -> VisitList (Distance,Coord) -> VisitList (Distance,Coord)
-        insertDistance cd EmptyVisitList = Min cd EmptyVisitList
-        insertDistance cd (Min a vl) | cd < a = Min cd (insertDistance a vl)
-                                     | otherwise = Min a (insertDistance cd vl)
+              , case M.lookup ij m of
+                    Nothing -> True
+                    Just d' -> d+1 < d']
+
+insertDistance :: (Distance,Coord) -> VisitList (Distance,Coord) -> VisitList (Distance,Coord)
+insertDistance cd EmptyVisitList = Min cd EmptyVisitList
+insertDistance cd (Min a vl) | cd < a = Min cd (insertDistance a vl)
+                             | otherwise = Min a (insertDistance cd vl)
 
 isComplete :: DistanceMap -> Bool
 isComplete (DM (h,w) m _) = 
@@ -68,3 +72,13 @@ establish dm@(DM s m vl) = case nextDistance dm of
     Just (d,ij) -> establish $ set ij d (updateNextDistance dm)
     Nothing -> establish dm
                  
+
+process :: [String] -> [String]
+process bm = map (concat . intersperse " " . (map show)) $ toList $ establish dm
+    where
+    dm = Prelude.foldr (\cd dm -> set cd 0 dm) (distanceMap (h,w)) initial
+    (h,w) = (length bm, length (head bm))
+    initial = [(i,j)
+              | i <- [0..h-1]
+              , j <- [0..w-1]
+              , bm!!i!!j == '1']

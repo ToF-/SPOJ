@@ -60,6 +60,12 @@ main = hspec $ do
                     dm'= set (0,1) 1 $ updateNextDistance dm
                 nextDistance dm' `shouldBe` Nothing
 
+            it "doesn't add distances that are already set except for a shorter distance" $ do
+                let dm = establish $ set (0,0) 0 $ distanceMap (1,4)
+                    dm'= set (0,3) 0 $ dm
+                nextDistance dm  `shouldBe` Nothing
+                nextDistance dm' `shouldBe` Just (1,(0,2))
+
         describe "can establish all the distances" $ do
             it "given one initial pixel" $ do
                 let dm = establish $ set (1,1) 0 $ distanceMap (3,3)
@@ -72,6 +78,28 @@ main = hspec $ do
                 toList dm `shouldBe` [[0,1,2]
                                      ,[1,2,1]
                                      ,[2,1,0]]
+            it "given the case test" $ do
+                let dm = establish 
+                        $ set (0,0) 0 
+                        $ set (1,2) 0 
+                        $ set (1,3) 0 
+                        $ set (2,1) 0 
+                        $ set (2,2) 0 
+                        $ distanceMap (3,4)
+                toList dm `shouldBe` [[3,2,1,0]
+                                     ,[2,1,0,0]
+                                     ,[1,0,0,1]]
+
+
+    describe "process" $ do
+        it "processes a bitmap, yielding a text output" $ do
+            let input = ["0001"
+                        ,"0011"
+                        ,"0110"]
+                output= ["3 2 1 0"
+                        ,"2 1 0 0"
+                        ,"1 0 0 1"]
+            process input `shouldBe` output
                 
             
                 
