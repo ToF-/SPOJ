@@ -33,3 +33,10 @@ main = hspec $ do
             toList dm `shouldBe` [[0,1]
                                  ,[1,2]]
             toList (distanceMap (1,1)) `shouldBe` [[-1]]
+
+        describe "when added a distance" $ do
+            it "has its nextDistance updated" $ do
+                let dm = set (1,1) 0 $ distanceMap (3,3)
+                nextDistance dm `shouldBe` Just (1,(0,1))
+
+                
