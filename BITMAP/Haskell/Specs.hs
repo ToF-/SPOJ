@@ -98,7 +98,7 @@ main = hspec $ do
                                      ,[1,0,0,1]]
 
 
-    describe "process" $ do
+    describe "processCase" $ do
         it "processes a bitmap, yielding a text output" $ do
             let input = ["0001"
                         ,"0011"
@@ -106,7 +106,7 @@ main = hspec $ do
                 output= ["3 2 1 0"
                         ,"2 1 0 0"
                         ,"1 0 0 1"]
-            process input `shouldBe` output
+            processCase input `shouldBe` output
                 
             
                 

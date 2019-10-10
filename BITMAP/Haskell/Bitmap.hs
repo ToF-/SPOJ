@@ -80,8 +80,8 @@ establish dm@(DM s m vl) = case nextDistance dm of
     Nothing -> establish dm
                  
 
-process :: [String] -> [String]
-process bm = map (concat . intersperse " " . (map show)) $ toList $ establish dm
+processCase :: [String] -> [String]
+processCase bm = map (concat . intersperse " " . (map show)) $ toList $ establish dm
     where
     dm = Prelude.foldr (\cd dm -> set cd 0 dm) (distanceMap (h,w)) initial
     (h,w) = (length bm, length (head bm))
