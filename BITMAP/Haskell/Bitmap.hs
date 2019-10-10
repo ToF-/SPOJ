@@ -17,8 +17,8 @@ distanceMap hw = DM hw M.empty EmptyVisitList
 at :: DistanceMap -> Coord -> Maybe Distance
 (DM hw m _) `at` ij | ij `within` hw = M.lookup ij m
                     | otherwise = Nothing
-    where
-    (i,j) `within` (h,w) = i < h && j < w && i >= 0 && j >= 0
+
+(i,j) `within` (h,w) = i < h && j < w && i >= 0 && j >= 0
 
 set :: Coord -> Distance -> DistanceMap -> DistanceMap
 set (i,j) d (DM hw m vl) = DM hw m' vl'
@@ -27,7 +27,9 @@ set (i,j) d (DM hw m vl) = DM hw m' vl'
     vl'= Prelude.foldr insertDistance vl cds
         where
         cds :: [(Distance,Coord)]
-        cds = map (\ij -> (d+1,ij)) $ [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+        cds = [(d+1,ij)
+              | ij <- [(i-1,j),(i+1,j),(i,j-1),(i,j+1)]
+              , ij `within` hw]
         insertDistance :: (Distance,Coord) -> VisitList (Distance,Coord) -> VisitList (Distance,Coord)
         insertDistance cd EmptyVisitList = Min cd EmptyVisitList
         insertDistance cd (Min a vl) | cd < a = Min cd (insertDistance a vl)

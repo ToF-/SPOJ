@@ -50,4 +50,9 @@ main = hspec $ do
                 nextDistance dm'' `shouldBe` Just (1,(1,2))
                 nextDistance dm''' `shouldBe` Just (1,(2,1))
                 nextDistance dm'''' `shouldBe` Nothing
+
+            it "doesn't add off-limit distances to set" $ do
+                let dm = updateNextDistance $ set (0,0) 0 $ distanceMap (1,1)
+                nextDistance dm `shouldBe` Nothing
+
                 
