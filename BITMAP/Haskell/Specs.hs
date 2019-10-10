@@ -19,3 +19,13 @@ main = hspec $ do
             let dm = set (0,1) 0 $ set (0,0) 0 $ distanceMap (1,2)
             adjacent (0,0) dm `shouldBe` [] 
 
+        it "can set several distances in one go" $ do
+            let dm = setDistances [(0,0),(2,2)] 0 $ distanceMap (3,3)
+            dm `at` (0,0)  `shouldBe` Just 0
+            dm `at` (2,2)  `shouldBe` Just 0
+
+        it "can tell adjacent distances to a set of cells" $ do
+            let cs = [(0,0),(2,2)]
+                dm = setDistances cs 0 $ distanceMap (3,3)
+            adjacents cs dm `shouldBe` [(0,1),(1,0),(1,2),(2,1)]
+
