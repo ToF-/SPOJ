@@ -17,3 +17,11 @@ at :: DistanceMap -> Coord -> Maybe Distance
 
 set :: Coord -> Distance -> DistanceMap -> DistanceMap
 set ij d (DM hw m) = DM hw (M.insert ij d m)
+
+adjacent :: Coord -> DistanceMap -> [Coord]
+adjacent (i,j) (DM (h,w) m) = 
+    [ (r,c) | (r,c) <- [(i-1,j),(i,j-1),(i,j+1),(i+1,j)]
+            , (r,c) `within` (h,w)
+            , M.lookup (r,c) m == Nothing]
+    where
+    (i,j) `within`  (h,w) = i >= 0 && j >= 0 && i < h && j < w
