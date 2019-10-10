@@ -8,9 +8,11 @@ type Size = Coord
 type Coord = (Int,Int)
 type Distance = Int
 data DistanceMap = DM Size (M.Map Coord Distance) (VisitList (Distance,Coord))
+    deriving (Show)
 
 data VisitList a = EmptyVisitList
                  | Min a (VisitList a)
+    deriving (Show)
 
 distanceMap :: Size -> DistanceMap
 distanceMap hw = DM hw M.empty EmptyVisitList
@@ -24,7 +26,12 @@ at :: DistanceMap -> Coord -> Maybe Distance
 set :: Coord -> Distance -> DistanceMap -> DistanceMap
 set (i,j) d (DM hw m vl) = DM hw m' vl'
     where 
-    m' = insert (i,j) d m
+    m' = case M.lookup (i,j) m of
+        Nothing -> insert (i,j) d m
+        Just d' -> case d < d' of
+            True -> insert (i,j) d m
+            False -> m
+
     vl'= Prelude.foldr insertDistance vl cds
         where
         cds :: [(Distance,Coord)]
@@ -82,3 +89,5 @@ process bm = map (concat . intersperse " " . (map show)) $ toList $ establish dm
               | i <- [0..h-1]
               , j <- [0..w-1]
               , bm!!i!!j == '1']
+
+

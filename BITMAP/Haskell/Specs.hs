@@ -39,6 +39,13 @@ main = hspec $ do
                 let dm = set (1,1) 0 $ distanceMap (3,3)
                 nextDistance dm `shouldBe` Just (1,(0,1))
 
+            it "cannot reset a distance unless distance is smaller" $ do
+                let dm = set (1,1) 3 $ set (1,1) 0 $ distanceMap (3,3)
+                dm `at` (1,1)  `shouldBe` Just 0
+                let dm = set (1,1) 1 $ set (1,1) 2 $ distanceMap (3,3)
+                dm `at` (1,1)  `shouldBe` Just 1
+                    
+
             it "has several nextDistances to set, ordered by distance and then coords" $ do
                 let dm = set (1,1) 0 $ distanceMap (3,3)
                     dm'= updateNextDistance dm
@@ -80,7 +87,7 @@ main = hspec $ do
                                      ,[2,1,0]]
             it "given the case test" $ do
                 let dm = establish 
-                        $ set (0,0) 0 
+                        $ set (0,3) 0 
                         $ set (1,2) 0 
                         $ set (1,3) 0 
                         $ set (2,1) 0 
