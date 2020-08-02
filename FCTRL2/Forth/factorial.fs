@@ -1,5 +1,5 @@
 
-1000 CONSTANT MAXBYTES
+1000CONSTANT MAXBYTES
 
 CREATE BIGINT MAXBYTES ALLOT 
 
@@ -9,18 +9,37 @@ CREATE BIGINT MAXBYTES ALLOT
     BIGINT MAXBYTES 1- +
     1 SWAP C! ;
 
-: PRINT-BIGINT 
-    BIGINT -1
+: MULT-BIGINT ( n -- )
+    >R
+    BIGINT MAXBYTES 1- + 0      \ addr,c
     BEGIN
-        1+
-        OVER OVER + C@ 
-    UNTIL  \ adr,p
-    DUP ROT + SWAP
-    MAXBYTES SWAP - TYPE ;
+        OVER C@                 \ addr,c,d
+        R@ SWAP                 \ addr,c,f,d
+        * +                     \ addr,f*d+c
+        10 /MOD SWAP            \ addr,c,d
+        ROT DUP >R C! R>        \ c,addr
+        1- SWAP                 \ addr,c
+        OVER BIGINT             \ addr,c,addr,start
+    < UNTIL 
+    R> DROP DROP DROP ;
 
-: MULTIPLY-BIGINT ( n -- )
+
+: PRINT-BIGINT 
+    BIGINT MAXBYTES + BIGINT 1-
+    BEGIN 
+        1+
+        2DUP = 
+        OVER C@ 
+    OR UNTIL
+    DO
+        I C@ [CHAR] 0 + EMIT
+    LOOP ;
     
-: FACTORIAL ;
+: FACTORIAL ( n -- ) 
+    INITIALIZE 
+    1+ 1 DO
+        I MULT-BIGINT 
+    LOOP ;
 
 \ read a number on stdin, assume no exception
 : READ-INT ( -- addr,l )
@@ -29,18 +48,9 @@ CREATE BIGINT MAXBYTES ALLOT
 
 : MAIN
     READ-INT 0 DO 
-        READ-INT FACTORIAL . CR 
+        READ-INT FACTORIAL 
+        PRINT-BIGINT CR 
     LOOP ;
 
-INITIALIZE
-BIGINT 999 + CHAR 7 SWAP C!
-BIGINT 998 + CHAR 0 SWAP C!
-BIGINT 997 + CHAR 8 SWAP C!
-BIGINT 996 + CHAR 4 SWAP C!
-BIGINT 995 + CHAR 7 SWAP C!
-BIGINT 994 + CHAR 0 SWAP C!
-BIGINT 993 + CHAR 8 SWAP C!
-BIGINT 993 + CHAR 4 SWAP C!
-
-PRINT-BIGINT
+MAIN
 BYE
