@@ -1,40 +1,35 @@
-CREATE TREE 50000 CELLS 4 * ALLOT
+50000 CONSTANT MAX-NUMBER
+4 CELLS CONSTANT NODE-SIZE 
 
-: SEGMENT-SUM@ ( addr -- n )
-    @ ;
+: NODES ( n -- s )
+    4 CELLS * ;
 
-: MAX-SEGMENT-SUM@ ( addr -- n )
-    CELL+ @ ;
+: TREE-SIZE ( n -- s )
+    4 * NODES ;
 
-: MAX-PREFIX-SUM@ ( addr -- n )
-    CELL+ CELL+ @ ;
-
-: MAX-SUFFIX-SUM@ ( addr -- n )
-    CELL+ CELL+ CELL+ @ ;
-
-
-: SEGMENT-SUM! ( n,addr -- )
-    ! ;
-
-: MAX-SEGMENT-SUM! ( n,addr -- )
-    CELL+ ! ;
-
-: MAX-PREFIX-SUM! ( n,addr -- )
-    CELL+ CELL+ ! ;
-
-: MAX-SUFFIX-SUM! ( n,addr -- )
-    CELL+ CELL+ CELL+ ! ;
+CREATE SEGMENT-TREE MAX-NUMBER TREE-SIZE ALLOT
 
 : LEFT ( p -- p*2*node size )
-    2* 4 * CELLS ;
+    2* NODES ;
 
-: RIGHT ( p -- p*(2+1)*node size )
-    2* 1+ 4 * CELLS ;
+: RIGHT ( p -- p*[2+1]*node size )
+    2* 1+ NODES ;
 
 -999999 CONSTANT MINIMUM-INT
 
-: MINIMUM-NODE ( -- n,n,n,n )
+: MINIMUM-NODE ( -- node )
     MINIMUM-INT DUP DUP DUP ;
+
+: NODE@ ( addr -- node )
+    DUP CELL+ CELL+ 
+    2@ ROT 2@ ;
+
+: NODE! ( node,addr -- )
+    DUP CELL+ CELL+ 
+    >R 2! R> 2! ;
+
+: MAX-SEG-SUM ( node -- n )
+    2DROP DROP ;
 
 
 
