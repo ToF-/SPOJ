@@ -53,16 +53,26 @@ T{ ." MERGE segment suffix sum = max of right suffix sum, right segment sum + le
     0 4807 42 17   23 1024 20 10 MERGE   MAX-SUFFIX-SUM 1041 ?S
     0 4807 42 17   23 1024 20 6000 MERGE   MAX-SUFFIX-SUM 6000 ?S
 
-T{ ." MAKE-LEAF creates a leaf with a number from the initial array " CR
+T{ ." MAKE-LEAF creates a leaf within a 1 node range with  a number from the initial array " CR
     4807 NUMBERS 0 CELLS + !
-    1 1 MAKE-LEAF
+    1 1 1 LH->RANGE MAKE-LEAF
     SEGMENT-TREE 1 NODES + NODE@
     4807 ?S 4807 ?S 4807 ?S 4807 ?S
 }T
 
+T{ ." a RANGE represents a low and a high in a sincle cell " CR
+    17 42 LH->RANGE RANGE->LH 42 ?S 17 ?S 
+}T
+
+T{ ." SPLIT-RANGE computes the two halves of a range " CR 
+    17 42 LH->RANGE SPLIT-RANGE 
+    RANGE->LH SWAP 30 ?S 42 ?S
+    RANGE->LH SWAP 17 ?S 29 ?S
+}T
+
 T{ ." MAKE-TREE when low = high makes a leaf " CR
     42 NUMBERS 0 CELLS + !
-    1 1 1 MAKE-TREE
+    1 1 1 LH->RANGE MAKE-TREE
     SEGMENT-TREE 1 NODES + NODE@
     42 ?S 42 ?S 42 ?S 42 ?S
 }T
@@ -70,7 +80,7 @@ T{ ." MAKE-TREE when low = high makes a leaf " CR
 T{ ." MAKE-TREE when low < high makes a tree " CR
     23 NUMBERS 0 CELLS + !
     17 NUMBERS 1 CELLS + !
-    1 1 2 MAKE-TREE
+    1 1 2 LH->RANGE MAKE-TREE
     SEGMENT-TREE 2 NODES + NODE@
     23 ?S 23 ?S 23 ?S 23 ?S
     SEGMENT-TREE 3 NODES + NODE@
@@ -80,7 +90,7 @@ T{ ." MAKE-TREE when low < high makes a tree " CR
 T{ ." MAKE-TREE when low < high makes a merged node as root " CR
     23 NUMBERS 0 CELLS + !
     17 NUMBERS 1 CELLS + !
-    1 1 2 MAKE-TREE
+    1 1 2 LH->RANGE MAKE-TREE
     SEGMENT-TREE 2 NODES + NODE@
     23 ?S 23 ?S 23 ?S 23 ?S
     SEGMENT-TREE 3 NODES + NODE@
@@ -92,43 +102,46 @@ T{ ." MAKE-TREE when low < high makes a merged node as root " CR
         >MAX-SUF     @ 40 ?S
 }T
     
+T{ ." OUTSIDE-RANGE? is true when x > h or y < l " CR
+    1 5 LH->RANGE 6 2 LH->RANGE OUTSIDE-RANGE? -1 ?S
+    1 5 LH->RANGE 3 0 LH->RANGE OUTSIDE-RANGE? -1 ?S
+    1 5 LH->RANGE 3 4 LH->RANGE OUTSIDE-RANGE?  0 ?S
+}T
+T{ ." INSIDE-RANGE? is true when x <= l and h <= y " CR
+    4 7 LH->RANGE 2 8 LH->RANGE INSIDE-RANGE? -1 ?S
+    4 7 LH->RANGE 4 8 LH->RANGE INSIDE-RANGE? -1 ?S
+    4 7 LH->RANGE 2 7 LH->RANGE INSIDE-RANGE? -1 ?S
+    4 7 LH->RANGE 5 8 LH->RANGE INSIDE-RANGE? 0 ?S
+    4 7 LH->RANGE 2 6 LH->RANGE INSIDE-RANGE? 0 ?S
+}T
+
 T{ ." QUERY-TREE when low = high gives the leaf node at position " CR
-    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 MAKE-TREE
-    2 1 1 1 1 QUERY-TREE 
+    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 LH->RANGE MAKE-TREE
+    2 1 1 LH->RANGE 1 1 LH->RANGE QUERY-TREE 
     23 ?S 23 ?S 23 ?S 23 ?S 
-    3 2 2 2 2 QUERY-TREE 
+    3 2 2 LH->RANGE 2 2 LH->RANGE QUERY-TREE 
     17 ?S 17 ?S 17 ?S 17 ?S 
 }T
 
-T{ ." OUTSIDE-RANGE? is true when x > h or y < l " CR
-    1 5 6 2 OUTSIDE-RANGE? -1 ?S
-    1 5 3 0 OUTSIDE-RANGE? -1 ?S
-    1 5 3 4 OUTSIDE-RANGE?  0 ?S
-}T
-
-T{ ." INSIDE-RANGE? is true when x <= l and h <= y " CR
-    4 7 2 8 INSIDE-RANGE? -1 ?S
-    4 7 4 8 INSIDE-RANGE? -1 ?S
-    4 7 2 7 INSIDE-RANGE? -1 ?S
-    4 7 5 8 INSIDE-RANGE? 0 ?S
-    4 7 2 6 INSIDE-RANGE? 0 ?S
-}T
-
 T{ ." QUERY-TREE when x and y are outside node range gives minimal node " CR
-    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 MAKE-TREE
-    3 2 2 1 1 QUERY-TREE
+    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 LH->RANGE MAKE-TREE
+    3 2 2 LH->RANGE 1 1 LH->RANGE QUERY-TREE
     MINIMUM-INT ?S MINIMUM-INT ?S MINIMUM-INT ?S MINIMUM-INT ?S
 }T
 
 T{ ." QUERY-TREE when l and h are inside query range gives the node " CR
-    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 MAKE-TREE
-    1 1 3 1 3 QUERY-TREE
+    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 LH->RANGE MAKE-TREE
+    1 1 3 LH->RANGE 1 3 LH->RANGE QUERY-TREE
     40 ?S 40 ?S 40 ?S 40 ?S
 }T
 
 T{ ." QUERY-TREE when x and y are crossing node range gives merged node " CR
-    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  4807 NUMBERS 2 CELLS + !
-    1 1 3 MAKE-TREE
-    1 1 3 2 3 QUERY-TREE MAX-SEG-SUM 4824 ?S
+    8 NUMBERS 0 CELLS + !  4 NUMBERS 1 CELLS + !  16 NUMBERS 2 CELLS + !
+    INIT-SEGMENT-TREE
+    1 1 3 LH->RANGE MAKE-TREE
+    1 1 3 LH->RANGE 1 1 LH->RANGE QUERY-TREE MAX-SEG-SUM 8 ?S
+    1 1 3 LH->RANGE 1 2 LH->RANGE QUERY-TREE MAX-SEG-SUM 12 ?S
+    1 1 3 LH->RANGE 3 3 LH->RANGE QUERY-TREE MAX-SEG-SUM 16 ?S
+    1 1 3 LH->RANGE 2 2 LH->RANGE QUERY-TREE MAX-SEG-SUM 16 ?S
 }T
 BYE

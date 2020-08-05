@@ -85,57 +85,94 @@ CREATE NUMBERS MAX-NUMBER CELLS ALLOT
     MERGE-MAX-PREFIX-SUM
     MERGE-MAX-SUFFIX-SUM ;
 
+: MERGE@ ( addrl,addrr -- node )
+    >R NODE@      \ nodel
+    R> NODE@      \ nodel,noder
+    MERGE ;
+
 : LEAF-NODE ( n -- node )
     DUP DUP DUP ;
 
-: MAKE-LEAF ( pos,low -- )
-    1- CELLS NUMBERS + @ 
-    SWAP NODES SEGMENT-TREE + 
-    >R LEAF-NODE R> NODE! ;
+
+: LH->RANGE ( l,h -- range )
+    32 LSHIFT OR ;
+
+HEX FFFFFFFF CONSTANT LOW-MASK DECIMAL
+
+: RANGE->LH ( range -- l,h )
+    DUP LOW-MASK AND SWAP 32 RSHIFT ;
 
 : MIDDLE ( l,h -- m )
     + 2/ ;
 
-: MAKE-TREE ( p,l,h -- )
-    OVER OVER             \ p,l,h,l,h
-    = IF 
-        DROP MAKE-LEAF
+: SPLIT-RANGE ( r -- rl,rr )
+    RANGE->LH      \ l,h
+    OVER OVER      \ l,h,l,h
+    MIDDLE DUP 1+  \ l,h,m,m+1
+    ROT LH->RANGE  \ l,m,rr
+    -ROT LH->RANGE \ rr,rl
+    SWAP ;
+    
+: IS-LEAF? ( r -- f )
+    RANGE->LH = ;
+
+: MAKE-LEAF ( pos,r -- )
+    RANGE->LH DROP            \ pos,l 
+    1- CELLS NUMBERS + @      \ pos,v
+    SWAP NODES SEGMENT-TREE + \ v,addr
+    >R LEAF-NODE R> NODE! ;
+
+: MAKE-TREE ( p,r -- )
+    DUP IS-LEAF? IF
+        MAKE-LEAF
     ELSE
-        OVER OVER
-        MIDDLE DUP 1+ ROT           \ p,l,m,m+1,h 
-        4 PICK 2* 1+ -ROT           \ p,l,m,p*2+1,m+1,h
-        RECURSE                     \ p,l,m
-        2 PICK 2* -ROT              \ p,p*2,l,m
-        RECURSE                     \ p
-        >R
-        R@ 2* NODES SEGMENT-TREE + NODE@    \ left
-        R@ 2* 1+ NODES SEGMENT-TREE + NODE@ \ left,right
-        MERGE R> NODES SEGMENT-TREE +   \ node,addr
-        NODE!
+        SPLIT-RANGE \ p,rl,rr 
+        ROT DUP     \ rl,rr,p,p
+        2* 1+ ROT   \ rl,p,p*2+1,rr
+        RECURSE     \ rl,p
+        DUP 2* ROT  \ p,p*2,rl
+        RECURSE     \ p
+        DUP  2*    NODES SEGMENT-TREE + \ p,addrl
+        OVER 2* 1+ NODES SEGMENT-TREE + \ p,addrl,addrr
+        ROT >R                          \ addrl,addrr
+        MERGE@                          \ node                          
+        R> NODES SEGMENT-TREE + NODE!
     THEN ;
     
-: OUTSIDE-RANGE? ( l,h,x,y -- x>h || y<l )
-    SWAP ROT     \ l,y,x,h 
-    > -ROT > OR ;
+: OUTSIDE-RANGE? ( lh,xy -- x>h || y<l )
+    RANGE->LH     \ lh,x,y
+    ROT RANGE->LH \ x,y,l,h
+    -ROT          \ x,h,y,l
+    < -ROT > OR ; \ y<l || x>h
 
-: INSIDE-RANGE? ( l,h,x,y -- l>=x && h<=y )
-    ROT          \ l,x,y,h
-    >= -ROT >= AND ;
+: INSIDE-RANGE? ( lh,xy -- l>=x && h<=y )
+    RANGE->LH        \ lh,x,y
+    ROT RANGE->LH    \ x,y,l,h
+    ROT              \ x,l,h,y
+    <= -ROT <= AND ; \ h<=y && x<=l
 
-: QUERY-TREE ( p,l,h,x,y -- node )
-    2OVER 2OVER OUTSIDE-RANGE? IF    
-        2DROP 2DROP DROP MINIMUM-NODE
+    
+: QUERY-TREE ( p,lh,xy -- node )
+    OVER OVER OUTSIDE-RANGE? IF
+        DROP DROP DROP MINIMUM-NODE
     ELSE
-    2OVER 2OVER INSIDE-RANGE? IF
-        2DROP 2DROP NODES SEGMENT-TREE + NODE@
-        ELSE    \  p,l,h,x,y 
-            2>R OVER OVER MIDDLE DUP 1+ ROT \ p,l,m,m+1,h
-            4 PICK 2* 1+ -ROT               \ p,l,m,p*2+1,m+1,h
-            2R> 2SWAP 2OVER                 \ p,l,m,x,y,p*2+1,m+1,h,x,y
-            RECURSE RIGHT-NODE NODE!        \ p,l,m,x,y
-            2>R 2>R 2* 2R> 2R>              \ p*2,l,m,x,y
-            RECURSE LEFT-NODE  NODE!     
-            LEFT-NODE NODE@ RIGHT-NODE NODE@ MERGE
+        OVER OVER INSIDE-RANGE? IF
+        DROP DROP NODES SEGMENT-TREE + NODE@ 
+        ELSE    \  p,lh,xy
+            >R  \  p,lh
+            SPLIT-RANGE      \ p,rl,rr
+            R> SWAP OVER     \ p,rl,xy,rr,xy
+            4 PICK           \ p,rl,xy,rr,p
+            2* 1+ -ROT       \ p,rl,xy,pr,rr,xy
+            >R >R >R         \ p,rl,xy
+            ROT              \ rl,xy,p
+            2* -ROT          \ pl,rl,xy
+            R> R> R>         \ pl,rl,xy,pr,rr,xy
+            RECURSE          \ pl,rl,xy,rnode
+            RIGHT-NODE NODE! \ pl,rl,xy
+            RECURSE          \ lnode
+            LEFT-NODE  NODE! \ 
+            LEFT-NODE RIGHT-NODE MERGE@ \ node
         THEN
     THEN ;
 
