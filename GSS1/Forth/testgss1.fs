@@ -52,4 +52,44 @@ T{ ." MERGE segment prefix sum = max of left max prefix sum, left segment sum + 
 T{ ." MERGE segment suffix sum = max of right suffix sum, right segment sum + left max suffix sum " CR
     0 4807 42 17   23 1024 20 10 MERGE   MAX-SUFFIX-SUM 1041 ?S
     0 4807 42 17   23 1024 20 6000 MERGE   MAX-SUFFIX-SUM 6000 ?S
+
+T{ ." MAKE-LEAF creates a leaf with a number from the initial array " CR
+    4807 NUMBERS 0 CELLS + !
+    1 1 MAKE-LEAF
+    SEGMENT-TREE 1 NODES + NODE@
+    4807 ?S 4807 ?S 4807 ?S 4807 ?S
+}T
+
+T{ ." MAKE-TREE when low = high makes a leaf " CR
+    42 NUMBERS 0 CELLS + !
+    1 1 1 MAKE-TREE
+    SEGMENT-TREE 1 NODES + NODE@
+    42 ?S 42 ?S 42 ?S 42 ?S
+}T
+
+T{ ." MAKE-TREE when low < high makes a tree " CR
+    23 NUMBERS 0 CELLS + !
+    17 NUMBERS 1 CELLS + !
+    1 1 2 MAKE-TREE
+    SEGMENT-TREE 2 NODES + NODE@
+    23 ?S 23 ?S 23 ?S 23 ?S
+    SEGMENT-TREE 3 NODES + NODE@
+    17 ?S 17 ?S 17 ?S 17 ?S
+}T
+
+T{ ." MAKE-TREE when low < high makes a merged node as root " CR
+    23 NUMBERS 0 CELLS + !
+    17 NUMBERS 1 CELLS + !
+    1 1 2 MAKE-TREE
+    SEGMENT-TREE 2 NODES + NODE@
+    23 ?S 23 ?S 23 ?S 23 ?S
+    SEGMENT-TREE 3 NODES + NODE@
+    17 ?S 17 ?S 17 ?S 17 ?S
+    SEGMENT-TREE 1 NODES + 
+    DUP >SEG-SUM     @ 40 ?S
+    DUP >MAX-SEG-SUM @ 40 ?S
+    DUP >MAX-PRE     @ 40 ?S
+        >MAX-SUF     @ 40 ?S
+}T
+    
 BYE

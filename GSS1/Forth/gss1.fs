@@ -12,6 +12,7 @@ CREATE MERGE-NODE NODE-SIZE ALLOT
     4 * NODES ;
 
 CREATE SEGMENT-TREE MAX-NUMBER TREE-SIZE ALLOT
+CREATE NUMBERS MAX-NUMBER CELLS ALLOT
 
 : LEFT ( p -- p*2*node size )
     2* NODES ;
@@ -84,6 +85,39 @@ CREATE SEGMENT-TREE MAX-NUMBER TREE-SIZE ALLOT
     MERGE-MAX-PREFIX-SUM
     MERGE-MAX-SUFFIX-SUM ;
 
+: LEAF-NODE ( n -- node )
+    DUP DUP DUP ;
+
+: MAKE-LEAF ( pos,low -- )
+    1- CELLS NUMBERS + @ 
+    SWAP NODES SEGMENT-TREE + 
+    >R LEAF-NODE R> NODE! ;
+
+: MIDDLE ( l,h -- m )
+    + 2/ ;
+
+: MAKE-TREE ( p,l,h -- )
+    OVER OVER             \ p,l,h,l,h
+    = IF 
+        DROP MAKE-LEAF
+    ELSE
+        OVER OVER
+        MIDDLE DUP 1+ ROT           \ p,l,m,m+1,h 
+        4 PICK 2* 1+ -ROT           \ p,l,m,p*2+1,m+1,h
+        RECURSE                     \ p,l,m
+        2 PICK 2* -ROT              \ p,p*2,l,m
+        RECURSE                     \ p
+        >R
+        R@ 2* NODES SEGMENT-TREE + NODE@    \ left
+        R@ 2* 1+ NODES SEGMENT-TREE + NODE@ \ left,right
+        MERGE R> NODES SEGMENT-TREE +   \ node,addr
+        NODE!
+    THEN ;
+    
+: INIT-SEGMENT-TREE ( -- )
+    SEGMENT-TREE MAX-NUMBER TREE-SIZE ERASE ; 
+
+    
     
 
 
