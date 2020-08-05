@@ -114,11 +114,31 @@ CREATE NUMBERS MAX-NUMBER CELLS ALLOT
         NODE!
     THEN ;
     
+: OUTSIDE-RANGE? ( l,h,x,y -- x>h || y<l )
+    SWAP ROT     \ l,y,x,h 
+    > -ROT > OR ;
+
+: INSIDE-RANGE? ( l,h,x,y -- l>=x && h<=y )
+    ROT          \ l,x,y,h
+    >= -ROT >= AND ;
+
+: QUERY-TREE ( p,l,h,x,y -- node )
+    2OVER 2OVER OUTSIDE-RANGE? IF    
+        2DROP 2DROP DROP MINIMUM-NODE
+    ELSE
+    2OVER 2OVER INSIDE-RANGE? IF
+        2DROP 2DROP NODES SEGMENT-TREE + NODE@
+        ELSE    \  p,l,h,x,y 
+            2>R OVER OVER MIDDLE DUP 1+ ROT \ p,l,m,m+1,h
+            4 PICK 2* 1+ -ROT               \ p,l,m,p*2+1,m+1,h
+            2R> 2SWAP 2OVER                 \ p,l,m,x,y,p*2+1,m+1,h,x,y
+            RECURSE RIGHT-NODE NODE!        \ p,l,m,x,y
+            2>R 2>R 2* 2R> 2R>              \ p*2,l,m,x,y
+            RECURSE LEFT-NODE  NODE!     
+            LEFT-NODE NODE@ RIGHT-NODE NODE@ MERGE
+        THEN
+    THEN ;
+
 : INIT-SEGMENT-TREE ( -- )
     SEGMENT-TREE MAX-NUMBER TREE-SIZE ERASE ; 
-
     
-    
-
-
-

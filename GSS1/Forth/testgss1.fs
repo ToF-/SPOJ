@@ -92,4 +92,43 @@ T{ ." MAKE-TREE when low < high makes a merged node as root " CR
         >MAX-SUF     @ 40 ?S
 }T
     
+T{ ." QUERY-TREE when low = high gives the leaf node at position " CR
+    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 MAKE-TREE
+    2 1 1 1 1 QUERY-TREE 
+    23 ?S 23 ?S 23 ?S 23 ?S 
+    3 2 2 2 2 QUERY-TREE 
+    17 ?S 17 ?S 17 ?S 17 ?S 
+}T
+
+T{ ." OUTSIDE-RANGE? is true when x > h or y < l " CR
+    1 5 6 2 OUTSIDE-RANGE? -1 ?S
+    1 5 3 0 OUTSIDE-RANGE? -1 ?S
+    1 5 3 4 OUTSIDE-RANGE?  0 ?S
+}T
+
+T{ ." INSIDE-RANGE? is true when x <= l and h <= y " CR
+    4 7 2 8 INSIDE-RANGE? -1 ?S
+    4 7 4 8 INSIDE-RANGE? -1 ?S
+    4 7 2 7 INSIDE-RANGE? -1 ?S
+    4 7 5 8 INSIDE-RANGE? 0 ?S
+    4 7 2 6 INSIDE-RANGE? 0 ?S
+}T
+
+T{ ." QUERY-TREE when x and y are outside node range gives minimal node " CR
+    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 MAKE-TREE
+    3 2 2 1 1 QUERY-TREE
+    MINIMUM-INT ?S MINIMUM-INT ?S MINIMUM-INT ?S MINIMUM-INT ?S
+}T
+
+T{ ." QUERY-TREE when l and h are inside query range gives the node " CR
+    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  1 1 2 MAKE-TREE
+    1 1 3 1 3 QUERY-TREE
+    40 ?S 40 ?S 40 ?S 40 ?S
+}T
+
+T{ ." QUERY-TREE when x and y are crossing node range gives merged node " CR
+    23 NUMBERS 0 CELLS + !  17 NUMBERS 1 CELLS + !  4807 NUMBERS 2 CELLS + !
+    1 1 3 MAKE-TREE
+    1 1 3 2 3 QUERY-TREE MAX-SEG-SUM 4824 ?S
+}T
 BYE
