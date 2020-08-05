@@ -1,5 +1,9 @@
 50000 CONSTANT MAX-NUMBER
+VARIABLE NUMBER-MAX
 4 CELLS CONSTANT NODE-SIZE 
+7 CONSTANT NUMBER-SIZE
+NUMBER-SIZE MAX-NUMBER * CONSTANT LINE-MAX-LENGHTH
+CREATE INPUT-LINE LINE-MAX-LENGHTH ALLOT
 
 CREATE LEFT-NODE  NODE-SIZE ALLOT
 CREATE RIGHT-NODE NODE-SIZE ALLOT
@@ -169,9 +173,11 @@ HEX FFFFFFFF CONSTANT LOW-MASK DECIMAL
             2* -ROT          \ pl,rl,xy
             R> R> R>         \ pl,rl,xy,pr,rr,xy
             RECURSE          \ pl,rl,xy,rnode
-            RIGHT-NODE NODE! \ pl,rl,xy
+            2>R 2>R          \ pl,rl,xy
             RECURSE          \ lnode
             LEFT-NODE  NODE! \ 
+            2R> 2R>
+            RIGHT-NODE NODE! 
             LEFT-NODE RIGHT-NODE MERGE@ \ node
         THEN
     THEN ;
@@ -179,3 +185,53 @@ HEX FFFFFFFF CONSTANT LOW-MASK DECIMAL
 : INIT-SEGMENT-TREE ( -- )
     SEGMENT-TREE MAX-NUMBER TREE-SIZE ERASE ; 
     
+\ read a number on stdin, assume no exception
+: READ-INT ( -- addr,l )
+    PAD DUP 40 STDIN READ-LINE THROW DROP 
+    S>NUMBER? DROP DROP ;
+
+: SKIP-SPACE ( addr,l -- addr,l )
+    BEGIN
+        OVER C@ BL = WHILE
+        SWAP 1+ SWAP 1-
+    REPEAT ;
+
+: SCAN-MINUS-SIGN ( addr,l -- addr,l,f )
+    OVER C@ [CHAR] - = IF
+        SWAP 1+ SWAP 1- -1
+    ELSE 0
+    THEN ; 
+
+: NEXT-NUMBER ( addr,l -- addr,l,n )
+    SKIP-SPACE 
+    SCAN-MINUS-SIGN >R
+    0 S>D 2SWAP
+    >NUMBER 
+    2SWAP D>S 
+    R> IF NEGATE THEN ;
+
+: MAIN
+    READ-INT NUMBER-MAX !
+    INPUT-LINE LINE-MAX-LENGHTH STDIN READ-LINE THROW DROP
+    INPUT-LINE SWAP
+    NUMBER-MAX @ 0 DO
+        NEXT-NUMBER
+        NUMBERS I CELLS + !
+    LOOP
+    INIT-SEGMENT-TREE
+    1 1 NUMBER-MAX @ LH->RANGE MAKE-TREE
+    READ-INT 0 DO
+        INPUT-LINE LINE-MAX-LENGHTH STDIN READ-LINE THROW DROP
+        INPUT-LINE SWAP
+        NEXT-NUMBER >R
+        NEXT-NUMBER R>
+        SWAP LH->RANGE 
+        1 NUMBER-MAX @ LH->RANGE
+        SWAP 1 -ROT QUERY-TREE
+        MAX-SEG-SUM . CR
+    LOOP
+    ;
+
+MAIN
+BYE
+
