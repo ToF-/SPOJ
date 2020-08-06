@@ -3,7 +3,7 @@ REQUIRE Random.fs
 VARIABLE N
 VARIABLE R
 VARIABLE Q
-CREATE NS 50000 CELLS ALLOT
+CREATE NS 50000 1+ CELLS ALLOT
 
 : NEXT-PARAM ( n -- n or next arg )
     NEXT-ARG DUP IF
@@ -23,8 +23,8 @@ CREATE NS 50000 CELLS ALLOT
 
 \ gives a query in the range 1 N
 : RANDOM-QUERY ( -- x,y )
-    N @ RANDOM-INT ABS 
-    N @ RANDOM-INT ABS
+    N @ RND SWAP MOD  1+
+    N @ RND SWAP MOD  1+
     2DUP > IF SWAP THEN ;
 
 \ makes a number 1 if it's zero
@@ -37,25 +37,59 @@ CREATE NS 50000 CELLS ALLOT
 : .<-
     ." <- " ;
 
+VARIABLE MAXSUM
+-1000000 CONSTANT SMALLEST
+
+: SUM ( y,x -- )
+    2DUP = IF 
+        DROP CELLS NS + @ 
+    ELSE
+        0 -ROT
+        DO 
+            I CELLS NS + @ +
+        LOOP
+    THEN
+    MAXSUM @ MAX MAXSUM ! ;
+
+: SERIE ( y,x -- )
+    OVER OVER  \ y,x,y,x
+    DO
+        I OVER SUM
+    LOOP 
+    SUM ;
+
+: SERIES ( y,x -- )
+    SMALLEST MAXSUM !
+    SWAP 1+ SWAP 2DUP = IF SUM 
+    ELSE
+        OVER -ROT
+        DO
+            DUP I SERIE
+        LOOP 
+        DUP SUM 
+    THEN ;
+
 : ORACLE
-    10 NEXT-PARAM  POSITIVE   50000 MIN N !
+    10 NEXT-PARAM  POSITIVE   2 MAX 50000 MIN N !
     15007 NEXT-PARAM POSITIVE 15007 MIN R !
     10 NEXT-PARAM POSITIVE      100 MIN Q !
-    .-> N ? CR
-    .->
-    N @ 0 DO 
+    .<- N ? CR
+    .<-
+    N @ 1+ 1 DO
         R @ RANDOM-INT 
         DUP NS I CELLS + !
         . 
     LOOP 
     CR 
-    .-> Q ? CR
+    .<- Q ? CR
     Q @ 0 DO
-        .->
-       RANDOM-QUERY 2DUP SWAP 1+ . 1+ . CR 
-       SWAP .<- 
-       MAX-SUM CR
+        .<-
+       RANDOM-QUERY SWAP SWAP 2DUP SWAP . . CR 
+       SWAP .-> SERIES 
+       MAXSUM @ . CR
     LOOP
 ;
-dbg ORACLE
-bye
+UTIME DROP SEED !
+ORACLE
+BYE
+
