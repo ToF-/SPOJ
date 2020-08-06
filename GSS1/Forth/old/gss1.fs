@@ -1,6 +1,9 @@
+\ make a node 16 bytes long not 32, dividing the space of the segment tree by 2
+
+
 50000 CONSTANT M
 VARIABLE N
-4 CELLS CONSTANT NODE% 
+2 CELLS CONSTANT NODE% 
 7 CONSTANT NUMBER%
 NUMBER% M * CONSTANT LINE%
 CREATE LN NODE% ALLOT
@@ -8,13 +11,14 @@ CREATE RN NODE% ALLOT
 CREATE LINE LINE% ALLOT
 
 : NODES ( n -- s )
-    4 CELLS * ;
+    NODE% * ;
 
 : TREE% ( n -- s )
     4 * NODES ;
 
 CREATE TREE M TREE% ALLOT
 CREATE NUMBERS M CELLS ALLOT
+
 
 -999999 CONSTANT MI
 
