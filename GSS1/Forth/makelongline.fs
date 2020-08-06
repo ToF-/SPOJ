@@ -1,0 +1,3 @@
+: .NUMBERS 50000 0 DO I 7 .R LOOP ;
+
+.NUMBERS bye
