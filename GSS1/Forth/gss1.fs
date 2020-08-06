@@ -1,35 +1,35 @@
-50000 CONSTANT MAX-NUMBER
-VARIABLE NUMBER-MAX
-4 CELLS CONSTANT NODE-SIZE 
-7 CONSTANT NUMBER-SIZE
-NUMBER-SIZE MAX-NUMBER * CONSTANT LINE-MAX-LENGHTH
-CREATE INPUT-LINE LINE-MAX-LENGHTH ALLOT
-
-CREATE LEFT-NODE  NODE-SIZE ALLOT
-CREATE RIGHT-NODE NODE-SIZE ALLOT
-CREATE MERGE-NODE NODE-SIZE ALLOT
+50000 CONSTANT M
+VARIABLE N
+4 CELLS CONSTANT NODE% 
+7 CONSTANT NUMBER%
+NUMBER% M * CONSTANT LINE%
+CREATE LN NODE% ALLOT
+CREATE RN NODE% ALLOT
+CREATE LINE LINE% ALLOT
 
 : NODES ( n -- s )
     4 CELLS * ;
 
-: TREE-SIZE ( n -- s )
+: TREE% ( n -- s )
     4 * NODES ;
 
-CREATE SEGMENT-TREE MAX-NUMBER TREE-SIZE ALLOT
-CREATE NUMBERS MAX-NUMBER CELLS ALLOT
+CREATE TREE M TREE% ALLOT
+CREATE NUMBERS M CELLS ALLOT
 
-: LEFT ( p -- p*2*node size )
-    2* NODES ;
+-999999 CONSTANT MI
 
-: RIGHT ( p -- p*[2+1]*node size )
-    2* 1+ NODES ;
+: NULL ( -- node )
+    MI DUP DUP DUP ;
 
--999999 CONSTANT MINIMUM-INT
-
-: MINIMUM-NODE ( -- node )
-    MINIMUM-INT DUP DUP DUP ;
-
+: CHKN@ ( addr -- f )
+    DUP LN = SWAP
+    DUP RN = SWAP
+    DUP TREE >=
+    SWAP TREE M TREE% + < 
+    AND OR OR ;
+    
 : NODE@ ( addr -- node )
+    DUP CHKN@ 0= IF NULL EXIT THEN
     DUP CELL+ CELL+ 
     2@ ROT 2@ ;
 
@@ -37,19 +37,19 @@ CREATE NUMBERS MAX-NUMBER CELLS ALLOT
     DUP CELL+ CELL+ 
     >R 2! R> 2! ;
 
-: MAX-SEG-SUM ( max,sum,pre,suf -- max )
+: MSS ( max,sum,pre,suf -- max )
     2DROP DROP ;
 
 : SEG-SUM ( max,sum,pre,suf -- sum )
     2DROP SWAP DROP ;
 
-: MAX-PREFIX-SUM ( max,sum,pre,suf -- pre )
+: MPF ( max,sum,pre,suf -- pre )
     2SWAP 2DROP DROP ;
 
-: MAX-SUFFIX-SUM ( max,sum,pre,suf -- suf )
+: MSF ( max,sum,pre,suf -- suf )
     SWAP DROP -ROT 2DROP ;
 
-: >MAX-SEG-SUM ( addr -- addr )
+: >MSS ( addr -- addr )
     CELL+ CELL+ CELL+ ;
 
 : >SEG-SUM     ( addr -- addr )
@@ -61,33 +61,33 @@ CREATE NUMBERS MAX-NUMBER CELLS ALLOT
 : >MAX-SUF     ( addr -- addr )
     ;
 
-: MERGE-MAX-SEG-SUM ( -- max )
-    LEFT-NODE  >MAX-SUF @ 
-    RIGHT-NODE >MAX-PRE @ +
-    RIGHT-NODE >MAX-SEG-SUM @ MAX
-    LEFT-NODE  >MAX-SEG-SUM @ MAX ;
+: MERGE-MSS ( -- max )
+    LN  >MAX-SUF @ 
+    RN >MAX-PRE @ +
+    RN >MSS @ MAX
+    LN  >MSS @ MAX ;
 
 : MERGE-SEG-SUM ( -- sum )
-    LEFT-NODE  >SEG-SUM @
-    RIGHT-NODE >SEG-SUM @ + ;
+    LN  >SEG-SUM @
+    RN >SEG-SUM @ + ;
 
-: MERGE-MAX-PREFIX-SUM ( -- max )
-    LEFT-NODE  >MAX-PRE @
-    LEFT-NODE  >SEG-SUM @
-    RIGHT-NODE >MAX-PRE @ + MAX ;
+: MERGE-MPF ( -- max )
+    LN  >MAX-PRE @
+    LN  >SEG-SUM @
+    RN >MAX-PRE @ + MAX ;
 
-: MERGE-MAX-SUFFIX-SUM ( -- max )
-    RIGHT-NODE >MAX-SUF @
-    RIGHT-NODE >SEG-SUM @ 
-    LEFT-NODE  >MAX-SUF @ + MAX ;
+: MERGE-MSF ( -- max )
+    RN >MAX-SUF @
+    RN >SEG-SUM @ 
+    LN  >MAX-SUF @ + MAX ;
 
 : MERGE ( node,node -- node )
-    RIGHT-NODE NODE!
-    LEFT-NODE  NODE!
-    MERGE-MAX-SEG-SUM 
+    RN NODE!
+    LN  NODE!
+    MERGE-MSS 
     MERGE-SEG-SUM
-    MERGE-MAX-PREFIX-SUM
-    MERGE-MAX-SUFFIX-SUM ;
+    MERGE-MPF
+    MERGE-MSF ;
 
 : MERGE@ ( addrl,addrr -- node )
     >R NODE@      \ nodel
@@ -98,35 +98,35 @@ CREATE NUMBERS MAX-NUMBER CELLS ALLOT
     DUP DUP DUP ;
 
 
-: LH->RANGE ( l,h -- range )
+: LH>R ( l,h -- range )
     32 LSHIFT OR ;
 
 HEX FFFFFFFF CONSTANT LOW-MASK DECIMAL
 
-: RANGE->LH ( range -- l,h )
+: R>LH ( range -- l,h )
     DUP LOW-MASK AND SWAP 32 RSHIFT ;
 
 : MIDDLE ( l,h -- m )
     + 2/ ;
 
 : SPLIT-RANGE ( r -- rl,rr )
-    RANGE->LH      \ l,h
-    OVER OVER      \ l,h,l,h
+    R>LH      \ l,h
+    2DUP      \ l,h,l,h
     MIDDLE DUP 1+  \ l,h,m,m+1
-    ROT LH->RANGE  \ l,m,rr
-    -ROT LH->RANGE \ rr,rl
+    ROT LH>R  \ l,m,rr
+    -ROT LH>R \ rr,rl
     SWAP ;
     
 : IS-LEAF? ( r -- f )
-    RANGE->LH = ;
+    R>LH = ;
 
 : MAKE-LEAF ( pos,r -- )
-    RANGE->LH DROP            \ pos,l 
+    R>LH DROP            \ pos,l 
     1- CELLS NUMBERS + @      \ pos,v
-    SWAP NODES SEGMENT-TREE + \ v,addr
+    SWAP NODES TREE + \ v,addr
     >R LEAF-NODE R> NODE! ;
 
-: MAKE-TREE ( p,r -- )
+: TMAKE ( p,r -- )
     DUP IS-LEAF? IF
         MAKE-LEAF
     ELSE
@@ -136,32 +136,36 @@ HEX FFFFFFFF CONSTANT LOW-MASK DECIMAL
         RECURSE     \ rl,p
         DUP 2* ROT  \ p,p*2,rl
         RECURSE     \ p
-        DUP  2*    NODES SEGMENT-TREE + \ p,addrl
-        OVER 2* 1+ NODES SEGMENT-TREE + \ p,addrl,addrr
+        DUP  2*    NODES TREE + \ p,addrl
+        OVER 2* 1+ NODES TREE + \ p,addrl,addrr
         ROT >R                          \ addrl,addrr
         MERGE@                          \ node                          
-        R> NODES SEGMENT-TREE + NODE!
+        R> NODES TREE + NODE!
     THEN ;
     
-: OUTSIDE-RANGE? ( lh,xy -- x>h || y<l )
-    RANGE->LH     \ lh,x,y
-    ROT RANGE->LH \ x,y,l,h
+: OUTSIDE? ( lh,xy -- x>h || y<l )
+    R>LH     \ lh,x,y
+    ROT R>LH \ x,y,l,h
     -ROT          \ x,h,y,l
     < -ROT > OR ; \ y<l || x>h
 
-: INSIDE-RANGE? ( lh,xy -- l>=x && h<=y )
-    RANGE->LH        \ lh,x,y
-    ROT RANGE->LH    \ x,y,l,h
+: INSIDE? ( lh,xy -- l>=x && h<=y )
+    R>LH        \ lh,x,y
+    ROT R>LH    \ x,y,l,h
     ROT              \ x,l,h,y
     <= -ROT <= AND ; \ h<=y && x<=l
 
+: WRONG-R? ( lh -- f )
+    R>LH N @ <= SWAP 1 >= AND 0= ;
     
-: QUERY-TREE ( p,lh,xy -- node )
-    OVER OVER OUTSIDE-RANGE? IF
-        DROP DROP DROP MINIMUM-NODE
+: TQUERY ( p,lh,xy -- node )
+    OVER WRONG-R? IF 2DROP DROP NULL EXIT THEN
+
+    2DUP OUTSIDE? IF
+        2DROP DROP NULL
     ELSE
-        OVER OVER INSIDE-RANGE? IF
-        DROP DROP NODES SEGMENT-TREE + NODE@ 
+        2DUP INSIDE? IF
+        2DROP NODES TREE + NODE@ 
         ELSE    \  p,lh,xy
             >R  \  p,lh
             SPLIT-RANGE      \ p,rl,rr
@@ -175,63 +179,72 @@ HEX FFFFFFFF CONSTANT LOW-MASK DECIMAL
             RECURSE          \ pl,rl,xy,rnode
             2>R 2>R          \ pl,rl,xy
             RECURSE          \ lnode
-            LEFT-NODE  NODE! \ 
+            LN  NODE! \ 
             2R> 2R>
-            RIGHT-NODE NODE! 
-            LEFT-NODE RIGHT-NODE MERGE@ \ node
+            RN NODE! 
+            LN RN MERGE@ \ node
         THEN
     THEN ;
 
-: INIT-SEGMENT-TREE ( -- )
-    SEGMENT-TREE MAX-NUMBER TREE-SIZE ERASE ; 
+: TINIT ( -- )
+    TREE M TREE% ERASE ; 
     
-\ read a number on stdin, assume no exception
-: READ-INT ( -- addr,l )
-    PAD DUP 40 STDIN READ-LINE THROW DROP 
-    S>NUMBER? DROP DROP ;
-
-: SKIP-SPACE ( addr,l -- addr,l )
+: >BL> ( addr,l -- addr,l )
     BEGIN
         OVER C@ BL = WHILE
         SWAP 1+ SWAP 1-
     REPEAT ;
 
-: SCAN-MINUS-SIGN ( addr,l -- addr,l,f )
+: >-SIGN ( addr,l -- addr,l,f )
     OVER C@ [CHAR] - = IF
         SWAP 1+ SWAP 1- -1
     ELSE 0
     THEN ; 
 
-: NEXT-NUMBER ( addr,l -- addr,l,n )
-    SKIP-SPACE 
-    SCAN-MINUS-SIGN >R
+: >NUMBER> ( addr,l -- addr,l,n )
+    >BL> 
+    >-SIGN >R
     0 S>D 2SWAP
     >NUMBER 
     2SWAP D>S 
     R> IF NEGATE THEN ;
 
-: MAIN
-    READ-INT NUMBER-MAX !
-    INPUT-LINE LINE-MAX-LENGHTH STDIN READ-LINE THROW DROP
-    INPUT-LINE SWAP
-    NUMBER-MAX @ 0 DO
-        NEXT-NUMBER
-        NUMBERS I CELLS + !
-    LOOP
-    INIT-SEGMENT-TREE
-    1 1 NUMBER-MAX @ LH->RANGE MAKE-TREE
-    READ-INT 0 DO
-        INPUT-LINE LINE-MAX-LENGHTH STDIN READ-LINE THROW DROP
-        INPUT-LINE SWAP
-        NEXT-NUMBER >R
-        NEXT-NUMBER R>
-        SWAP LH->RANGE 
-        1 NUMBER-MAX @ LH->RANGE
-        SWAP 1 -ROT QUERY-TREE
-        MAX-SEG-SUM . CR
-    LOOP
-    ;
+: READLN ( addr,l -- l )
+    STDIN READ-LINE THROW DROP ;
 
-MAIN
-BYE
+\ read a number on stdin, assume no exception
+: READ-INT ( -- addr,l )
+    LINE 40 READLN
+    LINE SWAP
+    S>NUMBER? 2DROP ;
+
+: >NUMBERS> ( addr,l -- )
+    N @ 0 DO
+        >NUMBER>
+        NUMBERS I CELLS + !
+    LOOP 
+    2DROP ;
+
+: >QUERY ( -- x,y )
+    LINE 2 NUMBER% * READLN
+    LINE SWAP
+    >NUMBER> >R
+    >NUMBER> >R 
+    2DROP R> R> SWAP ;
+
+: MAIN
+    READ-INT N !
+    LINE LINE% READLN
+    LINE SWAP >NUMBERS>
+    TINIT
+    1 1 N @ LH>R TMAKE
+    READ-INT 0 DO
+        >QUERY
+        LH>R 1 N @ LH>R 
+        SWAP 1 -ROT 
+        TQUERY
+        MSS . CR 
+    LOOP ;
+
+MAIN BYE
 
