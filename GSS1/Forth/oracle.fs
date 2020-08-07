@@ -44,12 +44,15 @@ VARIABLE MAXSUM
     2DUP = IF 
         DROP CELLS NS + @ 
     ELSE
-        0 -ROT
+        OVER -ROT   \ y,y,x
+        0 -ROT      \ y,acc,y,x
         DO 
             I CELLS NS + @ +
-        LOOP
+        LOOP        \ y,acc
+        SWAP CELLS NS + @ +
     THEN
-    MAXSUM @ MAX MAXSUM ! ;
+    MAXSUM @ MAX MAXSUM ! 
+    ;
 
 : SERIE ( y,x -- )
     OVER OVER  \ y,x,y,x
@@ -60,7 +63,7 @@ VARIABLE MAXSUM
 
 : SERIES ( y,x -- )
     SMALLEST MAXSUM !
-    SWAP 1+ SWAP 2DUP = IF SUM 
+    2DUP = IF SUM 
     ELSE
         OVER -ROT
         DO
@@ -70,9 +73,9 @@ VARIABLE MAXSUM
     THEN ;
 
 : ORACLE
-    10 NEXT-PARAM  POSITIVE   2 MAX 50000 MIN N !
-    15007 NEXT-PARAM POSITIVE 15007 MIN R !
-    10 NEXT-PARAM POSITIVE      100 MIN Q !
+    10 NEXT-PARAM    2 MAX 50000 MIN N !
+    15007 NEXT-PARAM 2 MAX 15007 MIN R !
+    10 NEXT-PARAM    2 MAX 100 MIN Q !
     .<- N ? CR
     .<-
     N @ 1+ 1 DO
