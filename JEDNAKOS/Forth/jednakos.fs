@@ -1,9 +1,15 @@
-1000 CONSTANT M
+100 CONSTANT MAXDIGIT
+MAXDIGIT 1+ 2* CONSTANT ROW%
+500 CONSTANT MAXSUM
 CHAR = CONSTANT EQUAL
 CHAR 0 CONSTANT ZERO
+9999 CONSTANT X
+0    CONSTANT Z
+
 VARIABLE N
 VARIABLE SUM
-CREATE DIGITS M 1+ ALLOT
+VARIABLE T
+CREATE DIGITS MAXDIGIT ALLOT
 
 
 \ read a line on standard input
@@ -34,4 +40,30 @@ CREATE DIGITS M 1+ ALLOT
     SWAP S>NUMBER? ?DUP 0= IF ." ILL-FORMED EQUATION, NON-NUMERIC SUM " EXIT THEN
     DROP D>S SUM ! ;
                                 
+: INIT-TABLE
+    ROW% MAXSUM * ALLOCATE IF ." ALLOCATE IMPOSSIBLE " EXIT THEN 
+    T ! 
+    T @ ROW% MAXSUM * ERASE ;
+
+: FREE-TABLE
+    T @ FREE DROP ;
+
+: T! ( w,i,r -- )
+    SWAP ROW% * SWAP 2* + T @ + W! ; 
+
+: T@ ( i,r -- w )
+    SWAP ROW% * SWAP 2* + T @ + W@ ; 
+
+: PLUSSES ( i,result -- n )
+    DUP 0< IF DROP DROP X EXIT THEN
+    OVER N @ = IF
+        DUP 0= IF 
+            DROP DROP 0 EXIT 
+        ELSE
+            DROP DROP X EXIT 
+        THEN
+    THEN
+    OVER OVER T@ Z <> IF T@ EXIT THEN 
+    DROP DROP X ;
+
 
