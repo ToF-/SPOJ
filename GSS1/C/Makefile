@@ -2,8 +2,9 @@ cyatq : cyatq.c
 	cc cyatq.c -o cyatq
 
 test : cyatq test.txt
-	sed -n -e 's/\(<- \)\(.*\)/\2/pw input.dat'     test.txt >/dev/null
-	sed -n -e 's/\(-> \)\(.*\)/\2/pw expected.dat' test.txt >/dev/null
+	sed -n -e 's/\(<- \)\(.*\)/\2/pw input.dat'    test.txt >/dev/null
+	sed -n -e 's/\(-> \)\(.*\)/\2/pw expected.tmp' test.txt >/dev/null
+	sed -n -e 's/ //pw expected.dat' expected.tmp >/dev/null
 	./cyatq <input.dat >result.dat
 	diff expected.dat result.dat
 
