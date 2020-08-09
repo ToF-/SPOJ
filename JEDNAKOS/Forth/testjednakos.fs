@@ -1,3 +1,5 @@
+#! /usr/local/bin/gforth
+\ launch with one argument to avoid executing main function : ./testjednakos test
 PAGE
 REQUIRE ffl/tst.fs
 REQUIRE jednakos.fs

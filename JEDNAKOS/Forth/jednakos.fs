@@ -1,3 +1,5 @@
+#! /usr/local/bin/gforth
+\ lauch WITHOUT argument to run the main program
 1001 CONSTANT MAXDIGIT
 5000 CONSTANT MAXSUM
 MAXDIGIT 1+ 2* CONSTANT ROW%
@@ -128,3 +130,8 @@ DEBUG @ IF     2DUP DS ." ********************** LAUNCHING PLUSSES WITH " TYPE C
     PLUSSES . CR ;
 
 DEBUG OFF
+
+: RUN 
+    NEXT-ARG DROP 0= IF JEDNAKOS BYE THEN ;
+
+RUN
