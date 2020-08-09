@@ -12,6 +12,8 @@ VARIABLE SUM
 VARIABLE T
 CREATE DIGITS MAXDIGIT ALLOT
 
+: DS 
+    DEPTH SPACES ;
 
 \ read a line on standard input
 : READLN ( -- addr,l )
@@ -32,17 +34,17 @@ CREATE DIGITS MAXDIGIT ALLOT
 
 : >DIGITS>SUM! ( addr,l -- )
     OVER OVER             \ addr,l,addr,l
-    DIGITS-LENGTH ?DUP 0= IF ." ILL-FORMED EQUATION, MISSING = " EXIT THEN
+    DIGITS-LENGTH ?DUP 0= IF DS ." ILL-FORMED EQUATION, MISSING = " EXIT THEN
     N !               \ addr,l
     OVER N @ >DIGITS! \ addr,l
     N @ 1+ -          \ addr,lS
-    ?DUP 0= IF ." ILL-FORMED EQUATION, MISSING SUM " EXIT THEN
+    ?DUP 0= IF DS ." ILL-FORMED EQUATION, MISSING SUM " EXIT THEN
     SWAP N @ + 1+     \ lS,addr+lA+1
-    SWAP S>NUMBER? ?DUP 0= IF ." ILL-FORMED EQUATION, NON-NUMERIC SUM " EXIT THEN
+    SWAP S>NUMBER? ?DUP 0= IF DS ." ILL-FORMED EQUATION, NON-NUMERIC SUM " EXIT THEN
     DROP D>S SUM ! ;
                                 
 : INIT-TABLE
-    TABLE% ALLOCATE IF ." ALLOCATE IMPOSSIBLE " EXIT THEN 
+    TABLE% ALLOCATE IF DS ." ALLOCATE IMPOSSIBLE " EXIT THEN 
     T ! 
     T @ TABLE% ERASE ;
 
@@ -50,27 +52,27 @@ CREATE DIGITS MAXDIGIT ALLOT
     T @ FREE DROP ;
 
 : T! ( w,i,r -- )
-    .S ." STORING VALUE " 2 PICK . ." AT ROW " OVER . ." COL " DUP . CR
-    DUP SUM @ > IF ." UNEXPECTED CONDITION WITH COL " DUP . ." LARGER THAN " SUM @ . CR THEN
-    OVER N @  > IF ." UNEXPECTED CONDITION WITH ROW " OVER . ." LARGER THAN " N @ . CR THEN
+    DS .S ." STORING VALUE " 2 PICK . ." AT ROW " OVER . ." COL " DUP . CR
+    DUP SUM @ > IF DS ." UNEXPECTED CONDITION WITH COL " DUP . ." LARGER THAN " SUM @ . CR THEN
+    OVER N @  > IF DS ." UNEXPECTED CONDITION WITH ROW " OVER . ." LARGER THAN " N @ . CR THEN
     SWAP ROW% * SWAP 2* + 
-    DUP TABLE% > IF ." UNEXPECTED CONDITION " DUP . ." INDEX BEYOND " TABLE% . CR THEN
+    DUP TABLE% > IF DS ." UNEXPECTED CONDITION " DUP . ." INDEX BEYOND " TABLE% . CR THEN
     T @ + W! ; 
 
 : T@ ( i,r -- w )
-    .S ." FETCHING VALUE " OVER . DUP . 
+    DS .S ." FETCHING VALUE " OVER . DUP . 
     SWAP ROW% * SWAP 2* + T @ + W@ 
     DUP ." = " . CR
     ; 
 
 : PARTITION-PLUS ( i,result -- n )
-    ." PARTITION-PLUS " OVER . DUP . CR
+    DS ." PARTITION-PLUS " OVER . DUP . CR
     DUP 0< IF 
         DROP DROP X 
     ELSE
         OVER N @ = IF
             DUP 0= IF 
-                ." WE FOUND A RESULT " CR
+                DS ." WE FOUND A RESULT " CR
                 DROP DROP 0 
             ELSE
                 DROP DROP X 
@@ -94,6 +96,7 @@ CREATE DIGITS MAXDIGIT ALLOT
                     -ROT >R >R ROT            \ index,value,min
                     MIN SWAP                  \ value',index
                     R> R> -ROT                \ value',acc',index,result
+                    DS ." INSIDE LOOP [" I . ." ]" .S CR
                 LOOP                          \ value',index,result,acc
                 DROP                          \ value',index,result
                 2 PICK -ROT                   \ value',value',index,result
@@ -103,7 +106,7 @@ CREATE DIGITS MAXDIGIT ALLOT
     THEN ;
 
 : PLUSSES ( addr,l -- v )
-    2DUP ." ********************** LAUCHING PLUSSES WITH " TYPE CR
+    2DUP DS ." ********************** LAUCHING PLUSSES WITH " TYPE CR
     >DIGITS>SUM!
     INIT-TABLE
     0 SUM @ PARTITION-PLUS
