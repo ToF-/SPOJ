@@ -1,6 +1,7 @@
-100 CONSTANT MAXDIGIT
+1001 CONSTANT MAXDIGIT
+5000 CONSTANT MAXSUM
 MAXDIGIT 1+ 2* CONSTANT ROW%
-500 CONSTANT MAXSUM
+MAXSUM ROW% * CONSTANT TABLE%  
 CHAR = CONSTANT EQUAL
 CHAR 0 CONSTANT ZERO
 9999 CONSTANT X
@@ -41,29 +42,75 @@ CREATE DIGITS MAXDIGIT ALLOT
     DROP D>S SUM ! ;
                                 
 : INIT-TABLE
-    ROW% MAXSUM * ALLOCATE IF ." ALLOCATE IMPOSSIBLE " EXIT THEN 
+    TABLE% ALLOCATE IF ." ALLOCATE IMPOSSIBLE " EXIT THEN 
     T ! 
-    T @ ROW% MAXSUM * ERASE ;
+    T @ TABLE% ERASE ;
 
 : FREE-TABLE
     T @ FREE DROP ;
 
 : T! ( w,i,r -- )
-    SWAP ROW% * SWAP 2* + T @ + W! ; 
+    .S ." STORING VALUE " 2 PICK . ." AT ROW " OVER . ." COL " DUP . CR
+    DUP SUM @ > IF ." UNEXPECTED CONDITION WITH COL " DUP . ." LARGER THAN " SUM @ . CR THEN
+    OVER N @  > IF ." UNEXPECTED CONDITION WITH ROW " OVER . ." LARGER THAN " N @ . CR THEN
+    SWAP ROW% * SWAP 2* + 
+    DUP TABLE% > IF ." UNEXPECTED CONDITION " DUP . ." INDEX BEYOND " TABLE% . CR THEN
+    T @ + W! ; 
 
 : T@ ( i,r -- w )
-    SWAP ROW% * SWAP 2* + T @ + W@ ; 
+    .S ." FETCHING VALUE " OVER . DUP . 
+    SWAP ROW% * SWAP 2* + T @ + W@ 
+    DUP ." = " . CR
+    ; 
 
-: PLUSSES ( i,result -- n )
-    DUP 0< IF DROP DROP X EXIT THEN
-    OVER N @ = IF
-        DUP 0= IF 
-            DROP DROP 0 EXIT 
+: PARTITION-PLUS ( i,result -- n )
+    ." PARTITION-PLUS " OVER . DUP . CR
+    DUP 0< IF 
+        DROP DROP X 
+    ELSE
+        OVER N @ = IF
+            DUP 0= IF 
+                ." WE FOUND A RESULT " CR
+                DROP DROP 0 
+            ELSE
+                DROP DROP X 
+            THEN
         ELSE
-            DROP DROP X EXIT 
+            OVER OVER T@ Z <> IF T@ 
+            ELSE
+                X -ROT 0 -ROT                 \ min,acc,index,result
+                OVER                          \ min,acc,index,result,index
+                N @ SWAP                      \ min,acc,index,result,limit,index
+                DO                            \ min,acc,index,result
+                    ROT OVER OVER             \ min,index,result,acc,result,acc
+                    -                         \ min,index,result,acc,result'
+                    0< IF LEAVE THEN
+                    10 *                      \ min,index,result,acc*10
+                    DIGITS I + C@ +           \ min,index,result,acc'
+                    >R DUP R@ -               \ min,index,result,result-acc'
+                    R> I 1+                   \ min,index,result,result',acc',j+1
+                    ROT                       \ min,index,result,acc',j+1,result'
+                    RECURSE 1+                \ min,index,result,acc',value
+                    -ROT >R >R ROT            \ index,value,min
+                    MIN SWAP                  \ value',index
+                    R> R> -ROT                \ value',acc',index,result
+                LOOP                          \ value',index,result,acc
+                DROP                          \ value',index,result
+                2 PICK -ROT                   \ value',value',index,result
+                T!                            \ value'
+            THEN
         THEN
-    THEN
-    OVER OVER T@ Z <> IF T@ EXIT THEN 
-    DROP DROP X ;
+    THEN ;
 
+: PLUSSES ( addr,l -- v )
+    2DUP ." ********************** LAUCHING PLUSSES WITH " TYPE CR
+    >DIGITS>SUM!
+    INIT-TABLE
+    0 SUM @ PARTITION-PLUS
+    FREE-TABLE 
+    1- ;
+
+: JEDNAKOS
+    READLN
+    PLUSSES . CR ;
 

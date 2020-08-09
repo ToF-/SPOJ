@@ -27,34 +27,72 @@ T{ ." >DIGITS>SUM! stores the digits in an array and the sum that is after the e
 }T
 
 T{ ." T! and T@ stores and fetches a word at a row and column of the table " CR
+    50 SUM !  5 N !
     INIT-TABLE
-    4807 23 17 T!
-    42   23 18 T!
-    23 17 T@ 4807 ?S
-    23 18 T@ 42   ?S
+    4807 2 17 T!
+    42   3 18 T!
+    2 17 T@ 4807 ?S
+    3 18 T@ 42   ?S
     FREE-TABLE
 }T
 
-T{ ." PLUSSES returns X if result < 0 " CR
-    42 -4807 PLUSSES X ?S 
+T{ ." PARTITION-PLUS returns X if result < 0 " CR
+    42 -4807 PARTITION-PLUS X ?S 
 }T
 
-T{ ." PLUSSES returns X if result <> 0 and i == N " CR
+T{ ." PARTITION-PLUS returns X if result <> 0 and i == N " CR
     S" 1234=28" >DIGITS>SUM!
-    4 32 PLUSSES X ?S 
+    4 32 PARTITION-PLUS X ?S 
 }T
 
-T{ ." PLUSSES returns 0 if result = 0 and i == N " CR
+T{ ." PARTITION-PLUS returns 0 if result = 0 and i == N " CR
     S" 1234=28" >DIGITS>SUM!
-    4 0 PLUSSES 0 ?S 
+    4 0 PARTITION-PLUS 0 ?S 
 }T
  
-T{ ." PLUSSES return T[i][r] it is not Z " CR
+T{ ." PARTITION-PLUS return T[i][r] if is not Z " CR
+    50 SUM !  5 N !
     INIT-TABLE
-    42 23 18 T!
-    23 18 PLUSSES 42 ?S
+    42 2 18 T!
+    2 18 PARTITION-PLUS 42 ?S
     FREE-TABLE
 }T
 
+T{ ." PARTITION-PLUS calls itself while substracting result " CR
+    S" 5=5" >DIGITS>SUM!
+    INIT-TABLE
+    0 5 PARTITION-PLUS 1- 0 ?S
+    FREE-TABLE
+
+    S" 51=51" >DIGITS>SUM!
+    INIT-TABLE
+    0 51 PARTITION-PLUS 1- 0 ?S
+    FREE-TABLE
+
+    S" 51=6" >DIGITS>SUM!
+    INIT-TABLE
+    0 6 PARTITION-PLUS 1- 1 ?S
+    FREE-TABLE
+
+    S" 510=15" >DIGITS>SUM!
+    INIT-TABLE
+    0 15 PARTITION-PLUS 1- 1 ?S
+    FREE-TABLE
+
+    S" 501=6" >DIGITS>SUM!
+    INIT-TABLE
+    0 6 PARTITION-PLUS 1- 1 ?S
+    FREE-TABLE
+}T
+
+T{ ." PLUSSES finds the number of additions in a jednakos equation " CR
+    S" 42=42"      PLUSSES 0 ?S
+    S" 51=6"       PLUSSES 1 ?S
+    S" 143175=120" PLUSSES 2 ?S
+    S" 999899=125" PLUSSES 4 ?S
+    S" 5025=30"    PLUSSES 1 ?S
+    S" 49511917553=50" PLUSSES 10 ?S
+    S" 49511917553=5000" PLUSSES 5 ?S
+}T
     
 BYE
