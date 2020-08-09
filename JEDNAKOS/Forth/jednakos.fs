@@ -52,7 +52,7 @@ CREATE DIGITS MAXDIGIT ALLOT
     T @ FREE DROP ;
 
 : T! ( w,i,r -- )
-    DS .S ." STORING VALUE " 2 PICK . ." AT ROW " OVER . ." COL " DUP . CR
+    DS ." STORING VALUE " 2 PICK . ." AT ROW " OVER . ." COL " DUP . CR
     DUP SUM @ > IF DS ." UNEXPECTED CONDITION WITH COL " DUP . ." LARGER THAN " SUM @ . CR THEN
     OVER N @  > IF DS ." UNEXPECTED CONDITION WITH ROW " OVER . ." LARGER THAN " N @ . CR THEN
     SWAP ROW% * SWAP 2* + 
@@ -60,7 +60,7 @@ CREATE DIGITS MAXDIGIT ALLOT
     T @ + W! ; 
 
 : T@ ( i,r -- w )
-    DS .S ." FETCHING VALUE " OVER . DUP . 
+    DS ." FETCHING VALUE " OVER . DUP . 
     SWAP ROW% * SWAP 2* + T @ + W@ 
     DUP ." = " . CR
     ; 
@@ -84,9 +84,13 @@ CREATE DIGITS MAXDIGIT ALLOT
                 OVER                          \ min,acc,index,result,index
                 N @ SWAP                      \ min,acc,index,result,limit,index
                 DO                            \ min,acc,index,result
+                    DS ." DO [ " I . ." ] " ." ACC = " 2 PICK . ." INDEX = " OVER . ." RESULT = " DUP . CR
                     ROT OVER OVER             \ min,index,result,acc,result,acc
                     -                         \ min,index,result,acc,result'
-                    0< IF LEAVE THEN
+                    0< IF
+                        DS ." LEAVE [ " I . ." ] " ." ACC = " 2 PICK . ." INDEX = " OVER . ." RESULT = " DUP . CR
+                        LEAVE 
+                    THEN
                     10 *                      \ min,index,result,acc*10
                     DIGITS I + C@ +           \ min,index,result,acc'
                     >R DUP R@ -               \ min,index,result,result-acc'
@@ -96,9 +100,12 @@ CREATE DIGITS MAXDIGIT ALLOT
                     -ROT >R >R ROT            \ index,value,min
                     MIN SWAP                  \ value',index
                     R> R> -ROT                \ value',acc',index,result
-                    DS ." INSIDE LOOP [" I . ." ]" .S CR
-                LOOP                          \ value',index,result,acc
-                DROP                          \ value',index,result
+                    .S CR
+                    DS ." LOOP [ " I . ." ] " ." ACC = " 2 PICK . ." INDEX = " OVER . ." RESULT = " DUP . CR
+                LOOP                          \ value',acc,index,result
+                ROT DROP
+                .S CR
+                DS ." DONE " ." VALUE = " 2 PICK . ." INDEX = " OVER . ." RESULT = " DUP . CR
                 2 PICK -ROT                   \ value',value',index,result
                 T!                            \ value'
             THEN
@@ -106,7 +113,7 @@ CREATE DIGITS MAXDIGIT ALLOT
     THEN ;
 
 : PLUSSES ( addr,l -- v )
-    2DUP DS ." ********************** LAUCHING PLUSSES WITH " TYPE CR
+    2DUP DS ." ********************** LAUNCHING PLUSSES WITH " TYPE CR
     >DIGITS>SUM!
     INIT-TABLE
     0 SUM @ PARTITION-PLUS
