@@ -1,5 +1,4 @@
-
-\ uncomment first line to autoexecute \ #! /usr/local/bin/gforth
+#! /usr/local/bin/gforth
 1001 CONSTANT MAXDIGIT
 5000 CONSTANT MAXSUM
 MAXDIGIT 1+ 2* CONSTANT ROW%
@@ -134,4 +133,4 @@ DEBUG OFF
 : RUN 
     NEXT-ARG DROP 0= IF JEDNAKOS BYE THEN ;
 
-JEDNAKOS BYE
+RUN
