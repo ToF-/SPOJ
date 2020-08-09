@@ -15,7 +15,7 @@ VARIABLE T
 CREATE DIGITS MAXDIGIT ALLOT
 
 : DS 
-    DEPTH SPACES ;
+    DEPTH DUP . SPACES ;
 
 \ read a line on standard input
 : READLN ( -- addr,l )
@@ -128,9 +128,9 @@ DEBUG @ IF     2DUP DS ." ********************** LAUNCHING PLUSSES WITH " TYPE C
     READLN
     PLUSSES . CR ;
 
-DEBUG OFF
+DEBUG ON
 
-: RUN 
+: MAIN
     NEXT-ARG DROP 0= IF JEDNAKOS BYE THEN ;
 
-RUN
+MAIN
