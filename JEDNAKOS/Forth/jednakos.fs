@@ -1,5 +1,5 @@
-\ #! /usr/local/bin/gforth
-\ uncomment first line to autoexecute
+
+\ uncomment first line to autoexecute \ #! /usr/local/bin/gforth
 1001 CONSTANT MAXDIGIT
 5000 CONSTANT MAXSUM
 MAXDIGIT 1+ 2* CONSTANT ROW%
