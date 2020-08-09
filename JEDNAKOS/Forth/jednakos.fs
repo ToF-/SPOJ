@@ -87,24 +87,26 @@ CREATE DIGITS MAXDIGIT ALLOT
                     DS ." DO [ " I . ." ] " ." ACC = " 2 PICK . ." INDEX = " OVER . ." RESULT = " DUP . CR
                     ROT OVER OVER             \ min,index,result,acc,result,acc
                     -                         \ min,index,result,acc,result'
+                    DS ." INDEX = " 3 PICK . ." J = " I . ." RESULT = " 2 PICK . ." ACC = " OVER . ." NEW RESULT = " DUP . CR
                     0< IF
-                        DS ." LEAVE [ " I . ." ] " ." ACC = " 2 PICK . ." INDEX = " OVER . ." RESULT = " DUP . CR
-                        LEAVE 
+                        DS ." LEAVE [ " I . ." ] " ." INDEX = " 2 PICK . ." RESULT = " OVER  . ." ACC = " DUP . CR
+                        -ROT
+                        LEAVE                 \ min,acc,index,result 
                     THEN
+                    DS ." NEXT DIGIT A[J] = " DIGITS I + C@ . CR 
                     10 *                      \ min,index,result,acc*10
                     DIGITS I + C@ +           \ min,index,result,acc'
                     >R DUP R@ -               \ min,index,result,result-acc'
                     R> I 1+                   \ min,index,result,result',acc',j+1
+                    DS ." J = " DUP . ." NEW ACC = " OVER . ." NEW RESULT = " 2 PICK . CR
                     ROT                       \ min,index,result,acc',j+1,result'
                     RECURSE 1+                \ min,index,result,acc',value
                     -ROT >R >R ROT            \ index,value,min
                     MIN SWAP                  \ value',index
                     R> R> -ROT                \ value',acc',index,result
-                    .S CR
                     DS ." LOOP [ " I . ." ] " ." ACC = " 2 PICK . ." INDEX = " OVER . ." RESULT = " DUP . CR
                 LOOP                          \ value',acc,index,result
                 ROT DROP
-                .S CR
                 DS ." DONE " ." VALUE = " 2 PICK . ." INDEX = " OVER . ." RESULT = " DUP . CR
                 2 PICK -ROT                   \ value',value',index,result
                 T!                            \ value'
