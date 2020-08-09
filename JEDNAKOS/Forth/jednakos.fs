@@ -1,5 +1,5 @@
-#! /usr/local/bin/gforth
-\ lauch WITHOUT argument to run the main program
+\ #! /usr/local/bin/gforth
+\ uncomment first line to autoexecute
 1001 CONSTANT MAXDIGIT
 5000 CONSTANT MAXSUM
 MAXDIGIT 1+ 2* CONSTANT ROW%
