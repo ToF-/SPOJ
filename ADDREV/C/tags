@@ -1,0 +1,2 @@
+Maddrev	addrev.c	/^int main() {$/
+reverse	addrev.c	/^int reverse(int n) {$/
