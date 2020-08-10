@@ -87,6 +87,7 @@ T{ ." PARTITION-PLUS calls itself while substracting result " CR
     FREE-TABLE
 }T
 
+DEBUG ON
 T{ ." PLUSSES finds the number of additions in a jednakos equation " CR
     S" 42=42"      PLUSSES 0 ?S
     S" 51=6"       PLUSSES 1 ?S
