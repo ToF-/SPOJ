@@ -11,9 +11,18 @@ char Input[MAXDIGITS+1+100];
 
 int get_digits_and_sum(char *input, int *sum) {
     int count = 0;
+    int zeros = 0;
     for(int i = 0; i < MAXDIGITS && *input != '='; i++, input++) {
-        Digits[i] = *input - '0';
-        count++;
+        int digit = *input - '0';
+        if (digit) {
+            Digits[count] = digit;
+            count++;
+            zeros = 0;
+        } else if(zeros < 4) {
+            Digits[count] = digit;
+            count++;
+            zeros++;
+        }
     }
     input++;
     sscanf(input,"%d", sum);
@@ -28,13 +37,9 @@ void init_table() {
 
 int additions(int index, int sum) {
     if (sum < 0) return MAXVALUE;
-    if (index == Max_Digit) {
-        if (sum == 0)
-            return 0;
-        else
-            return MAXVALUE;
-    }
-    if (Table[index][sum] != 0)
+    if (index == Max_Digit)
+        return sum ? MAXVALUE : 0 ;
+    if (Table[index][sum])
         return Table[index][sum];
     int min_value = MAXVALUE;
     int acc = 0;
