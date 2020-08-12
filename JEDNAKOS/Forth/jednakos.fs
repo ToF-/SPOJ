@@ -1,4 +1,5 @@
 #! /usr/local/bin/gforth
+\ run with gforth -d 16M -r 16M 
 1001 CONSTANT MAXDIGIT
 5000 CONSTANT MAXSUM
 MAXDIGIT 1+ 2* CONSTANT ROW%
