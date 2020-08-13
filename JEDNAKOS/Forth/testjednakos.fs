@@ -49,4 +49,11 @@ t{ ." partition-plus returns 0 if target = 0 and index is past last digit of mys
     4 0 PARTITION-PLUS 0 ?s
 }t
 
+t{ ." partition-plus return the table content at index,target if it not null " cr
+    50 TARGET-SUM ! 5 MYSTERY-SIZE !
+    INIT-TABLE
+    23 2 18 P-TABLE! 
+    2 18 PARTITION-PLUS 23 ?S
+    FREE-TABLE
+
 bye

@@ -43,7 +43,11 @@ VARIABLE P-TABLE-ADDR
         OVER MYSTERY-SIZE @ = IF
             NIP 0= IF 0 ELSE FAIL THEN
         ELSE
-            DROP 42 
+            OVER OVER P-TABLE@ DUP IF 
+                NIP NIP 
+            ELSE
+                DROP DROP 42 
+            THEN
         THEN
     THEN ;
 

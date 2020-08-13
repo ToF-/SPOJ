@@ -60,8 +60,8 @@ T{ ." PARTITION-PLUS return T[i][r] if is not Z " CR
     42 2 18 T!
     2 18 PARTITION-PLUS 42 ?S
     FREE-TABLE
-}T
 
+}T
 T{ ." PARTITION-PLUS calls itself while substracting result " CR
     S" 5=5" >DIGITS>SUM!
     INIT-TABLE
