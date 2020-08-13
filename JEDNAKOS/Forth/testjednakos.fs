@@ -29,8 +29,14 @@ t{ ." unpack makes 1 cell on the stack into 4 unsigned 2 byte words on the stack
 
 t{ ." p-table! and p-table@ store and retrieve 2 byte words values " cr
     INIT-TABLE
+    0 0 P-TABLE@ 0 ?S
     42 0 0 P-TABLE! 0 0 P-TABLE@ 42 ?s
     24 23 17 P-TABLE! 23 17 P-TABLE@ 24 ?s
     FREE-TABLE
 }t
+
+t{ ." PARTITION-PLUS returns FAIL if target sum is < 0 " CR
+    42 -23 PARTITION-PLUS FAIL ?s
+}t
+
 bye

@@ -35,8 +35,8 @@ T{ ." T! and T@ stores and fetches a word at a row and column of the table " CR
     INIT-TABLE
     4807 2 17 T!
     42   3 18 T!
-    2 17 T@ 4807 ?S
     3 18 T@ 42   ?S
+    2 17 T@ 4807 ?S
     FREE-TABLE
 }T
 
