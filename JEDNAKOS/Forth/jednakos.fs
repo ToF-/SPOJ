@@ -1,3 +1,5 @@
+VARIABLE DEBUG
+DEBUG OFF
 1000 CONSTANT MYSTERY-MAX
 5001 CONSTANT SUM-MAX
 SUM-MAX 2* CONSTANT ROW-SIZE
@@ -20,10 +22,14 @@ VARIABLE P-TABLE-ADDR
     P-TABLE-ADDR @ FREE DROP ;
 
 : P-TABLE! ( uw,row,col -- )
-    2* SWAP ROW-SIZE * + P-TABLE-ADDR @ + W! ;
+    2* SWAP ROW-SIZE * + 
+    ASSERT( DUP TABLE-SIZE < )
+    P-TABLE-ADDR @ + W! ;
 
 : P-TABLE@ ( row,col -- uw )
-    2* SWAP ROW-SIZE * + P-TABLE-ADDR @ + W@ ;
+    2* SWAP ROW-SIZE * + 
+    ASSERT( DUP TABLE-SIZE < )
+    P-TABLE-ADDR @ + W@ ;
 
 : PACK ( uw1,uw2,uw3,uw4 -- d )
     16 LSHIFT OR
@@ -37,6 +43,7 @@ VARIABLE P-TABLE-ADDR
     SWAP 16 RSHIFT ;
 
 : PARTITION-PLUS ( index,target -- value )
+    DEBUG @ IF .S CR THEN
     DUP 0< IF                              \ index,target
         DROP DROP FAIL
     ELSE 
@@ -54,7 +61,8 @@ VARIABLE P-TABLE-ADDR
                 DO                         \ minval,accum,index,target
                     ROT OVER OVER          \ minval,index,target,accum,target,accum
                     - 0< IF                \ minval,index,target,accum
-                        -ROT LEAVE         \ minval,accum,index,targe
+                        DEBUG @ IF ." leave " CR THEN
+                        -ROT LEAVE         \ minval,accum,index,target
                     THEN                   \ minval,index,target,accum
                     10 *                   
                     MYSTERY-SUM I + C@ +   \ minval,index,target,accum'

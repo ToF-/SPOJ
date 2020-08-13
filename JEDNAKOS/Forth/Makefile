@@ -1,5 +1,5 @@
 unit: testjednakos.fs jednakos.fs
-	gforth-itc testjednakos.fs
+	gforth-itc -r 16M testjednakos.fs
 
 test: spoj test.txt jednakos.fs
 	sed -n -e 's/\(<- \)\(.*\)/\2/pw input.dat'    test.txt >/dev/null
