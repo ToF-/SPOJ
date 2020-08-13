@@ -17,4 +17,14 @@ t{ ." get-equation eliminates zeroes when contiguous and more than 3 " cr
        
     s" 0000042000003000000=45" GET-EQUATION MYSTERY-SIZE @ 12 ?s
 }t
+
+t{ ." pack makes 4 unsigned 2 byte words on the stack into 1 cell on the stack " cr
+      1 2 3 4 PACK hex 0004000300020001 ?s decimal
+      
+}t
+t{ ." unpack makes 1 cell on the stack into 4 unsigned 2 byte words on the stack " cr
+      hex 0004000300020001 unpack decimal 4 ?s 3 ?s 2 ?s 1 ?s
+
+      
+}t
 bye

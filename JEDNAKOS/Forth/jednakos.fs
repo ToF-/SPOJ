@@ -5,7 +5,19 @@ VARIABLE MYSTERY-SIZE
 VARIABLE TARGET-SUM
 CREATE   MYSTERY-SUM MYSTERY-MAX ALLOT
 
+: PACK ( uw1,uw2,uw3,uw4 -- d )
+    16 LSHIFT OR
+    16 LSHIFT OR
+    16 LSHIFT OR ;
+
+: UNPACK ( d -- uw1,uw2,uw3,uw4 )
+                   DUP 65535 AND
+    SWAP 16 RSHIFT DUP 65535 AND
+    SWAP 16 RSHIFT DUP 65535 AND
+    SWAP 16 RSHIFT ;
+
 : GET-MYSTERY-SUM ( addr,l -- s )
+    
     0 0 ROT           \ addr,j,z,l
     0 DO              \ addr,j,z
         >R OVER R> SWAP \ addr,j,z,addr
