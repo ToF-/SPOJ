@@ -61,7 +61,9 @@ VARIABLE P-TABLE-ADDR
                     >R DUP R@ -            \ minval,index,target,target-accum'
                     R> I 1+                \ minval,index,target,target',accum',i+1
                     ROT                    \ minval,index,target,accum',i+1,target'
-                    RECURSE 1+             \ minval,index,target,accum',value
+                    >R >R PACK R> R>       \ d,i+1,target'
+                    RECURSE 1+             \ d,value
+                    >R UNPACK R>           \ minval,index,target,accum',value
                     -ROT >R >R ROT         \ index,value,minval
                     MIN SWAP               \ minval',index
                     R> R> -ROT             \ minval',accum',index,target
