@@ -4,6 +4,8 @@ PAGE
 REQUIRE ffl/tst.fs
 REQUIRE jednakos.fs
 
+DEBUG ON
+TEST ON
 T{ ." DIGITS-LENGTH finds the position on the equal sign in the input " CR
     S" 123456789=123" DIGITS-LENGTH 9 ?S 
     S" Whatever can be in that string anyway = voila" DIGITS-LENGTH 38 ?S 
@@ -87,7 +89,6 @@ T{ ." PARTITION-PLUS calls itself while substracting result " CR
     FREE-TABLE
 }T
 
-DEBUG ON
 T{ ." PLUSSES finds the number of additions in a jednakos equation " CR
     S" 42=42"      PLUSSES 0 ?S
     S" 51=6"       PLUSSES 1 ?S
