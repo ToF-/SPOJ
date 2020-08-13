@@ -37,20 +37,41 @@ VARIABLE P-TABLE-ADDR
     SWAP 16 RSHIFT ;
 
 : PARTITION-PLUS ( index,target -- value )
-    DUP 0< IF 
+    DUP 0< IF                              \ index,target
         DROP DROP FAIL
     ELSE 
-        OVER MYSTERY-SIZE @ = IF
+        OVER MYSTERY-SIZE @ = IF           \ index,target
             NIP 0= IF 0 ELSE FAIL THEN
         ELSE
-            OVER OVER P-TABLE@ DUP IF 
+            OVER OVER P-TABLE@ DUP IF      \ index,target,value
                 NIP NIP 
             ELSE
-                DROP DROP 42 
+                DROP                       \ index,target
+                FAIL -ROT                  \ minval,index,target
+                0    -ROT                  \ minval,accum,index,target
+                OVER                       \ minval,accum,index,target,index
+                MYSTERY-SIZE @ SWAP        \ minval,accum,index,target,limit,index
+                DO                         \ minval,accum,index,target
+                    ROT OVER OVER          \ minval,index,target,accum,target,accum
+                    - 0< IF                \ minval,index,target,accum
+                        -ROT LEAVE         \ minval,accum,index,targe
+                    THEN                   \ minval,index,target,accum
+                    10 *                   
+                    MYSTERY-SUM I + C@ +   \ minval,index,target,accum'
+                    >R DUP R@ -            \ minval,index,target,target-accum'
+                    R> I 1+                \ minval,index,target,target',accum',i+1
+                    ROT                    \ minval,index,target,accum',i+1,target'
+                    RECURSE 1+             \ minval,index,target,accum',value
+                    -ROT >R >R ROT         \ index,value,minval
+                    MIN SWAP               \ minval',index
+                    R> R> -ROT             \ minval',accum',index,target
+                LOOP                       
+                ROT DROP                   \ minval',index,target
+                >R >R DUP R> R>            \ minval',minval',index,target
+                P-TABLE!                   \ minval'
             THEN
         THEN
     THEN ;
-
 
 : GET-MYSTERY-SUM ( addr,l -- s )
     
@@ -88,5 +109,11 @@ VARIABLE P-TABLE-ADDR
     SWAP R> +                   \ l',addr'
     SWAP S>NUMBER?              \ d,f
     IF D>S TARGET-SUM ! ELSE 2DROP THEN ;
+
+: PLUSSES ( addr,l -- v )
+    INIT-TABLE
+    GET-EQUATION 
+    0 TARGET-SUM @ PARTITION-PLUS 1-
+    FREE-TABLE ;
 
 : MAIN 42 . CR ;

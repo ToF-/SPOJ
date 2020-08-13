@@ -55,5 +55,42 @@ t{ ." partition-plus return the table content at index,target if it not null " c
     23 2 18 P-TABLE! 
     2 18 PARTITION-PLUS 23 ?S
     FREE-TABLE
+}t
+
+t{ ." partition-plus calls itself while subtracting target sun " cr
+    S" 5=5" GET-EQUATION
+    INIT-TABLE
+    0 5 PARTITION-PLUS 1 ?S
+    FREE-TABLE
+
+    S" 50=5" GET-EQUATION
+    INIT-TABLE
+    0 5 PARTITION-PLUS 2 ?S
+    FREE-TABLE
+
+    S" 05=5" GET-EQUATION
+    INIT-TABLE
+    0 5 PARTITION-PLUS 1 ?S
+    FREE-TABLE
+ 
+    S" 405=9" GET-EQUATION 
+    INIT-TABLE
+    0 TARGET-SUM @ PARTITION-PLUS 2 ?S
+    FREE-TABLE
+
+    S" 405=45" GET-EQUATION 
+    INIT-TABLE
+    0 TARGET-SUM @ PARTITION-PLUS 2 ?S
+    FREE-TABLE
+}t
+t{ ." plusses finds the number of additions in a jednakos equation " CR
+    S" 4=4"        PLUSSES 0 ?S
+    S" 51=6"       PLUSSES 1 ?S
+    S" 143175=120" PLUSSES 2 ?S
+    S" 999899=125" PLUSSES 4 ?S
+    S" 5025=30"    PLUSSES 1 ?S
+    S" 49511917553=50" PLUSSES 10 ?S
+    S" 49511917553=5000" PLUSSES 5 ?S
+}T
 
 bye
