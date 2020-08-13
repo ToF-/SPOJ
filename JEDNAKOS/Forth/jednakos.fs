@@ -37,7 +37,16 @@ VARIABLE P-TABLE-ADDR
     SWAP 16 RSHIFT ;
 
 : PARTITION-PLUS ( index,target -- value )
-    DROP DROP FAIL ;
+    DUP 0< IF 
+        DROP DROP FAIL
+    ELSE 
+        OVER MYSTERY-SIZE @ = IF
+            NIP 0= IF 0 ELSE FAIL THEN
+        ELSE
+            DROP 42 
+        THEN
+    THEN ;
+
 
 : GET-MYSTERY-SUM ( addr,l -- s )
     

@@ -35,8 +35,18 @@ t{ ." p-table! and p-table@ store and retrieve 2 byte words values " cr
     FREE-TABLE
 }t
 
-t{ ." PARTITION-PLUS returns FAIL if target sum is < 0 " CR
+t{ ." partition-plus returns FAIL if target sum is < 0 " cr
     42 -23 PARTITION-PLUS FAIL ?s
+}t
+
+t{ ." partition-plus returns FAIL if target <> 0 and index is past last digit of mystery sum " cr
+    s" 1234=28" GET-EQUATION MYSTERY-SIZE @ 4 ?s 
+    4 32 PARTITION-PLUS FAIL ?s
+}t
+
+t{ ." partition-plus returns 0 if target = 0 and index is past last digit of mystery sum " cr
+    S" 1234=28" GET-EQUATION 
+    4 0 PARTITION-PLUS 0 ?s
 }t
 
 bye
