@@ -35,22 +35,22 @@ void init_table() {
             Table[i][j] = 0;
 }
 
-int additions(int index, int sum) {
-    if (sum < 0) return MAXVALUE;
+int additions(int index, int target) {
+    if (target < 0) return MAXVALUE;
     if (index == Max_Digit)
-        return sum ? MAXVALUE : 0 ;
-    if (Table[index][sum])
-        return Table[index][sum];
+        return target ? MAXVALUE : 0 ;
+    if (Table[index][target])
+        return Table[index][target];
     int min_value = MAXVALUE;
-    int acc = 0;
-    for (int i = index; i < Max_Digit && (sum - acc) >= 0; i++) {
-        acc = acc * 10 + Digits[i];
-        int value = 1 + additions(i+1, sum - acc);
+    int accum = 0;
+    for (int i = index; i < Max_Digit && (target - accum) >= 0; i++) {
+        accum = accum * 10 + Digits[i];
+        int value = 1 + additions(i+1, target - accum);
         if (value < min_value)
             min_value = value;
+            Table[index][target] = min_value;
     }
-    Table[index][sum] = min_value;
-    return min_value;
+    return Table[index][target];
 }
 
 int main() {
