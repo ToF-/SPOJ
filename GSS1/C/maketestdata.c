@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
     printf("# test case for cyatq -- random generated\n");
     printf("# lines beginning with # are comments\n");
     printf("# lines containing left arrow are part of the test input\n");
-    printf("# lines beginning with right arrowi are part of the expected result\n");
+    printf("# lines beginning with right arrow are part of the expected result\n");
     printf("<- %d\n<- ", max_number);
     for(int i=0; i<max_number; i++) {
         Numbers[i] = random_number(range);

@@ -42,7 +42,7 @@ VARIABLE P-TABLE-ADDR
     SWAP 16 RSHIFT DUP 65535 AND
     SWAP 16 RSHIFT ;
 
-: PARTITION-PLUS ( index,target -- value )
+: R-PARTITION-PLUS ( index,target -- value )
     DEBUG @ IF .S CR THEN
     DUP 0< IF                              \ index,target
         DROP DROP FAIL
@@ -123,7 +123,7 @@ VARIABLE P-TABLE-ADDR
 : PLUSSES ( addr,l -- v )
     INIT-TABLE
     GET-EQUATION 
-    0 TARGET-SUM @ PARTITION-PLUS 1-
+    0 TARGET-SUM @ R-PARTITION-PLUS 1-
     FREE-TABLE ;
 
 : MAIN 42 . CR ;

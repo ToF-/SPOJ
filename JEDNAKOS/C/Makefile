@@ -1,5 +1,5 @@
-jednakos: jednakos.c
-	cc jednakos.c -o jednakos
+maketestdata: maketestdata.c
+	cc maketestdata.c -o maketestdata
 
 clean:
-	rm jednakos
+	rm maketestdata

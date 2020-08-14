@@ -35,52 +35,53 @@ t{ ." p-table! and p-table@ store and retrieve 2 byte words values " cr
     FREE-TABLE
 }t
 
-t{ ." partition-plus returns FAIL if target sum is < 0 " cr
-    42 -23 PARTITION-PLUS FAIL ?s
+
+t{ ." r-partition-plus returns FAIL if target sum is < 0 " cr
+    42 -23 R-r-partition-plus FAIL ?s
 }t
 
-t{ ." partition-plus returns FAIL if target <> 0 and index is past last digit of mystery sum " cr
+t{ ." r-partition-plus returns FAIL if target <> 0 and index is past last digit of mystery sum " cr
     s" 1234=28" GET-EQUATION MYSTERY-SIZE @ 4 ?s 
-    4 32 PARTITION-PLUS FAIL ?s
+    4 32 R-r-partition-plus FAIL ?s
 }t
 
-t{ ." partition-plus returns 0 if target = 0 and index is past last digit of mystery sum " cr
+t{ ." r-partition-plus returns 0 if target = 0 and index is past last digit of mystery sum " cr
     S" 1234=28" GET-EQUATION 
-    4 0 PARTITION-PLUS 0 ?s
+    4 0 R-r-partition-plus 0 ?s
 }t
 
-t{ ." partition-plus return the table content at index,target if it not null " cr
+t{ ." r-partition-plus return the table content at index,target if it not null " cr
     50 TARGET-SUM ! 5 MYSTERY-SIZE !
     INIT-TABLE
     23 2 18 P-TABLE! 
-    2 18 PARTITION-PLUS 23 ?S
+    2 18 R-r-partition-plus 23 ?S
     FREE-TABLE
 }t
 
-t{ ." partition-plus calls itself while subtracting target sun " cr
+t{ ." r-partition-plus calls itself while subtracting target sun " cr
     S" 5=5" GET-EQUATION
     INIT-TABLE
-    0 5 PARTITION-PLUS 1 ?S
+    0 5 R-r-partition-plus 1 ?S
     FREE-TABLE
 
     S" 50=5" GET-EQUATION
     INIT-TABLE
-    0 5 PARTITION-PLUS 2 ?S
+    0 5 R-r-partition-plus 2 ?S
     FREE-TABLE
 
     S" 05=5" GET-EQUATION
     INIT-TABLE
-    0 5 PARTITION-PLUS 1 ?S
+    0 5 R-r-partition-plus 1 ?S
     FREE-TABLE
  
     S" 405=9" GET-EQUATION 
     INIT-TABLE
-    0 TARGET-SUM @ PARTITION-PLUS 2 ?S
+    0 TARGET-SUM @ R-r-partition-plus 2 ?S
     FREE-TABLE
 
     S" 405=45" GET-EQUATION 
     INIT-TABLE
-    0 TARGET-SUM @ PARTITION-PLUS 2 ?S
+    0 TARGET-SUM @ R-r-partition-plus 2 ?S
     FREE-TABLE
 }t
 t{ ." plusses finds the number of additions in a jednakos equation " CR

@@ -1,0 +1,2 @@
+:> output.dat
+cat input.dat | xargs -L 1 ./jednakos >> output.dat
