@@ -80,13 +80,13 @@ int additions(int sum) {
     push(recurse);
     for(;StackPointer>0;) { 
         struct action a = pop();
-        // printf("%s{%d,%d}:\n", a.type == COMPARE ? "C" : "R", a.index, a.target);
+        printf("%s{%d,%d}:\n", a.type == COMPARE ? "C" : "R", a.index, a.target);
         switch(a.type) {
             case COMPARE:
                 Table[a.index][a.target] = min(Table[a.index][a.target], 1+value);
-                // printf("Table[%d][%d] <- %d\n", a.index, a.target, Table[a.index][a.target]);
+                printf("Table[%d][%d] <- %d\n", a.index, a.target, Table[a.index][a.target]);
                 value = Table[a.index][a.target];
-                // printf("value <- %d\n", value);
+                printf("value <- %d\n", value);
                 break;
             case RECURSE:
                 index = a.index;
@@ -94,26 +94,26 @@ int additions(int sum) {
                 assert(target >=0);
                 if (index == Max_Digit && target == 0) {
                     value = 0;  
-                    // printf("value <- %d\n", value);
+                    printf("value <- %d\n", value);
                     break;
                 }
                 if (index == Max_Digit && target > 0) {
                     value = MAXVALUE;
-                    // printf("value <- %d\n", value);
+                    printf("value <- %d\n", value);
                     break;
                 }
                 if (Table[index][target]) {
-                    // printf("already computed ");
+                    printf("already computed ");
                     value = Table[index][target];
-                    // printf("value <- %d\n", value);
+                    printf("value <- %d\n", value);
                     break;
                 }
                 Table[index][target] = MAXVALUE;
-                // printf("Table[%d][%d] <- %d\n", index, target, Table[index][target]);
+                printf("Table[%d][%d] <- %d\n", index, target, Table[index][target]);
                 int accum = 0;
                 for(int j = a.index; (j < Max_Digit) && (target-accum >= 0); j++) {
                     accum = accum * 10 + Digits[j];
-                    // printf("j=%d; accum=%d; target-accum=%d\n", j, accum, target-accum); 
+                    printf("j=%d; accum=%d; target-accum=%d\n", j, accum, target-accum); 
                     if (target-accum >=0) {
                         struct action compare = { .type = COMPARE, .index = index, .target = target};
                         struct action recurse = { .type = RECURSE, .index = j+1, .target = target-accum};
@@ -121,7 +121,7 @@ int additions(int sum) {
                         push(recurse);
                     }
                 }
-                // printf("end of loop:");print_stack();
+                printf("end of loop:");print_stack();
                 break;
         }
     }
@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
         input=Input;
         fgets(input, MAXDIGITS + 10, stdin);
     }
-    // printf("%s\n", input);
+    printf("%s\n", input);
     Max_Digit = get_digits_and_sum(input, &sum);
     init_table();
     printf("%d\n", additions(sum)-1);

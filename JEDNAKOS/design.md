@@ -48,6 +48,7 @@
                 T[I][R] = X
                 A = 0
                 for(J=I; J<L && R-A >= 0; J++)
+                    A = A*10+A[J]
                     C{I,R} ->> S
                     R{J+1,R-A} ->> S
                 continue

@@ -1,99 +1,24 @@
-22222222222=22
-R{0,22}:
-Table[0][22] <- 9999
-j=0; accum=2; target-accum=20
-j=1; accum=22; target-accum=0
-j=2; accum=222; target-accum=-200
-end of loop:(4)  C{0,22} R{1,20} C{0,22} R{2,0} 
+05=5
+R{0,5}:
+Table[0][5] <- 9999
+j=0; accum=0; target-accum=5
+j=1; accum=5; target-accum=0
+end of loop:(4)  C{0,5} R{1,5} C{0,5} R{2,0} 
 R{2,0}:
-Table[2][0] <- 9999
-j=2; accum=2; target-accum=-2
-end of loop:(3)  C{0,22} R{1,20} C{0,22} 
-C{0,22}:
-Table[0][22] <- 9999
-value <- 9999
-R{1,20}:
-Table[1][20] <- 9999
-j=1; accum=2; target-accum=18
-j=2; accum=22; target-accum=-2
-end of loop:(3)  C{0,22} C{1,20} R{2,18} 
-R{2,18}:
-Table[2][18] <- 9999
-j=2; accum=2; target-accum=16
-j=3; accum=22; target-accum=-4
-end of loop:(4)  C{0,22} C{1,20} C{2,18} R{3,16} 
-R{3,16}:
-Table[3][16] <- 9999
-j=3; accum=2; target-accum=14
-j=4; accum=22; target-accum=-6
-end of loop:(5)  C{0,22} C{1,20} C{2,18} C{3,16} R{4,14} 
-R{4,14}:
-Table[4][14] <- 9999
-j=4; accum=2; target-accum=12
-j=5; accum=22; target-accum=-8
-end of loop:(6)  C{0,22} C{1,20} C{2,18} C{3,16} C{4,14} R{5,12} 
-R{5,12}:
-Table[5][12] <- 9999
-j=5; accum=2; target-accum=10
-j=6; accum=22; target-accum=-10
-end of loop:(7)  C{0,22} C{1,20} C{2,18} C{3,16} C{4,14} C{5,12} R{6,10} 
-R{6,10}:
-Table[6][10] <- 9999
-j=6; accum=2; target-accum=8
-j=7; accum=22; target-accum=-12
-end of loop:(8)  C{0,22} C{1,20} C{2,18} C{3,16} C{4,14} C{5,12} C{6,10} R{7,8} 
-R{7,8}:
-Table[7][8] <- 9999
-j=7; accum=2; target-accum=6
-j=8; accum=22; target-accum=-14
-end of loop:(9)  C{0,22} C{1,20} C{2,18} C{3,16} C{4,14} C{5,12} C{6,10} C{7,8} R{8,6} 
-R{8,6}:
-Table[8][6] <- 9999
-j=8; accum=2; target-accum=4
-j=9; accum=22; target-accum=-16
-end of loop:(10)  C{0,22} C{1,20} C{2,18} C{3,16} C{4,14} C{5,12} C{6,10} C{7,8} C{8,6} R{9,4} 
-R{9,4}:
-Table[9][4] <- 9999
-j=9; accum=2; target-accum=2
-j=10; accum=22; target-accum=-18
-end of loop:(11)  C{0,22} C{1,20} C{2,18} C{3,16} C{4,14} C{5,12} C{6,10} C{7,8} C{8,6} C{9,4} R{10,2} 
-R{10,2}:
-Table[10][2] <- 9999
-j=10; accum=2; target-accum=0
-end of loop:(12)  C{0,22} C{1,20} C{2,18} C{3,16} C{4,14} C{5,12} C{6,10} C{7,8} C{8,6} C{9,4} C{10,2} R{11,0} 
-R{11,0}:
 value <- 0
-C{10,2}:
-Table[10][2] <- 1
+C{0,5}:
+Table[0][5] <- 1
 value <- 1
-C{9,4}:
-Table[9][4] <- 2
-value <- 2
-C{8,6}:
-Table[8][6] <- 3
-value <- 3
-C{7,8}:
-Table[7][8] <- 4
-value <- 4
-C{6,10}:
-Table[6][10] <- 5
-value <- 5
-C{5,12}:
-Table[5][12] <- 6
-value <- 6
-C{4,14}:
-Table[4][14] <- 7
-value <- 7
-C{3,16}:
-Table[3][16] <- 8
-value <- 8
-C{2,18}:
-Table[2][18] <- 9
-value <- 9
-C{1,20}:
-Table[1][20] <- 10
-value <- 10
-C{0,22}:
-Table[0][22] <- 11
-value <- 11
-10
+R{1,5}:
+Table[1][5] <- 9999
+j=1; accum=5; target-accum=0
+end of loop:(3)  C{0,5} C{1,5} R{2,0} 
+R{2,0}:
+value <- 0
+C{1,5}:
+Table[1][5] <- 1
+value <- 1
+C{0,5}:
+Table[0][5] <- 1
+value <- 1
+0

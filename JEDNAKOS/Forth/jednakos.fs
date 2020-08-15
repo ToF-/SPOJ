@@ -108,7 +108,6 @@ VARIABLE ACCUM
     ELSE
         OVER OVER P-TABLE@ 
         ?DUP IF 
-            ." vplus <- " dup . cr
             VPLUS ! DROP DROP
         ELSE 
             ACCUMULATE-ACTIONS
@@ -213,7 +212,7 @@ VARIABLE ACCUM
 : PLUSSES ( addr,l -- v )
     INIT-TABLE
     GET-EQUATION 
-    0 TARGET-SUM @ R-PARTITION-PLUS 1-
+    0 TARGET-SUM @ L-PARTITION-PLUS 1-
     FREE-TABLE ;
 
 : MAIN 42 . CR ;
