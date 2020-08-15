@@ -49,8 +49,8 @@ t{ ." action-end returns a end action " CR
 }t
 
 t{ ." action unpacks the given action into an index a target and a flag " CR
-    42 17 ACTION-COMPARE ACTION 2 ?S 17 ?S 42 ?S
-    42 17 ACTION-RECURSE ACTION 4 ?S 17 ?S 42 ?S
+    42 17 ACTION-COMPARE ACTION-PARAMS 2 ?S 17 ?S 42 ?S
+    42 17 ACTION-RECURSE ACTION-PARAMS 4 ?S 17 ?S 42 ?S
 }t
 
 t{ ." l-partition-plus returns 0 if target = 0 and index is past last digit of mystery sum " cr
@@ -71,9 +71,9 @@ t{ ." l-partition-plus returns FAIL if target <> 0 and index is past last digit 
 t{ ." l-partition-plus loops while subtracting target sum " cr
     S" 5=5" GET-EQUATION
     INIT-TABLE
-    0 5 dbg L-PARTITION-PLUS 1 ?S
+    0 5 L-PARTITION-PLUS 1 ?S
     FREE-TABLE
-    bye
+
     S" 50=5" GET-EQUATION
     INIT-TABLE
     0 5 L-PARTITION-PLUS 2 ?S
@@ -81,17 +81,17 @@ t{ ." l-partition-plus loops while subtracting target sum " cr
 
     S" 05=5" GET-EQUATION
     INIT-TABLE
-    0 5 L-PARTITION-PLUS 1 ?S
+    0 5 L-PARTITION-PLUS 2 ?S
     FREE-TABLE
  
     S" 405=9" GET-EQUATION 
     INIT-TABLE
-    0 TARGET-SUM @ L-PARTITION-PLUS 2 ?S
+    0 TARGET-SUM @ L-PARTITION-PLUS 3 ?S
     FREE-TABLE
 
     S" 405=45" GET-EQUATION 
     INIT-TABLE
-    0 TARGET-SUM @ L-PARTITION-PLUS 2 ?S
+    0 TARGET-SUM @ L-PARTITION-PLUS 3 ?S
     FREE-TABLE
 }t
 

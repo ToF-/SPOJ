@@ -57,14 +57,11 @@ VARIABLE ACCUM
 : ACTION-END ( -- action )
     0 0 ACT-END 0 PACK ;
 
-: ACTION ( action -- index,target,act-code )
+: ACTION-PARAMS ( action -- index,target,act-code )
     UNPACK DROP ;
 
-: ACTION-END? ( action -- f )
-    ACTION NIP NIP ACT-END = ;
-
 : .ACTION ( action -- )
-    ACTION DUP ACT-END = IF DROP ." END " DROP DROP 
+    ACTION-PARAMS DUP ACT-END = IF DROP ." END " DROP DROP 
     ELSE   DUP ACT-CMP = IF DROP ." COMPARE{ " SWAP . ." , " . ." }" 
     ELSE                    DROP ." RECURSE{ " SWAP . ." , " . ." }"
     THEN THEN CR ;
@@ -85,7 +82,7 @@ VARIABLE ACCUM
     -ROT OVER              \ target',index,target,index
     SWAP ACTION-COMPARE    \ target',index,actC
     -ROT 1+ SWAP           \ actC,index+1,target'
-    ACTION-RECURSE ;       \ actC,actR
+    ACTION-RECURSE ;
 
     
 : ACCUMULATE-ACTIONS ( index,target -- actions.. )
@@ -101,7 +98,7 @@ VARIABLE ACCUM
             SCHEDULE-ACTIONS      \ index,target,actC,actR
             2SWAP                 \ actC,actR,index,target
         THEN
-    LOOP DROP DROP ;
+    LOOP DROP DROP ; 
 
 : RECURSING-ACTION ( index,target -- )
     OVER MYSTERY-SIZE @ = IF
@@ -120,14 +117,15 @@ VARIABLE ACCUM
     ACTION-END -ROT
     ACTION-RECURSE 
     BEGIN
-        DUP ACTION-END? 0= WHILE
-        ACTION                     \ index,target,act-code 
-        ACT-CMP = IF               \ index,target
+        ACTION-PARAMS
+        DUP ACT-END <> WHILE
+        ACT-CMP = IF           \ index,target
             COMPARING-ACTION
         ELSE                       \ index,target
             RECURSING-ACTION 
         THEN
     REPEAT 
+    DROP DROP DROP
     VPLUS @ ;
     
 
@@ -212,7 +210,7 @@ VARIABLE ACCUM
 : PLUSSES ( addr,l -- v )
     INIT-TABLE
     GET-EQUATION 
-    0 TARGET-SUM @ R-PARTITION-PLUS 1-
+    0 TARGET-SUM @ L-PARTITION-PLUS 1-
     FREE-TABLE ;
 
 : MAIN 42 . CR ;
