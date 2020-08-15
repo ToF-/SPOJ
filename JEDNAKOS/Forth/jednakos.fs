@@ -42,6 +42,20 @@ VARIABLE P-TABLE-ADDR
     SWAP 16 RSHIFT DUP 65535 AND
     SWAP 16 RSHIFT ;
 
+: ACTION-COMPARE ( index,target -- action )
+    0 0 PACK ;
+
+: ACTION-RECURSE ( index,target -- action )
+    1 0 PACK ;
+
+: ACTION ( action -- index,target,f )
+    UNPACK DROP ;
+
+: L-PARTITION-PLUS ( index,target -- value )
+    -1 -ROT
+;
+    
+
 : R-PARTITION-PLUS ( index,target -- value )
     DEBUG @ IF .S CR THEN
     DUP 0< IF                              \ index,target

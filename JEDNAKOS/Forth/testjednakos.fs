@@ -36,52 +36,65 @@ t{ ." p-table! and p-table@ store and retrieve 2 byte words values " cr
 }t
 
 
+t{ ." action-compare returns a compare action for the given index and target " CR
+    42 17 ACTION-COMPARE hex 000000000011002A ?s decimal
+}t
+
+t{ ." action-recurse returns a recurse action for the given index and target " CR
+    42 17 ACTION-RECURSE hex 000000010011002A ?s decimal
+}t
+
+t{ ." action unpacks the given action into an index a target and a flag " CR
+    42 17 ACTION-COMPARE ACTION 0 ?S 17 ?S 42 ?S
+    42 17 ACTION-RECURSE ACTION 1 ?S 17 ?S 42 ?S
+}t
+
 t{ ." r-partition-plus returns FAIL if target sum is < 0 " cr
-    42 -23 R-r-partition-plus FAIL ?s
+    42 -23 R-PARTITION-PLUS FAIL ?s
 }t
 
 t{ ." r-partition-plus returns FAIL if target <> 0 and index is past last digit of mystery sum " cr
     s" 1234=28" GET-EQUATION MYSTERY-SIZE @ 4 ?s 
-    4 32 R-r-partition-plus FAIL ?s
+    4 32 R-PARTITION-PLUS FAIL ?s
 }t
 
 t{ ." r-partition-plus returns 0 if target = 0 and index is past last digit of mystery sum " cr
     S" 1234=28" GET-EQUATION 
-    4 0 R-r-partition-plus 0 ?s
+    4 0 R-PARTITION-PLUS 0 ?s
 }t
 
 t{ ." r-partition-plus return the table content at index,target if it not null " cr
     50 TARGET-SUM ! 5 MYSTERY-SIZE !
     INIT-TABLE
     23 2 18 P-TABLE! 
-    2 18 R-r-partition-plus 23 ?S
+    2 18 R-PARTITION-PLUS 23 ?S
     FREE-TABLE
 }t
 
 t{ ." r-partition-plus calls itself while subtracting target sun " cr
     S" 5=5" GET-EQUATION
     INIT-TABLE
-    0 5 R-r-partition-plus 1 ?S
+    0 5 R-PARTITION-PLUS 1 ?S
     FREE-TABLE
 
     S" 50=5" GET-EQUATION
     INIT-TABLE
-    0 5 R-r-partition-plus 2 ?S
+    0 5 R-PARTITION-PLUS 2 ?S
     FREE-TABLE
 
     S" 05=5" GET-EQUATION
     INIT-TABLE
-    0 5 R-r-partition-plus 1 ?S
+    0 5 R-PARTITION-PLUS 1 ?S
     FREE-TABLE
  
     S" 405=9" GET-EQUATION 
     INIT-TABLE
-    0 TARGET-SUM @ R-r-partition-plus 2 ?S
+    0 TARGET-SUM @ R-PARTITION-PLUS 2 ?S
     FREE-TABLE
 
     S" 405=45" GET-EQUATION 
     INIT-TABLE
-    0 TARGET-SUM @ R-r-partition-plus 2 ?S
+    0 TARGET-SUM @ R-PARTITION-PLUS 2 ?S
     FREE-TABLE
 }t
 t{ ." plusses finds the number of additions in a jednakos equation " CR
