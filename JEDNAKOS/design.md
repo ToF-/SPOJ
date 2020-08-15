@@ -26,6 +26,33 @@
         T[I][R] = M
         return M
 
+    P(A,T,I,R)
+        C{I,R} ->> S
+        V = X
+        while(S)
+            A <<- S
+            if A = C{I,R}
+                T[I][R] = min(T[I][R], 1+V)
+                V = T[I][R]
+                continue
+            else if A = R{I,R}
+                if I == L && R != 0
+                    V = X
+                    continue
+                if I == L && R == 0
+                    V = 0
+                    continue
+                if T[I][R] >0
+                    V = T[I][R]
+                    continue
+                T[I][R] = X
+                A = 0
+                for(J=I; J<L && R-A >= 0; J++)
+                    C{I,R} ->> S
+                    R{J+1,R-A} ->> S
+                continue
+        return(T[I][R])
+
 
         
 
