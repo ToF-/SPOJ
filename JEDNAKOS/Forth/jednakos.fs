@@ -45,8 +45,8 @@ VARIABLE P-TABLE-ADDR
 1 CONSTANT ACT-END
 2 CONSTANT ACT-CMP 
 4 CONSTANT ACT-REC
-VARIABLE V
-VARIABLE A
+VARIABLE VPLUS
+VARIABLE ACCUM
 
 : ACTION-COMPARE ( index,target -- action )
     ACT-CMP 0 PACK ;
@@ -64,70 +64,71 @@ VARIABLE A
     ACTION NIP NIP ACT-END = ;
 
 : .ACTION ( action -- )
-    ACTION DUP ACTION-END? IF ." END " 
-    ELSE DUP ACT-CMP = IF ." COMPARE{ " SWAP . ." , " . ." }" 
-    ELSE DROP ." RECURSE{ " SWAP . ." , " . ." }"
+    ACTION DUP ACT-END = IF DROP ." END " DROP DROP 
+    ELSE   DUP ACT-CMP = IF DROP ." COMPARE{ " SWAP . ." , " . ." }" 
+    ELSE                    DROP ." RECURSE{ " SWAP . ." , " . ." }"
     THEN THEN CR ;
 
-: ACCUM-DIGIT ( accum,i -- accum' )
+: ACCUM-DIGIT ( i -- )
     MYSTERY-SUM + C@
-    SWAP 10 * + ;
+    ACCUM @ 10 * + ACCUM ! ;
+
+: COMPARING-ACTION ( index,target -- )
+    OVER OVER P-TABLE@
+    VPLUS @ 1+ MIN DUP VPLUS !
+    -ROT P-TABLE! ;
+    
+: FAIL! ( index,target -- )
+    OVER OVER FAIL -ROT P-TABLE! ;
+
+: SCHEDULE-ACTIONS ( index,target,target' -- actC,actR )
+    -ROT OVER              \ target',index,target,index
+    SWAP ACTION-COMPARE    \ target',index,actC
+    -ROT 1+ SWAP           \ actC,index+1,target'
+    ACTION-RECURSE ;       \ actC,actR
+
+    
+: ACCUMULATE-ACTIONS ( index,target -- actions.. )
+    FAIL!
+    0 ACCUM !
+    OVER MYSTERY-SIZE @ SWAP DO   \ index,target
+        I ACCUM-DIGIT             \ index,target 
+        DUP ACCUM @ -             \ index,target,target-accum
+        DUP 0< IF                 \ index,target,target-accum
+            DROP LEAVE         
+        ELSE                      \ index,target,target'
+            >R OVER OVER R>       \ index,target,index,target,target'
+            SCHEDULE-ACTIONS      \ index,target,actC,actR
+            2SWAP                 \ actC,actR,index,target
+        THEN
+    LOOP DROP DROP ;
+
+: RECURSING-ACTION ( index,target -- )
+    OVER MYSTERY-SIZE @ = IF
+        NIP 0= IF 0 VPLUS ! ELSE FAIL VPLUS ! THEN
+    ELSE
+        OVER OVER P-TABLE@ 
+        ?DUP IF 
+            VPLUS ! DROP DROP
+        ELSE 
+            ACCUMULATE-ACTIONS
+        THEN
+    THEN ;
 
 : L-PARTITION-PLUS ( index,target -- value )
-    FAIL V !
+    FAIL VPLUS !
     ACTION-END -ROT
     ACTION-RECURSE 
     BEGIN
-        DUP .ACTION
         DUP ACTION-END? 0= WHILE
         ACTION                     \ index,target,act-code 
         ACT-CMP = IF               \ index,target
-            OVER OVER P-TABLE@     \ index,target,T[index][target]
-            V @ 1+ MIN             \ index,target,minval
-            DUP V !                \ index,target,minval
-            -ROT P-TABLE!          \ stored in V and T
-        ELSE                       \ index,target 
-            OVER MYSTERY-SIZE @ = IF \ index,target
-                NIP 0= IF 
-                    0 V ! 
-                ELSE 
-                    FAIL V ! 
-                THEN                 \ index,target
-            ELSE
-                OVER OVER P-TABLE@       \ index,target,T[index][target]
-                ?DUP IF                  \ index,target
-                    V ! DROP DROP        
-                ELSE                     \ index,target
-                    OVER OVER            \ index,target,index,target
-                    FAIL -ROT P-TABLE!   \ index,target
-                    0                    \ index,target,accum
-                    ROT DUP              \ target,accum,index,index
-                    MYSTERY-SIZE @ SWAP  \ target,accum,index,limit,index
-                    >R >R -ROT R> R>     \ index,target,accum,limit,index               
-                    DO                   \ index,target,accum
-                        I ACCUM-DIGIT    \ index,target,accum'
-                        OVER OVER -            \ index,target,accum,target-accum
-                        DUP 0< IF              \ index,target,accum,target-accum
-                            DROP LEAVE         \ index,target,accum
-                        ELSE                   \ index,target,accum,target'
-                            >R >R              \ index,target
-                            OVER OVER          \ index,target,index,target
-                            ACTION-COMPARE     \ index,target,actC
-                            -ROT               \ actC,index,target
-                            R> -ROT            \ actC,accum,index,target
-                            OVER 1+ R>         \ actC,accum,index,target,index+1,target'
-                            ACTION-RECURSE     \ actC,accum,index,target,actR
-                            -ROT >R >R SWAP    \ actC,actR,accum
-                            R> R> ROT          \ actC,actR,index,target,accum
-                        THEN
-                    LOOP                       \ actC,actR,index,target,accum                 
-                    DROP DROP DROP             \ actC,actR
-                THEN   
-            THEN
-        THEN 
-    REPEAT
-    DROP 
-    V @ ;
+            COMPARING-ACTION
+        ELSE                       \ index,target
+            RECURSING-ACTION 
+        THEN
+    REPEAT 
+    VPLUS @ ;
     
 
 : R-PARTITION-PLUS ( index,target -- value )

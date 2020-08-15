@@ -55,20 +55,25 @@ t{ ." action unpacks the given action into an index a target and a flag " CR
 
 t{ ." l-partition-plus returns 0 if target = 0 and index is past last digit of mystery sum " cr
     S" 1234=28" GET-EQUATION 
+    INIT-TABLE
     4 0 L-PARTITION-PLUS 0 ?s
+    FREE-TABLE
 }t
 
 t{ ." l-partition-plus returns FAIL if target <> 0 and index is past last digit of mystery sum " cr
     s" 1234=28" GET-EQUATION 
+    INIT-TABLE
     4 32 L-PARTITION-PLUS FAIL ?s
+    FREE-TABLE
 }t
 
-t{ ." l-partition-plus loops while subtracting target sun " cr
+
+t{ ." l-partition-plus loops while subtracting target sum " cr
     S" 5=5" GET-EQUATION
     INIT-TABLE
-    0 5 L-PARTITION-PLUS 1 ?S
+    0 5 dbg L-PARTITION-PLUS 1 ?S
     FREE-TABLE
-
+    bye
     S" 50=5" GET-EQUATION
     INIT-TABLE
     0 5 L-PARTITION-PLUS 2 ?S
