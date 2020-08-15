@@ -1,6 +1,6 @@
 require ffl/tst.fs
 require jednakos.fs
-
+page
 t{ ." get-equation finds the mystery sum and the target sum" cr
     s" 0=0" GET-EQUATION TARGET-SUM   @ 0 ?s MYSTERY-SUM c@ 0 ?s MYSTERY-SIZE @ 1 ?s
 
@@ -69,30 +69,6 @@ t{ ." l-partition-plus returns FAIL if target <> 0 and index is past last digit 
 
 
 t{ ." l-partition-plus loops while subtracting target sum " cr
-    S" 5=5" GET-EQUATION
-    INIT-TABLE
-    0 5 L-PARTITION-PLUS 1 ?S
-    FREE-TABLE
-
-    S" 50=5" GET-EQUATION
-    INIT-TABLE
-    0 5 L-PARTITION-PLUS 2 ?S
-    FREE-TABLE
-
-    S" 05=5" GET-EQUATION
-    INIT-TABLE
-    0 5 L-PARTITION-PLUS 2 ?S
-    FREE-TABLE
- 
-    S" 405=9" GET-EQUATION 
-    INIT-TABLE
-    0 TARGET-SUM @ L-PARTITION-PLUS 3 ?S
-    FREE-TABLE
-
-    S" 405=45" GET-EQUATION 
-    INIT-TABLE
-    0 TARGET-SUM @ L-PARTITION-PLUS 3 ?S
-    FREE-TABLE
 }t
 
 t{ ." r-partition-plus returns FAIL if target sum is < 0 " cr
@@ -117,32 +93,29 @@ t{ ." r-partition-plus return the table content at index,target if it not null "
     FREE-TABLE
 }t
 
-t{ ." r-partition-plus calls itself while subtracting target sun " cr
-    S" 5=5" GET-EQUATION
-    INIT-TABLE
-    0 5 R-PARTITION-PLUS 1 ?S
-    FREE-TABLE
+: TEST-R-PARTITION-PLUS ( addr,l -- result )
+    GET-EQUATION INIT-TABLE 0 TARGET-SUM @ R-PARTITION-PLUS FREE-TABLE ;
+    
+: TEST-L-PARTITION-PLUS ( addr,l -- result )
+    ." testing " 2dup type cr
+    GET-EQUATION INIT-TABLE 0 TARGET-SUM @ L-PARTITION-PLUS FREE-TABLE ;
 
-    S" 50=5" GET-EQUATION
-    INIT-TABLE
-    0 5 R-PARTITION-PLUS 2 ?S
-    FREE-TABLE
-
-    S" 05=5" GET-EQUATION
-    INIT-TABLE
-    0 5 R-PARTITION-PLUS 1 ?S
-    FREE-TABLE
- 
-    S" 405=9" GET-EQUATION 
-    INIT-TABLE
-    0 TARGET-SUM @ R-PARTITION-PLUS 2 ?S
-    FREE-TABLE
-
-    S" 405=45" GET-EQUATION 
-    INIT-TABLE
-    0 TARGET-SUM @ R-PARTITION-PLUS 2 ?S
-    FREE-TABLE
+t{ ." r-partition-plus calls itself recursively while subtracting target sun " cr
+    S" 5=5"    TEST-R-PARTITION-PLUS 1 ?S
+    S" 50=5"   TEST-R-PARTITION-PLUS 2 ?S
+    S" 05=5"   TEST-R-PARTITION-PLUS 1 ?S
+    S" 405=9"  TEST-R-PARTITION-PLUS 2 ?S
+    S" 405=45" TEST-R-PARTITION-PLUS 2 ?S
 }t
+
+t{ ." l-partition-plus loops over the stack  while subtracting target sun " cr
+    S" 5=5"    TEST-L-PARTITION-PLUS 1 ?S
+    S" 50=5"   TEST-L-PARTITION-PLUS 2 ?S
+    S" 05=5"   TEST-L-PARTITION-PLUS 1 ?S 
+    S" 405=9"  TEST-L-PARTITION-PLUS 2 ?S
+    S" 405=45" TEST-L-PARTITION-PLUS 2 ?S
+}t
+
 t{ ." plusses finds the number of additions in a jednakos equation " CR
     S" 4=4"        PLUSSES 0 ?S
     S" 51=6"       PLUSSES 1 ?S

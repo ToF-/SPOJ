@@ -62,10 +62,15 @@ VARIABLE ACCUM
 
 : .ACTION ( action -- )
     ACTION-PARAMS DUP ACT-END = IF DROP ." END " DROP DROP 
-    ELSE   DUP ACT-CMP = IF DROP ." COMPARE{ " SWAP . ." , " . ." }" 
-    ELSE                    DROP ." RECURSE{ " SWAP . ." , " . ." }"
-    THEN THEN CR ;
+    ELSE   DUP ACT-CMP = IF DROP ." C{ " SWAP . ." , " . ." }" 
+    ELSE                    DROP ." R{ " SWAP . ." , " . ." }"
+    THEN THEN BL EMIT ;
 
+: .ACTION-STACK
+    DEPTH DUP 0 DO 
+        DUP I - PICK .ACTION
+    LOOP DROP ;
+        
 : ACCUM-DIGIT ( i -- )
     MYSTERY-SUM + C@
     ACCUM @ 10 * + ACCUM ! ;
@@ -75,18 +80,14 @@ VARIABLE ACCUM
     VPLUS @ 1+ MIN DUP VPLUS !
     -ROT P-TABLE! ;
     
-: FAIL! ( index,target -- )
-    OVER OVER FAIL -ROT P-TABLE! ;
-
-: SCHEDULE-ACTIONS ( index,target,target' -- actC,actR )
-    -ROT OVER              \ target',index,target,index
-    SWAP ACTION-COMPARE    \ target',index,actC
-    -ROT 1+ SWAP           \ actC,index+1,target'
-    ACTION-RECURSE ;
+: SCHEDULE-ACTIONS ( index,target,j,target' -- actC,actR )
+    ACTION-RECURSE -ROT    \ actR,index,target
+    ACTION-COMPARE SWAP ;  \ actC,actR
 
     
 : ACCUMULATE-ACTIONS ( index,target -- actions.. )
-    FAIL!
+    OVER OVER
+    FAIL -ROT P-TABLE!
     0 ACCUM !
     OVER MYSTERY-SIZE @ SWAP DO   \ index,target
         I ACCUM-DIGIT             \ index,target 
@@ -95,10 +96,11 @@ VARIABLE ACCUM
             DROP LEAVE         
         ELSE                      \ index,target,target'
             >R OVER OVER R>       \ index,target,index,target,target'
+            I 1+ SWAP             \ index,target,index,target,j,target'
             SCHEDULE-ACTIONS      \ index,target,actC,actR
             2SWAP                 \ actC,actR,index,target
         THEN
-    LOOP DROP DROP ; 
+    LOOP DROP DROP ;
 
 : RECURSING-ACTION ( index,target -- )
     OVER MYSTERY-SIZE @ = IF
@@ -106,6 +108,7 @@ VARIABLE ACCUM
     ELSE
         OVER OVER P-TABLE@ 
         ?DUP IF 
+            ." vplus <- " dup . cr
             VPLUS ! DROP DROP
         ELSE 
             ACCUMULATE-ACTIONS
@@ -210,7 +213,7 @@ VARIABLE ACCUM
 : PLUSSES ( addr,l -- v )
     INIT-TABLE
     GET-EQUATION 
-    0 TARGET-SUM @ L-PARTITION-PLUS 1-
+    0 TARGET-SUM @ R-PARTITION-PLUS 1-
     FREE-TABLE ;
 
 : MAIN 42 . CR ;
