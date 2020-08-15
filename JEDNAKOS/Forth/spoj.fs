@@ -42,9 +42,93 @@ VARIABLE P-TABLE-ADDR
     SWAP 16 RSHIFT DUP 65535 AND
     SWAP 16 RSHIFT ;
 
+1 CONSTANT ACT-END
+2 CONSTANT ACT-CMP 
+4 CONSTANT ACT-REC
+VARIABLE VPLUS
+VARIABLE ACCUM
+
+: ACTION-COMPARE ( index,target -- action )
+    ACT-CMP 0 PACK ;
+
+: ACTION-RECURSE ( index,target -- action )
+    ACT-REC 0 PACK ;
+
+: ACTION-END ( -- action )
+    0 0 ACT-END 0 PACK ;
+
+: ACTION-PARAMS ( action -- index,target,act-code )
+    UNPACK DROP ;
+
+: .ACTION ( action -- )
+    ACTION-PARAMS DUP ACT-END = IF DROP ." END " DROP DROP 
+    ELSE   DUP ACT-CMP = IF DROP ." C{ " SWAP . ." , " . ." }" 
+    ELSE                    DROP ." R{ " SWAP . ." , " . ." }"
+    THEN THEN BL EMIT ;
+
+: .ACTION-STACK
+    DEPTH DUP 0 DO 
+        DUP I - PICK .ACTION
+    LOOP DROP ;
+        
+: ACCUM-DIGIT ( i -- )
+    MYSTERY-SUM + C@
+    ACCUM @ 10 * + ACCUM ! ;
+
+: COMPARING-ACTION ( index,target -- )
+    OVER OVER P-TABLE@
+    VPLUS @ 1+ MIN DUP VPLUS !
+    -ROT P-TABLE! ;
+    
+: SCHEDULE-ACTIONS ( index,target,j,target' -- actC,actR )
+    ACTION-RECURSE -ROT    \ actR,index,target
+    ACTION-COMPARE SWAP ;  \ actC,actR
+
+    
+: ACCUMULATE-ACTIONS ( index,target -- actions.. )
+    OVER OVER
+    FAIL -ROT P-TABLE!
+    0 ACCUM !
+    OVER MYSTERY-SIZE @ SWAP DO   \ index,target
+        I ACCUM-DIGIT             \ index,target 
+        DUP ACCUM @ -             \ index,target,target-accum
+        DUP 0< IF                 \ index,target,target-accum
+            DROP LEAVE         
+        ELSE                      \ index,target,target'
+            >R OVER OVER R>       \ index,target,index,target,target'
+            I 1+ SWAP             \ index,target,index,target,j,target'
+            SCHEDULE-ACTIONS      \ index,target,actC,actR
+            2SWAP                 \ actC,actR,index,target
+        THEN
+    LOOP DROP DROP ;
+
+: RECURSING-ACTION ( index,target -- )
+    OVER MYSTERY-SIZE @ = IF
+        NIP 0= IF 0 VPLUS ! ELSE FAIL VPLUS ! THEN
+    ELSE
+        OVER OVER P-TABLE@ 
+        ?DUP IF 
+            VPLUS ! DROP DROP
+        ELSE 
+            ACCUMULATE-ACTIONS
+        THEN
+    THEN ;
+
 : L-PARTITION-PLUS ( index,target -- value )
-    -1 -ROT
-;
+    FAIL VPLUS !
+    ACTION-END -ROT
+    ACTION-RECURSE 
+    BEGIN
+        ACTION-PARAMS
+        DUP ACT-END <> WHILE
+        ACT-CMP = IF           \ index,target
+            COMPARING-ACTION
+        ELSE                       \ index,target
+            RECURSING-ACTION 
+        THEN
+    REPEAT 
+    DROP DROP DROP
+    VPLUS @ ;
     
 
 : R-PARTITION-PLUS ( index,target -- value )
@@ -128,8 +212,11 @@ VARIABLE P-TABLE-ADDR
 : PLUSSES ( addr,l -- v )
     INIT-TABLE
     GET-EQUATION 
-    0 TARGET-SUM @ R-PARTITION-PLUS 1-
+    0 TARGET-SUM @ L-PARTITION-PLUS 1-
     FREE-TABLE ;
 
-: MAIN 42 . CR ;
+: MAIN 
+    PAD 2000 STDIN READ-LINE THROW
+    IF PAD SWAP PLUSSES . CR THEN ;
+
 MAIN BYE
