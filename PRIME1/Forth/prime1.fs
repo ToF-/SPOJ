@@ -26,7 +26,7 @@ CREATE PRIMES
 
 CREATE BIT-TABLE DELTA 8 / ALLOT
 
-: INIT-BIT-TABLE
+: ERASE-BIT-TABLE
     BIT-TABLE DELTA 8 / ERASE ;
 
 : SET-BIT ( index -- )
@@ -48,9 +48,99 @@ CREATE BIT-TABLE DELTA 8 / ALLOT
 : PRIME# ( index -- v )
     CELLS PRIMES + @ ;
 
-: SIEVE-PRIME ( limit,start,prime -- )
+: CLEAR-BIT ( index -- )
+    8 /MOD BIT-TABLE +        \ rem,addr
+    DUP ROT                   \ addr,addr,rem
+    1 SWAP LSHIFT             \ addr,addr,mask
+    255 XOR                   \ addr,addr,mask
+    SWAP C@ AND               \ addr,byte
+    SWAP C! ;
+
+: SET-FIRST-PRIMES-TABLE 
+    BIT-TABLE DELTA 8 / 255 FILL
+    0 BEGIN
+        DUP PRIME# 
+        DUP DELTA < WHILE \ index,prime
+        CLEAR-BIT
+        1+
+    REPEAT DROP DROP ;
+
+: SIEVE-PRIME-LOOP ( limit,start,prime -- )
     OVER OVER 1ST-MULTIPLE-OFFSET     \ limit,start,prime,offset
     >R -ROT - R>                      \ prime,limit-start,offset
      DO                               \ prime
         I SET-BIT DUP
     +LOOP DROP ;
+
+: SIEVE-PRIME ( limit,start,prime -- )
+    >R OVER OVER R@ -ROT R> 
+    + > IF SIEVE-PRIME-LOOP 
+     ELSE DROP DROP DROP THEN ;
+    
+
+: SIEVE-PRIMES ( limit,start -- )
+    2>R 0 BEGIN            \ index
+        DUP PRIME#         \ index,prime 
+        DUP DELTA < WHILE
+            2R@ ROT SIEVE-PRIME
+        1+
+    REPEAT 
+    2R> DROP DROP DROP DROP ;
+
+: .FIRST-PRIMES ( limit,start -- )
+    SET-FIRST-PRIMES-TABLE
+    SWAP DELTA MIN SWAP 
+    DO I BIT-SET? 0= IF I . CR THEN LOOP ;
+    
+: .CALC-PRIMES ( limit,start,index )
+    DELTA *
+    DUP ROT MAX        \ limit,delta,start
+    SWAP ROT MAX       \ start,limit
+    SWAP
+    OVER OVER > IF
+        ERASE-BIT-TABLE
+        OVER OVER SIEVE-PRIMES
+        DUP -ROT - 0 DO 
+            I BIT-SET? 0= IF DUP I + . CR THEN 
+        LOOP DROP 
+    ELSE DROP DROP
+    THEN ;
+
+: BETWEEN? ( limit,start,value -- flag )
+    >R
+    R@ < SWAP R> > AND ;
+
+: .PRIMES ( limit,start )
+    DUP DELTA 0 ROT BETWEEN? IF
+        OVER OVER .FIRST-PRIMES
+    THEN
+    OVER OVER 1 .CALC-PRIMES 
+    2 .CALC-PRIMES 
+
+    ;
+
+: TO-DIGIT ( char -- n )
+    [CHAR] 0 - ;
+
+: IS-DIGIT? ( char -- flag )
+    TO-DIGIT DUP 0 >= SWAP 9 <= AND ;     
+
+: SKIP-NON-DIGIT ( -- char )
+    BEGIN KEY DUP IS-DIGIT? 0= WHILE DROP REPEAT ;
+
+: GET-NUMBER ( -- n )
+    SKIP-NON-DIGIT  
+    0 SWAP          \ accumulator
+    BEGIN
+        TO-DIGIT SWAP 10 * + 
+        KEY DUP IS-DIGIT? 
+    0= UNTIL DROP ;
+
+: MAIN
+    GET-NUMBER 0 DO
+        GET-NUMBER GET-NUMBER
+        SWAP .PRIMES CR
+    LOOP ;
+
+    
+

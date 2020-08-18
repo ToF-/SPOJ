@@ -1,8 +1,8 @@
 
-test : prime1.fs
+test : prime1.fs spoj
 	sed -n -e 's/\(<- \)\(.*\)/\2/pw input.dat'     test.txt >/dev/null
 	sed -n -e 's/\(-> \)\(.*\)/\2/pw expected.dat' test.txt >/dev/null
-	gforth prime1.fs <input.dat >result.dat
+	gforth spoj.fs <input.dat >result.dat
 	diff expected.dat result.dat
 
 unit: prime1.fs testprime1.fs

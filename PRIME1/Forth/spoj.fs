@@ -1,22 +1,13 @@
 
 
 100000 CONSTANT MAX-PRIME
+1000 CONSTANT DELTA
 MAX-PRIME 2/ CONSTANT MAX-NUMBER
 MAX-NUMBER 8 / CONSTANT MAX-BTABLE
 
 CREATE BTABLE MAX-BTABLE ALLOT 
 BTABLE MAX-BTABLE ERASE
 
-: SET ( index-- )
-    8 /MOD BTABLE + >R 
-    1 SWAP LSHIFT
-    R@ C@ OR R> C! ; 
-
-: SET? ( index -- flag )
-    8 /MOD BTABLE + C@ 
-    SWAP 1 SWAP LSHIFT AND ;
-
-168 CONSTANT MAX-PRIMES
 CREATE PRIMES 
   2 ,   3 ,   5 ,   7 ,  11 ,  13 ,  17 ,  19 ,  23 ,  29 ,  31 ,  37 , 
  41 ,  43 ,  47 ,  53 ,  59 ,  61 ,  67 ,  71 ,  73 ,  79 ,  83 ,  89 ,  
@@ -33,64 +24,82 @@ CREATE PRIMES
 829 , 839 , 853 , 857 , 859 , 863 , 877 , 881 , 883 , 887 , 907 , 911 , 
 919 , 929 , 937 , 941 , 947 , 953 , 967 , 971 , 977 , 983 , 991 , 997 ,
 
+CREATE BIT-TABLE DELTA 8 / ALLOT
+
+: INIT-BIT-TABLE
+    BIT-TABLE DELTA 8 / ERASE ;
+
+: SET-BIT ( index -- )
+    8 /MOD BIT-TABLE +        \ rem,addr
+    DUP ROT                   \ addr,addr,rem
+    1 SWAP LSHIFT             \ addr,addr,mask
+    SWAP C@ OR                \ addr,byte
+    SWAP C! ;
+
+: BIT-SET? ( index -- flag )
+    8 /MOD BIT-TABLE +        \ rem,addr
+    C@ SWAP                   \ byte,rem
+    1 SWAP LSHIFT             \ byte,mask
+    AND ;
+
+: 1ST-MULTIPLE-OFFSET ( n,p -- offset )
+    SWAP NEGATE SWAP MOD ;
+
 : PRIME# ( index -- v )
     CELLS PRIMES + @ ;
 
-: Q ( left,index -- offset )
-    PRIME# DUP -ROT 
-    1+ + 2 / NEGATE SWAP MOD ;
+: SIEVE-PRIME-LOOP ( limit,start,prime -- )
+    OVER OVER 1ST-MULTIPLE-OFFSET     \ limit,start,prime,offset
+    >R -ROT - R>                      \ prime,limit-start,offset
+     DO                               \ prime
+        I SET-BIT DUP
+    +LOOP DROP ;
 
-: NEXT-Q ( left,index -- offset )
-    DUP PRIME# -ROT Q 10 - SWAP MOD ; 
+: SIEVE-PRIME ( limit,start,prime -- )
+    >R OVER OVER R@ -ROT R> 
+    + > IF SIEVE-PRIME-LOOP 
+     ELSE DROP DROP DROP THEN ;
+    
 
-: LIMIT ( right,left -- limit )
-    - 2/ ;
+: SIEVE-PRIMES ( limit,start -- )
+    2>R 0 BEGIN            \ index
+        DUP PRIME#         \ index,prime 
+        DUP DELTA < WHILE
+            2R@ ROT SIEVE-PRIME
+        1+
+    REPEAT 
+    2R> DROP DROP DROP DROP ;
 
-: SIEVE ( right,left,index -- ) 
-    -ROT TUCK      \ index,left,right,left
-    LIMIT SWAP ROT \ limit,left,index
-    DUP PRIME#     \ limit,left,index,P
-    -ROT Q         \ limit,P,Q
-    ROT 0 DO       \ P,Q
-        DUP SET    \ P,Q
-        OVER +     \ P,Q+P
-        DUP 2R@    \ P,Q+P,Q+P,limit,I
-        DROP       \ P,Q+P,Q+P,limit
-        > IF LEAVE THEN
-    LOOP DROP DROP ;
+: .PRIMES ( limit,start -- )
+    INIT-BIT-TABLE
+    OVER OVER SIEVE-PRIMES
+    DUP -ROT - 0 DO 
+        I BIT-SET? 0= IF DUP I + . CR THEN 
+    LOOP DROP ;
 
-: .BITS-NOT-SET ( limit -- )
-    0 DO I SET? 0= IF I . THEN LOOP ;
+: TO-DIGIT ( char -- n )
+    [CHAR] 0 - ;
 
-: .PRIMES ( right,left -- )
-    1+
-    0 -ROT
-    BEGIN              \ index,right,left
-        ROT            \ right,left,index
-        DUP SET? 0= IF \ right,left,index
-            DUP 2* ROT + \ right,index,left+index*2
-            DUP .
-            SWAP         \ right,left',index
-        THEN
-        1+ -ROT
-    OVER OVER <= UNTIL
-    DROP ;
+: IS-DIGIT? ( char -- flag )
+    TO-DIGIT DUP 0 >= SWAP 9 <= AND ;     
 
-: .NOTPRIMES ( right,left -- )
-    1+
-    0 -ROT
-    BEGIN              \ index,right,left
-        ROT            \ right,left,index
-        DUP SET? IF    \ right,left,index
-            DUP 2* ROT + \ right,index,left+index*2
-            DUP .
-            SWAP         \ right,left',index
-        THEN
-        1+ -ROT
-    OVER OVER <= UNTIL
-    DROP ;
+: SKIP-NON-DIGIT ( -- char )
+    BEGIN KEY DUP IS-DIGIT? 0= WHILE DROP REPEAT ;
 
+: GET-NUMBER ( -- n )
+    SKIP-NON-DIGIT  
+    0 SWAP          \ accumulator
+    BEGIN
+        TO-DIGIT SWAP 10 * + 
+        KEY DUP IS-DIGIT? 
+    0= UNTIL DROP ;
 
 : MAIN
-    42 . CR ;
+    GET-NUMBER 0 DO
+        GET-NUMBER GET-NUMBER
+        SWAP .PRIMES CR
+    LOOP ;
+
+    
+
 MAIN BYE
