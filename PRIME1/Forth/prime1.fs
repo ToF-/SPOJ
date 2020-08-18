@@ -1,3 +1,17 @@
+100000 CONSTANT MAX-PRIME
+MAX-PRIME 2/ CONSTANT MAX-NUMBER
+MAX-NUMBER 8 / CONSTANT MAX-BTABLE
+CREATE BTABLE MAX-BTABLE ALLOT 
+BTABLE MAX-BTABLE ERASE
+
+: SET ( index-- )
+    8 /MOD BTABLE + >R 
+    1 SWAP LSHIFT
+    R@ C@ OR R> C! ; 
+
+: SET? ( index -- flag )
+    8 /MOD BTABLE + C@ 
+    SWAP 1 SWAP LSHIFT AND ;
 
 168 CONSTANT MAX-PRIMES
 CREATE PRIMES 
@@ -26,17 +40,58 @@ CREATE PRIMES
 : NEXT-Q ( left,index -- offset )
     DUP PRIME# -ROT Q 10 - SWAP MOD ; 
 
-: .SIEVE ( right,left,index -- ) 
-    OVER OVER \ right,left,index,left,index
-    Q         \ right,left,index,offset
-    ROT +     \ right,index,left+offset
-    SWAP PRIME# \ right,left',prime
-    >R
-    BEGIN DUP . R@ + OVER OVER < UNTIL R> DROP ;
-    
+: LIMIT ( right,left -- limit )
+    - 2/ ;
+
+: SIEVE ( right,left,index -- ) 
+    -ROT TUCK      \ index,left,right,left
+    LIMIT SWAP ROT \ limit,left,index
+    DUP PRIME#     \ limit,left,index,P
+    -ROT Q         \ limit,P,Q
+    ROT 0 DO       \ P,Q
+        DUP SET    \ P,Q
+        OVER +     \ P,Q+P
+        DUP 2R@    \ P,Q+P,Q+P,limit,I
+        DROP       \ P,Q+P,Q+P,limit
+        > IF LEAVE THEN
+    LOOP DROP DROP ;
+
+: .BITS-NOT-SET ( limit -- )
+    0 DO I SET? 0= IF I . THEN LOOP ;
+
+: .PRIMES ( right,left -- )
+    1+
+    0 -ROT
+    BEGIN              \ index,right,left
+        ROT            \ right,left,index
+        DUP SET? 0= IF \ right,left,index
+            DUP 2* ROT + \ right,index,left+index*2
+            DUP .
+            SWAP         \ right,left',index
+        THEN
+        1+ -ROT
+    OVER OVER <= UNTIL
+    DROP ;
+
+: .NOTPRIMES ( right,left -- )
+    1+
+    0 -ROT
+    BEGIN              \ index,right,left
+        ROT            \ right,left,index
+        DUP SET? IF    \ right,left,index
+            DUP 2* ROT + \ right,index,left+index*2
+            DUP .
+            SWAP         \ right,left',index
+        THEN
+        1+ -ROT
+    OVER OVER <= UNTIL
+    DROP ;
+
+
 : MAIN
     42 . CR ;
 
-\ MAIN BYE
-
-
+PAGE
+BTABLE MAX-BTABLE ERASE
+: FOO 10 0 DO 200 100 I SIEVE 200 100 .NOTPRIMES CR LOOP ;
+FOO
