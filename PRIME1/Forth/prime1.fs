@@ -1,4 +1,7 @@
+VARIABLE DEBUG
+DEBUG OFF
 
+: CRSP DEBUG @ IF SPACE ELSE CR THEN ;
 
 100000 CONSTANT MAX-PRIME
 1000 CONSTANT DELTA
@@ -90,34 +93,39 @@ CREATE BIT-TABLE DELTA 8 / ALLOT
 : .FIRST-PRIMES ( limit,start -- )
     SET-FIRST-PRIMES-TABLE
     SWAP DELTA MIN SWAP 
-    DO I BIT-SET? 0= IF I . CR THEN LOOP ;
+    DO I BIT-SET? 0= IF I . CRSP THEN LOOP ;
     
-: .CALC-PRIMES ( limit,start,index )
-    DELTA *
-    DUP ROT MAX        \ limit,delta,start
-    SWAP ROT MAX       \ start,limit
-    SWAP
-    OVER OVER > IF
-        ERASE-BIT-TABLE
-        OVER OVER SIEVE-PRIMES
-        DUP -ROT - 0 DO 
-            I BIT-SET? 0= IF DUP I + . CR THEN 
-        LOOP DROP 
-    ELSE DROP DROP
-    THEN ;
+: .CALC-PRIMES ( limit,start )
+    ERASE-BIT-TABLE
+    OVER OVER SIEVE-PRIMES
+    DUP -ROT - 0 DO 
+        I BIT-SET? 0= IF DUP I + . CRSP THEN 
+    LOOP DROP ;
 
 : BETWEEN? ( limit,start,value -- flag )
     >R
     R@ < SWAP R> > AND ;
 
+VARIABLE LIMIT
+
 : .PRIMES ( limit,start )
     DUP DELTA 0 ROT BETWEEN? IF
         OVER OVER .FIRST-PRIMES
-    THEN
-    OVER OVER 1 .CALC-PRIMES 
-    2 .CALC-PRIMES 
-
-    ;
+    THEN               
+    DUP DELTA < IF DROP DROP EXIT THEN
+    DELTA MAX
+    OVER LIMIT !
+    DELTA / SWAP       \ start/D,limit
+    DELTA / 1+ SWAP    \ limit/D+1,start/D
+    DO 
+        I 1+ DELTA * LIMIT @ MIN 
+        I    DELTA * 
+        OVER OVER > IF
+                .CALC-PRIMES
+        ELSE
+            DROP DROP
+        THEN
+    LOOP ;
 
 : TO-DIGIT ( char -- n )
     [CHAR] 0 - ;

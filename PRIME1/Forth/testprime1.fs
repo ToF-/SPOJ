@@ -1,6 +1,7 @@
 require ffl/tst.fs
 require prime1.fs
 page
+debug on
 
 t{ ." PRIME# gives the nth prime if this prime is < 1000 " CR
     0    PRIME# 2 ?s
@@ -81,12 +82,14 @@ t{ ." SIEVE-PRIMES blocs offset of multiples of the nth primes from n to m " CR
     9 bit-set? ?false
 }t
 
-t{ ." .FIRST-PRIMES prints the primes starting at n under 1000 " CR
-    800 300 .FIRST-PRIMES
+t{ ." PRIMES output prime numbers from n to m " CR
+    29 17  .PRIMES CR
+    1010 990  .PRIMES CR
+    1842 1700  .PRIMES CR
+    18842 17800  .PRIMES CR
+    debug off
+    1000000000 1000000000 100 - .PRIMES CR
 }t
 
-t{ ." .PRIMES prints the primes from n to m " CR
-    1549 100 .PRIMES
-}t
     
 bye
