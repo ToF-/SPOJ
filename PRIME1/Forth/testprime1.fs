@@ -83,12 +83,8 @@ t{ ." SIEVE-PRIMES blocs offset of multiples of the nth primes from n to m " CR
 }t
 
 t{ ." PRIMES output prime numbers from n to m " CR
-    29 17  .PRIMES CR
-    1010 990  .PRIMES CR
-    1842 1700  .PRIMES CR
-    18842 17800  .PRIMES CR
+    1000000000 DUP 10 - dbg .PRIMES CR
     debug off
-    1000000000 1000000000 100 - .PRIMES CR
 }t
 
     

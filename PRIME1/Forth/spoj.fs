@@ -26,6 +26,7 @@ CREATE PRIMES
 751 , 757 , 761 , 769 , 773 , 787 , 797 , 809 , 811 , 821 , 823 , 827 , 
 829 , 839 , 853 , 857 , 859 , 863 , 877 , 881 , 883 , 887 , 907 , 911 , 
 919 , 929 , 937 , 941 , 947 , 953 , 967 , 971 , 977 , 983 , 991 , 997 ,
+1001 ,
 
 CREATE BIT-TABLE DELTA 8 / ALLOT
 
@@ -107,19 +108,21 @@ CREATE BIT-TABLE DELTA 8 / ALLOT
     R@ < SWAP R> > AND ;
 
 VARIABLE LIMIT
+VARIABLE START
 
 : .PRIMES ( limit,start )
+    SWAP 1+ SWAP
     DUP DELTA 0 ROT BETWEEN? IF
         OVER OVER .FIRST-PRIMES
     THEN               
     DUP DELTA < IF DROP DROP EXIT THEN
     DELTA MAX
-    OVER LIMIT !
+    OVER OVER START ! LIMIT !
     DELTA / SWAP       \ start/D,limit
     DELTA / 1+ SWAP    \ limit/D+1,start/D
     DO 
         I 1+ DELTA * LIMIT @ MIN 
-        I    DELTA * 
+        I    DELTA * START @ MAX
         OVER OVER > IF
                 .CALC-PRIMES
         ELSE
