@@ -3,6 +3,10 @@ DEBUG OFF
 
 : CRSP DEBUG @ IF SPACE ELSE CR THEN ;
 
+: BETWEEN? ( limit,start,value -- flag )
+    >R
+    R@ < SWAP R> > AND ;
+
 100000 CONSTANT MAX-PRIME
 1000 CONSTANT DELTA
 MAX-PRIME 2/ CONSTANT MAX-NUMBER
@@ -28,6 +32,11 @@ CREATE PRIMES
 919 , 929 , 937 , 941 , 947 , 953 , 967 , 971 , 977 , 983 , 991 , 997 ,
 1001 ,
 
+168 CONSTANT MAX-PRIMES
+
+VARIABLE LIMIT
+VARIABLE START
+
 CREATE BIT-TABLE DELTA 8 / ALLOT
 
 : ERASE-BIT-TABLE
@@ -52,23 +61,6 @@ CREATE BIT-TABLE DELTA 8 / ALLOT
 : PRIME# ( index -- v )
     CELLS PRIMES + @ ;
 
-: CLEAR-BIT ( index -- )
-    8 /MOD BIT-TABLE +        \ rem,addr
-    DUP ROT                   \ addr,addr,rem
-    1 SWAP LSHIFT             \ addr,addr,mask
-    255 XOR                   \ addr,addr,mask
-    SWAP C@ AND               \ addr,byte
-    SWAP C! ;
-
-: SET-FIRST-PRIMES-TABLE 
-    BIT-TABLE DELTA 8 / 255 FILL
-    0 BEGIN
-        DUP PRIME# 
-        DUP DELTA < WHILE \ index,prime
-        CLEAR-BIT
-        1+
-    REPEAT DROP DROP ;
-
 : SIEVE-PRIME-LOOP ( limit,start,prime -- )
     OVER OVER 1ST-MULTIPLE-OFFSET     \ limit,start,prime,offset
     >R -ROT - R>                      \ prime,limit-start,offset
@@ -92,42 +84,48 @@ CREATE BIT-TABLE DELTA 8 / ALLOT
     2R> DROP DROP DROP DROP ;
 
 : .FIRST-PRIMES ( limit,start -- )
-    SET-FIRST-PRIMES-TABLE
-    SWAP DELTA MIN SWAP 
-    DO I BIT-SET? 0= IF I . CRSP THEN LOOP ;
-    
+    168 0 DO 
+        OVER OVER I PRIME# BETWEEN? IF 
+            I PRIME# . CRSP
+        THEN
+    LOOP ;
+        
+: LOWER-RANGE ( n -- r )
+    DELTA / ;
+
+: UPPER-RANGE ( n -- r )
+    DELTA /  1+ ;
+
 : .CALC-PRIMES ( limit,start )
-    ERASE-BIT-TABLE
-    OVER OVER SIEVE-PRIMES
-    DUP -ROT - 0 DO 
-        I BIT-SET? 0= IF DUP I + . CRSP THEN 
-    LOOP DROP ;
-
-: BETWEEN? ( limit,start,value -- flag )
-    >R
-    R@ < SWAP R> > AND ;
-
-VARIABLE LIMIT
-VARIABLE START
+    OVER DUP LOWER-RANGE     \ limit,start,lr
+    DUP 1+ DELTA * SWAP      \ limit,start,lr+1*D,lr*D
+    >R ERASE-BIT-TABLE      
+    OVER OVER SIEVE-PRIMES   
+    R> -ROT                   \ lower,limit,start
+    OVER OVER - 0 DO          \ lower,limit,start
+        I BIT-SET? 0= IF 
+            2 PICK            \ lower,limit,start,lower
+            DUP I +           \ limit,start,prime
+            >R OVER OVER R@ BETWEEN? IF
+                R> . CRSP
+            ELSE
+                R> DROP 
+            THEN
+        THEN
+    LOOP DROP DROP ;
 
 : .PRIMES ( limit,start )
-    SWAP 1+ SWAP
-    DUP DELTA 0 ROT BETWEEN? IF
-        OVER OVER .FIRST-PRIMES
-    THEN               
-    DUP DELTA < IF DROP DROP EXIT THEN
-    DELTA MAX
-    OVER OVER START ! LIMIT !
-    DELTA / SWAP       \ start/D,limit
-    DELTA / 1+ SWAP    \ limit/D+1,start/D
+    START ! 1+ LIMIT !
+    LIMIT @ UPPER-RANGE
+    START @ LOWER-RANGE
     DO 
-        I 1+ DELTA * LIMIT @ MIN 
-        I    DELTA * START @ MAX
-        OVER OVER > IF
-                .CALC-PRIMES
+        I 0= IF 
+            LIMIT @ DELTA MIN
+            START @ 0     MAX
+            .FIRST-PRIMES 
         ELSE
-            DROP DROP
-        THEN
+            I DELTA * 
+
     LOOP ;
 
 : TO-DIGIT ( char -- n )

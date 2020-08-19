@@ -24,22 +24,13 @@ t{ ." SET-BIT set a bit in the table to 1 " CR
     17 BIT-SET? ?true
 }t
 
-t{ ." CLEAR-BIT set a bit to zero in the table " CR
-    41 SET-BIT
-    42 SET-BIT 
-    43 SET-BIT
-    42 CLEAR-BIT 
-    41 BIT-SET? ?true 
-    42 BIT-SET? ?false
-    43 BIT-SET? ?true 
+t{ ." LOWER-RANGE gives the greatest M such that M*DELTA <= n " CR
+    42 LOWER-RANGE 0 ?S
+    4807 LOWER-RANGE 4 ?S
 }t
-
-t{ ." SET-FIRST-PRIMES-TABLE set all bits to one except for primes < 1000 " CR
-    SET-FIRST-PRIMES-TABLE
-    2 BIT-SET? ?false
-    17 BIT-SET? ?false
-    941 BIT-SET? false
-    256 BIT-SET? ?true 
+t{ ." UPPER-RANGE gives the smallest M such that M*DELTA >= n " CR
+    42 UPPER-RANGE 1 ?S
+    4807 UPPER-RANGE 5 ?S
 }t
 
 t{ ." BETWEEN? return true if index is between start and limit " CR
@@ -82,10 +73,9 @@ t{ ." SIEVE-PRIMES blocs offset of multiples of the nth primes from n to m " CR
     9 bit-set? ?false
 }t
 
-t{ ." PRIMES output prime numbers from n to m " CR
-    1000000000 DUP 10 - dbg .PRIMES CR
-    debug off
+t{ ." CALC-PRIMES calculates and print primes in the given interval,smaller than DELTA " CR
+    2000 1990 .CALC-PRIMES CR
+    1010 1000 .CALC-PRIMES
 }t
-
     
 bye
