@@ -4,8 +4,8 @@ DEBUG ON
 : CRSP DEBUG @ IF SPACE ELSE CR THEN ;
 
 1000000000 CONSTANT N
-31623      CONSTANT N-SQRT
-178        CONSTANT N-SQRT-SQRT
+31623      CONSTANT DELTA
+178        CONSTANT INITIAL-DELTA
 
 : IS-PRIME? ( n -- flag )
     TRUE SWAP DUP 2 DO
@@ -14,7 +14,7 @@ DEBUG ON
     LOOP DROP ;
 
 : .INITIAL-PRIMES 
-    N-SQRT-SQRT 2 DO
+    INITIAL-DELTA 2 DO
         I DUP IS-PRIME? IF . ELSE DROP THEN
     LOOP ;
 
@@ -26,7 +26,6 @@ CREATE INITIAL-PRIMES
 : INITIAL-PRIME# ( index -- prime )
     CELLS INITIAL-PRIMES + @ ;
 
-N-SQRT-SQRT CONSTANT INITIAL-DELTA
 CREATE INITIAL-SET INITIAL-DELTA 8 / ALLOT
 
 : RESET ( set,size )
@@ -41,6 +40,10 @@ INITIAL-SET INITIAL-DELTA RESET
 : EXCLUDE! ( set,index -- )
     8 /MOD ROT + DUP C@ ROT 
     1 SWAP LSHIFT 255 XOR AND SWAP C! ; 
+
+: INCLUDE! ( set,index -- )
+    8 /MOD ROT + DUP C@ ROT
+    1 SWAP LSHIFT OR SWAP C! ;
 
 : Q ( start,prime -- offset )
     SWAP NEGATE SWAP MOD ;
@@ -68,12 +71,52 @@ INITIAL-SET INITIAL-DELTA RESET
             OVER I + . CRSP THEN
     LOOP DROP DROP ;
     
-\ to do
-\ use initial-sieve initial-delta times to 
-\ fill a set of size initial-delta^2 with 
-\ primes from 2 to initial-delta^2
+VARIABLE LIMIT
+CREATE PRIME-SET DELTA 8 / ALLOT
+HERE LIMIT !
+PRIME-SET DELTA RESET
 
-\ then use this set with delta to sieve
-\ from delta to delta*delta
-    
+: INITIAL-PRIMES>PRIME-SET
+    0 BEGIN
+        DUP INITIAL-PRIME# DUP
+        INITIAL-DELTA < WHILE
+        PRIME-SET SWAP INCLUDE!
+    1+ REPEAT
+    DROP DROP ;
+
+INITIAL-DELTA 8 / CONSTANT INITIAL-COUNT
+
+: INITIAL-SIEVE>PRIME-SET ( index -- )
+    DUP INITIAL-DELTA * INITIAL-SIEVE
+    INITIAL-DELTA * 
+    INITIAL-SET INITIAL-DELTA 0 DO
+        DUP I INCLUDE? IF
+            OVER I + PRIME-SET SWAP INCLUDE!
+        THEN
+    LOOP DROP DROP ;
+
+: INIT-PRIME-SET 
+    PRIME-SET DELTA 8 / ERASE
+    INITIAL-PRIMES>PRIME-SET
+    INITIAL-DELTA 1 DO
+        I INITIAL-SIEVE>PRIME-SET 
+    LOOP ;
+
+: PRIME-COUNT ( limit -- count )
+    0 SWAP 
+    DELTA MIN 0 DO 
+        OVER I INCLUDE? IF 1+ THEN
+    LOOP DROP ;
+
+: PRIME-CHECK
+    TRUE SWAP
+    DELTA MIN 0 DO
+        OVER I INCLUDE? IF I IS-PRIME? 0= IF SWAP DROP I SWAP LEAVE THEN THEN
+    LOOP DROP ;
+        
+debug off
+init-prime-set
+prime-set 10000 PRIME-CHECK .
+
+
 
