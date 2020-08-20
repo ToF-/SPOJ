@@ -63,20 +63,15 @@ HERE CONSTANT DELTA-MAX
 : Q ( start,prime -- offset )
     SWAP NEGATE SWAP MOD ;
 
-VARIABLE START
 : SIEVE! ( set,limit,start,prime -- )
-    ." excluding: "
-    OVER START !
     TUCK Q SWAP >R        \ set,limit,offset
-    DUP . 
     BEGIN 
         OVER OVER > WHILE
         >R OVER R@        \ set,limit,set,offset
-        DUP START @ + . DUP ." ( " . ." ) "
         EXCLUDE!          \ set,limit,
         R> R@ +           \ set,limit,offset+prime
     REPEAT
-    R> DROP DROP DROP DROP CR  ;
+    R> DROP DROP DROP DROP ;
 
 : GAMMA-SIEVE ( start -- )
     GAMMAS GAMMAS% RESET
@@ -89,7 +84,7 @@ VARIABLE START
         ELSE             \ start,prime
             DROP LEAVE 
         THEN
-    LOOP DROP cr ;
+    LOOP DROP ;
 
 : .SET ( set,limit,left -- )
     -ROT 0 DO 
