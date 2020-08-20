@@ -1,11 +1,14 @@
+variable memory
 VARIABLE DEBUG
 DEBUG ON
 
 : CRSP DEBUG @ IF SPACE ELSE CR THEN ;
 
 1000000000 CONSTANT N
-31623      CONSTANT DELTA
-178        CONSTANT INITIAL-DELTA
+178        CONSTANT GAMMA
+GAMMA 8 /  CONSTANT GAMMAS%
+178 178 *  CONSTANT DELTA
+DELTA 8 /  CONSTANT DELTAS%
 
 : IS-PRIME? ( n -- flag )
     TRUE SWAP DUP 2 DO
@@ -19,56 +22,68 @@ DEBUG ON
         DUP I MOD 0=  IF NIP I SWAP LEAVE THEN
     LOOP DROP ;
 
-: .INITIAL-PRIMES 
-    INITIAL-DELTA 2 DO
-        I DUP IS-PRIME? IF . ELSE DROP THEN
-    LOOP ;
+: EPSILONS, 
+    2 BEGIN
+        DUP GAMMA < WHILE
+        DUP IS-PRIME? IF DUP C, THEN
+        1+ 
+    REPEAT DROP ;
 
-CREATE INITIAL-PRIMES 
-2 , 3 , 5 , 7 , 11 , 13 , 17 , 19 , 23 , 29 , 31 , 37 , 41 , 43 , 47 , 
-53 , 59 , 61 , 67 , 71 , 73 , 79 , 83 , 89 , 97 , 101 , 103 , 107 , 
-109 , 113 , 127 , 131 , 137 , 139 , 149 , 151 , 157 , 163 , 167 , 173 , 
+CREATE EPSILONS EPSILONS, 
+HERE   EPSILONS - CONSTANT EPSILONS%
 
-: INITIAL-PRIME# ( index -- prime )
-    CELLS INITIAL-PRIMES + @ ;
+: EPSILON# ( index -- prime )
+    ASSERT( DUP GAMMA < )
+    EPSILONS + C@ ;
 
-CREATE INITIAL-SET INITIAL-DELTA 8 / ALLOT
+: RESET ( set,size/8 -- )
+    255 FILL ;
 
-: RESET ( set,size )
-    8 / 255 FILL ;
-
-INITIAL-SET INITIAL-DELTA RESET
+: SET-OFFSET ( set,index -- offset )
+    8 /MOD ROT + ;
 
 : INCLUDE? ( set,index -- flag )
-    8 /MOD ROT + C@ SWAP 
+    SET-OFFSET C@ SWAP 
     1 SWAP LSHIFT AND ;
 
 : EXCLUDE! ( set,index -- )
-    8 /MOD ROT + DUP C@ ROT 
+    SET-OFFSET DUP C@ ROT 
     1 SWAP LSHIFT 255 XOR AND SWAP C! ; 
 
 : INCLUDE! ( set,index -- )
-    8 /MOD ROT + DUP C@ ROT
+    SET-OFFSET 
+    DUP C@ ROT
     1 SWAP LSHIFT OR SWAP C! ;
+
+CREATE GAMMAS GAMMAS% ALLOT GAMMAS GAMMAS% RESET
+HERE CONSTANT GAMMA-MAX
+CREATE DELTAS DELTAS% ALLOT DELTAS DELTA ERASE
+HERE CONSTANT DELTA-MAX
 
 : Q ( start,prime -- offset )
     SWAP NEGATE SWAP MOD ;
 
-: SIEVE-LOOP ( set,limit,start,prime -- )
-    TUCK Q SWAP -ROT 
-    DO
-        OVER I EXCLUDE!
-    DUP +LOOP 
-    DROP DROP ;
+: SIEVE! ( set,limit,start,prime -- )
+    TUCK Q SWAP >R        \ set,limit,offset
+    BEGIN 
+        OVER OVER > WHILE
+        >R OVER R@        \ set,limit,set,offset
+        EXCLUDE!          \ set,limit,
+        R> R@ +           \ set,limit,offset+prime
+    REPEAT
+    R> DROP DROP DROP DROP ;
 
-
-: INITIAL-SIEVE ( start -- )
-    INITIAL-SET INITIAL-DELTA RESET
-    INITIAL-DELTA 8 / 0 DO
-        DUP 
-        INITIAL-SET INITIAL-DELTA 
-        ROT I INITIAL-PRIME# 
-        SIEVE-LOOP
+: GAMMA-SIEVE ( start -- )
+    GAMMAS GAMMAS% RESET
+    EPSILONS% 0 DO           \ start
+        I EPSILON#       \ start,prime
+        DUP GAMMA < IF   \ start,prime
+            OVER SWAP
+            GAMMAS GAMMA \ start,prime,set,limit
+            2SWAP SIEVE!
+        ELSE             \ start,prime
+            DROP LEAVE 
+        THEN
     LOOP DROP ;
 
 : .SET ( set,limit,left -- )
@@ -77,36 +92,33 @@ INITIAL-SET INITIAL-DELTA RESET
             OVER I + . CRSP THEN
     LOOP DROP DROP ;
     
-VARIABLE LIMIT
-CREATE PRIME-SET DELTA 8 / ALLOT
-HERE LIMIT !
-PRIME-SET DELTA RESET
-
-: INITIAL-PRIMES>PRIME-SET
-    0 BEGIN
-        DUP INITIAL-PRIME# DUP
-        INITIAL-DELTA < WHILE
-        PRIME-SET SWAP INCLUDE!
-    1+ REPEAT
-    DROP DROP ;
-
-INITIAL-DELTA 8 / CONSTANT INITIAL-COUNT
-
-: INITIAL-SIEVE>PRIME-SET ( index -- )
-    DUP INITIAL-DELTA * INITIAL-SIEVE
-    INITIAL-DELTA * 
-    INITIAL-SET INITIAL-DELTA 0 DO
-        DUP I INCLUDE? IF
-            OVER I + PRIME-SET SWAP INCLUDE!
-        THEN
-    LOOP DROP DROP ;
-
-: INIT-PRIME-SET 
-    PRIME-SET DELTA 8 / ERASE
-    INITIAL-PRIMES>PRIME-SET
-    INITIAL-DELTA 1 DO
-        I INITIAL-SIEVE>PRIME-SET 
+: EPSILONS>DELTAS
+    EPSILONS% 0 DO
+        DELTAS I EPSILON# INCLUDE! 
     LOOP ;
+
+GAMMA 8 / CONSTANT INITIAL-COUNT
+
+: GAMMA>DELTA ( start -- )
+    GAMMA 0 DO
+        GAMMAS I INCLUDE? IF
+            DELTAS OVER I + 
+            INCLUDE!
+        ELSE
+            DELTAS OVER I +
+            EXCLUDE!
+        THEN
+    LOOP DROP ;
+
+: GAMMAS>DELTAS ( index -- )
+    GAMMA * 
+    DUP GAMMA-SIEVE
+    GAMMA>DELTA ;
+
+: INIT-DELTAS 
+    DELTAS DELTAS% ERASE
+    EPSILONS>DELTAS
+    GAMMA 1 DO I GAMMAS>DELTAS LOOP ;
 
 : PRIME-COUNT ( limit -- count )
     0 SWAP 
@@ -116,12 +128,10 @@ INITIAL-DELTA 8 / CONSTANT INITIAL-COUNT
 
 : PRIME-CHECK
     DELTA MIN 0 DO
-        DUP I INCLUDE? IF I HAS-DIVISOR? DUP 1 > IF I . ." ( " . ." ) " ELSE DROP THEN THEN
+        DUP I INCLUDE? IF I HAS-DIVISOR? DUP 1 > IF CR I . ." ( " . ." ) " CR ELSE DROP THEN THEN
     LOOP DROP ;
-        
+
 debug off
-init-prime-set
-prime-set DELTA PRIME-CHECK BYE 
-
-
-
+INIT-DELTAS
+DELTAS DELTA PRIME-CHECK 
+BYE
