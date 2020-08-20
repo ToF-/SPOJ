@@ -63,15 +63,20 @@ HERE CONSTANT DELTA-MAX
 : Q ( start,prime -- offset )
     SWAP NEGATE SWAP MOD ;
 
+VARIABLE START
 : SIEVE! ( set,limit,start,prime -- )
+    ." excluding: "
+    OVER START !
     TUCK Q SWAP >R        \ set,limit,offset
+    DUP . 
     BEGIN 
         OVER OVER > WHILE
         >R OVER R@        \ set,limit,set,offset
+        DUP START @ + . DUP ." ( " . ." ) "
         EXCLUDE!          \ set,limit,
         R> R@ +           \ set,limit,offset+prime
     REPEAT
-    R> DROP DROP DROP DROP ;
+    R> DROP DROP DROP DROP CR  ;
 
 : GAMMA-SIEVE ( start -- )
     GAMMAS GAMMAS% RESET
@@ -84,7 +89,7 @@ HERE CONSTANT DELTA-MAX
         ELSE             \ start,prime
             DROP LEAVE 
         THEN
-    LOOP DROP ;
+    LOOP DROP cr ;
 
 : .SET ( set,limit,left -- )
     -ROT 0 DO 
@@ -105,6 +110,7 @@ GAMMA 8 / CONSTANT INITIAL-COUNT
             DELTAS OVER I + 
             INCLUDE!
         ELSE
+            DUP I + IS-PRIME? IF ." *error* " DUP I + . ." is prime and not included " cr ." start : " DUP . ." index " I . CR CR THEN
             DELTAS OVER I +
             EXCLUDE!
         THEN
@@ -135,13 +141,11 @@ GAMMA 8 / CONSTANT INITIAL-COUNT
     LOOP NIP ;
 
 : PRIME-CHECK
-    DELTA MIN 0 DO
-        DUP I INCLUDE? IF I HAS-DIVISOR? DUP 1 > IF CR I . ." ( " . ." ) " CR ELSE DROP THEN THEN
+    DELTA MIN 2 DO
+        DUP I INCLUDE? 0= I IS-PRIME? 0= <> IF I . I 8 / . CR THEN
     LOOP DROP ;
 
 debug off
 INIT-DELTAS
-DELTAS DELTA PRIME-COUNT .
-SLOW-INIT-DELTAS
-DELTAS DELTA PRIME-COUNT . 
+DELTAS DELTA PRIME-CHECK
 BYE
