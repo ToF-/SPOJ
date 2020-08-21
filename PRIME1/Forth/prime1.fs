@@ -1,4 +1,3 @@
-variable memory
 VARIABLE DEBUG
 DEBUG ON
 
@@ -6,9 +5,9 @@ DEBUG ON
 
 1000000000 CONSTANT N
 184        CONSTANT GAMMA
-GAMMA 8 /  CONSTANT GAMMAS%
+GAMMA 8 /  CONSTANT SMALL-SET%
 184 184 *  CONSTANT DELTA
-DELTA 8 /  CONSTANT DELTAS%
+DELTA 8 /  CONSTANT LARGE-SET%
 
 : IS-PRIME? ( n -- flag )
     TRUE SWAP DUP 2 DO
@@ -16,25 +15,30 @@ DELTA 8 /  CONSTANT DELTAS%
         DUP I MOD 0=  IF NIP FALSE SWAP LEAVE THEN
     LOOP DROP ;
 
+: SMALL-PRIMES, ( limit -- )
+    2 BEGIN
+        OVER OVER > WHILE
+        DUP IS-PRIME? IF DUP C, THEN
+        1+
+    REPEAT DROP ;
+
+CREATE SMALL-PRIMES GAMMA SMALL-PRIMES,
+HERE SMALL-PRIMES - CONSTANT SMALL-PRIMES% 
+
+: .SMALL-PRIMES 
+    SMALL-PRIMES% 0 DO 
+        SMALL-PRIMES I + C@ . 
+    LOOP ;
+
 : HAS-DIVISOR? ( n -- 1 )
     1 SWAP DUP 2 DO
         DUP I DUP * < IF LEAVE THEN
         DUP I MOD 0=  IF NIP I SWAP LEAVE THEN
     LOOP DROP ;
 
-: EPSILONS, 
-    2 BEGIN
-        DUP GAMMA < WHILE
-        DUP IS-PRIME? IF DUP C, THEN
-        1+ 
-    REPEAT DROP ;
-
-CREATE EPSILONS EPSILONS, 
-HERE   EPSILONS - CONSTANT EPSILONS%
-
-: EPSILON# ( index -- prime )
+: SMALL-PRIME# ( index -- prime )
     ASSERT( DUP GAMMA < )
-    EPSILONS + C@ ;
+    SMALL-PRIMES + C@ ;
 
 : RESET ( set,size/8 -- )
     255 FILL ;
@@ -55,9 +59,9 @@ HERE   EPSILONS - CONSTANT EPSILONS%
     DUP C@ ROT
     1 SWAP LSHIFT OR SWAP C! ;
 
-CREATE GAMMAS GAMMAS% ALLOT GAMMAS GAMMAS% RESET
+CREATE SMALL-SET SMALL-SET% ALLOT SMALL-SET SMALL-SET% RESET
 HERE CONSTANT GAMMA-MAX
-CREATE DELTAS DELTAS% ALLOT DELTAS DELTA ERASE
+CREATE LARGE-SET LARGE-SET% ALLOT LARGE-SET DELTA ERASE
 HERE CONSTANT DELTA-MAX
 
 : Q ( start,prime -- offset )
@@ -74,12 +78,12 @@ HERE CONSTANT DELTA-MAX
     R> DROP DROP DROP DROP ;
 
 : GAMMA-SIEVE ( start -- )
-    GAMMAS GAMMAS% RESET
-    EPSILONS% 0 DO           \ start
-        I EPSILON#       \ start,prime
+    SMALL-SET SMALL-SET% RESET
+    SMALL-PRIMES% 0 DO           \ start
+        I SMALL-PRIME#       \ start,prime
         DUP GAMMA < IF   \ start,prime
             OVER SWAP
-            GAMMAS GAMMA \ start,prime,set,limit
+            SMALL-SET GAMMA \ start,prime,set,limit
             2SWAP SIEVE!
         ELSE             \ start,prime
             DROP LEAVE 
@@ -88,48 +92,49 @@ HERE CONSTANT DELTA-MAX
 
 : .SET ( set,limit,left -- )
     -ROT 0 DO 
-        DUP I INCLUDE? IF
-            OVER I + . CRSP THEN
+        DUP I INCLUDE? IF   \ left,set
+            OVER I +        \ left,set,prime
+            2R@  DROP       \ left,set,prime,limit
+            OVER > IF       \ left,set,prime
+                . CRSP 
+            ELSE
+                DROP
+            THEN
+        THEN
     LOOP DROP DROP ;
     
-: EPSILONS>DELTAS
-    EPSILONS% 0 DO
-        DELTAS I EPSILON# INCLUDE! 
+: SMALL-PRIMES>LARGE-SET
+    SMALL-PRIMES% 0 DO
+        LARGE-SET I SMALL-PRIME# INCLUDE! 
     LOOP ;
 
 GAMMA 8 / CONSTANT INITIAL-COUNT
 
 : GAMMA>DELTA ( start -- )
     GAMMA 0 DO
-        GAMMAS I INCLUDE? IF
-            DELTAS OVER I + 
+        SMALL-SET I INCLUDE? IF
+            LARGE-SET OVER I + 
             INCLUDE!
         THEN
     LOOP DROP ;
 
-: GAMMAS>DELTAS ( index -- )
+: SMALL-SET>LARGE-SET ( index -- )
     GAMMA * 
     DUP GAMMA-SIEVE
     GAMMA>DELTA ;
 
-: INIT-DELTAS 
-    DELTAS DELTAS% ERASE
-    EPSILONS>DELTAS
-    GAMMA 1 DO I GAMMAS>DELTAS LOOP ;
+: INIT-LARGE-SET 
+    LARGE-SET LARGE-SET% ERASE
+    SMALL-PRIMES>LARGE-SET
+    GAMMA 1 DO I SMALL-SET>LARGE-SET LOOP ;
 
-: SLOW-INIT-DELTAS
-    DELTAS DELTAS% ERASE
+: SLOW-INIT-LARGE-SET
+    LARGE-SET LARGE-SET% ERASE
     DELTA 2 DO
         I IS-PRIME? IF
-            DELTAS I INCLUDE!
+            LARGE-SET I INCLUDE!
         THEN
     LOOP ;
-
-: PRIME-COUNT ( set,limit -- count )
-    0 SWAP 
-    DELTA MIN 2 DO 
-        OVER I INCLUDE? IF 1+ THEN
-    LOOP NIP ;
 
 : PRIME-CHECK
     DELTA MIN 2 DO
@@ -140,7 +145,56 @@ GAMMA 8 / CONSTANT INITIAL-COUNT
         THEN
     LOOP DROP ;
 
+
 debug off
-INIT-DELTAS
-DELTAS DELTA 0 .SET
-BYE
+INIT-LARGE-SET
+
+: W, ( w -- )
+    DUP 255 AND C,
+    8 RSHIFT C, ;
+
+: PRIMES, 
+    LARGE-SET DELTA 2 DO
+        DUP I INCLUDE? IF I W, THEN
+    LOOP DROP ;
+
+CREATE PRIMES PRIMES,
+HERE PRIMES - 2/ CONSTANT PRIMES-COUNT
+
+: PRIME# ( index -- prime )
+    2* PRIMES + W@ ;
+
+: .PRIMES ( limit -- ) 
+    PRIMES-COUNT MIN 0 DO
+        I . I PRIME# . CR
+    LOOP ;
+
+: CHECK ASSERT( 3624 PRIME# 33851 = ) ;
+
+: DELTA-SIEVE ( start -- )
+    LARGE-SET LARGE-SET% RESET
+    PRIMES-COUNT 0 DO       \ start
+        I PRIME#            \ start,prime
+        DUP DELTA < IF      \ start,prime
+            OVER SWAP
+            LARGE-SET DELTA \ start,prime,set,limit
+            2SWAP SIEVE!
+        ELSE             \ start,prime
+            DROP LEAVE 
+        THEN
+    LOOP DROP ;
+
+debug off
+: .DELTA-SETS ( limit -- )
+    DELTA                           \ limit,start
+    BEGIN
+        OVER OVER > WHILE
+        OVER DELTA-SIEVE          
+        DUP DELTA + >R OVER R> MIN  \ limit,start,start+delta
+        SWAP LARGE-SET -ROT         \ limit,set,start+delta,start
+        .SET
+        DELTA +
+    REPEAT DROP ;
+
+67730 .DELTA-SETS 
+CHECK BYE

@@ -13,5 +13,4 @@ spoj: prime1.fs
 	cat prime1.fs main.fs >spoj.fs
 
 clean : 
-	rm *.dat
-	rm *.tmp
+	rm *.tmp ; rm *.dat
