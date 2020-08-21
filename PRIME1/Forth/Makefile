@@ -14,3 +14,4 @@ spoj: prime1.fs
 
 clean : 
 	rm *.dat
+	rm *.tmp

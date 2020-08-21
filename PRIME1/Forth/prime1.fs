@@ -5,9 +5,9 @@ DEBUG ON
 : CRSP DEBUG @ IF SPACE ELSE CR THEN ;
 
 1000000000 CONSTANT N
-178        CONSTANT GAMMA
+184        CONSTANT GAMMA
 GAMMA 8 /  CONSTANT GAMMAS%
-178 178 *  CONSTANT DELTA
+184 184 *  CONSTANT DELTA
 DELTA 8 /  CONSTANT DELTAS%
 
 : IS-PRIME? ( n -- flag )
@@ -104,10 +104,6 @@ GAMMA 8 / CONSTANT INITIAL-COUNT
         GAMMAS I INCLUDE? IF
             DELTAS OVER I + 
             INCLUDE!
-        ELSE
-            DUP I + IS-PRIME? IF ." *error* " DUP I + . ." is prime and not included " cr ." start : " DUP . ." index " I . CR CR THEN
-            DELTAS OVER I +
-            EXCLUDE!
         THEN
     LOOP DROP ;
 
@@ -123,7 +119,7 @@ GAMMA 8 / CONSTANT INITIAL-COUNT
 
 : SLOW-INIT-DELTAS
     DELTAS DELTAS% ERASE
-    31684 0 DO
+    DELTA 2 DO
         I IS-PRIME? IF
             DELTAS I INCLUDE!
         THEN
@@ -137,10 +133,14 @@ GAMMA 8 / CONSTANT INITIAL-COUNT
 
 : PRIME-CHECK
     DELTA MIN 2 DO
-        DUP I INCLUDE? 0= I IS-PRIME? 0= <> IF I . I 8 / . CR THEN
+        DUP I INCLUDE? IF
+            I IS-PRIME? 0=  IF 
+                I . I 8 /MOD SWAP .  . CR 
+            THEN
+        THEN
     LOOP DROP ;
 
 debug off
 INIT-DELTAS
-DELTAS DELTA PRIME-CHECK
+DELTAS DELTA 0 .SET
 BYE
