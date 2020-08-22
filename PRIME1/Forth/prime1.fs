@@ -24,7 +24,8 @@ DELTA 8 /    CONSTANT LARGE-SET%
 CREATE SMALL-PRIMES GAMMA SMALL-PRIMES,
 HERE SMALL-PRIMES - CONSTANT SMALL-PRIMES% 
 
-DELTA 2* CONSTANT LARGE-PRIMES%
+DELTA 2* CONSTANT LARGE-PRIMES%  \ not the correct size!!
+\ how many primes from 2 to DELTA is the right size
 CREATE LARGE-PRIMES LARGE-PRIMES% ALLOT
 
 : .SMALL-PRIMES 
@@ -75,8 +76,8 @@ CREATE LARGE-SET LARGE-SET% ALLOT LARGE-SET LARGE-SET% 255 FILL
 DEFER PROC-SMALL-SET
 DEFER PROC-LARGE-SET
 
-: EXEC-SMALL-SET ( limit -- )
-    0 DO 
+: EXEC-SMALL-SET 
+    GAMMA 0 DO 
         SMALL-SET I INCLUDE? IF 
             I PROC-SMALL-SET
         THEN
@@ -92,21 +93,24 @@ DEFER PROC-LARGE-SET
 : Q ( start,prime -- offset )
     SWAP NEGATE SWAP MOD ;
 
-: CALC-OFFSET ( start,prime -- offset,prime )
-    TUCK Q SWAP ;
+: CALC-OFFSET ( start,prime -- offset )
+    OVER 0> IF Q ELSE NIP 2* THEN ;
+
+: WITHIN-RANGE ( limit,offset -- flag )
+    DUP GAMMA < 
+    -ROT > AND ;
 
 : SIEVE! ( set,limit,start,prime -- )
-    CALC-OFFSET >R          \ set,limit,offset
-    BEGIN 2DUP > WHILE
+    2>R 2R@                 \ keep start for debug purpose, and prime
+    CALC-OFFSET              \ set,limit,offset
+    BEGIN 2DUP WITHIN-RANGE WHILE
         2 PICK OVER EXCLUDE!
-        R@ +
-    REPEAT R> 
-    2DROP 2DROP ;
+        R@ + 
+    REPEAT 2R> DROP 2DROP 2DROP ;
 
 : SIEVE-WITH-PRIME! ( set,limit,start,prime -- set,limit,start )
-    2OVER 2OVER
-    SIEVE!
-    DROP ;
+    2OVER 2OVER         \ keep the arguments for the next w
+    SIEVE!  DROP ;
 
 : SMALL-SIEVES! ( set,limit,start -- )
     ROT DUP SMALL-SET% 255 FILL
@@ -115,31 +119,24 @@ DEFER PROC-LARGE-SET
     EXEC-SMALL-PRIMES 
     2DROP DROP ;
     
-VARIABLE PRIME#
-VARIABLE START
-
-: SMALL-PRIME>LARGE-PRIME ( offset,index,prime -- offset,index )
-    >R OVER R> +               \ offset,index,prime+offset' 
-    OVER 2*                    \ offset,index,prime',index*2
-    DUP LARGE-PRIMES% < IF 
-        LARGE-PRIMES + W!      \ offset,index
-        1+
-    ELSE
-        2DROP
-    THEN ;
+: LARGE-PRIME! ( index,start,bit# -- index,start )
+    OVER +            \ index,start,prime
+    ROT DUP 1+ -ROT   \ start,index+1,prime,index
+    2*                \ start,index+1,prime,addr
+    LARGE-PRIMES + W! \ start,index+1
+    SWAP ;
+    
+    
 
 : INIT-LARGE-PRIMES 
-    SMALL-PRIMES>LARGE-PRIMES!
-    SMALL-SET GAMMA GAMMA SMALL-SIEVES!
-    ['] SMALL-PRIME>LARGE-PRIME IS PROC-SMALL-SET 
-    GAMMA SMALL-PRIMES%        \ offset,index
-    GAMMA EXEC-SMALL-SET       \ offset,index
-    GAMMA 2 DO
-        SMALL-SET              \ offset,index,set
-        GAMMA I * GAMMA I 1- * \ offset,index,set,limit,start
-        SMALL-SIEVES!          \ offset,index
-        SWAP GAMMA + SWAP      \ offest+gamma,index
-        GAMMA EXEC-SMALL-SET   \ offset,index
-    LOOP
-    2DROP ;
+    ['] LARGE-PRIME! IS PROC-SMALL-SET 
+    0
+    GAMMA 0 DO
+        SMALL-SET
+        I GAMMA * 
+        DUP GAMMA + SWAP
+        SMALL-SIEVES! 
+        I GAMMA * EXEC-SMALL-SET 
+        DROP
+    LOOP DROP ;
 
