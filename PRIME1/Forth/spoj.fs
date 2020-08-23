@@ -1,30 +1,35 @@
 : SQ ( n -- n^2 ) DUP * ;
 : W, ( w -- ) 256 /MOD SWAP C, C, ;
 
-: BYTE-POS ( set,bit# -- addr )
+: SETOFFSET ( set,index -- offset )
     8 /MOD ROT + ;
 
-: ∈? ( set,bit# -- flag )
-    BYTE-POS C@ SWAP 
+: ∈? ( set,index -- flag )
+    SETOFFSET C@ SWAP 
     1 SWAP LSHIFT AND ;
 
-: ¬∈! ( set,bit# -- )
-    BYTE-POS DUP C@ ROT 
+: ¬∈! ( set,index -- )
+    SETOFFSET DUP C@ ROT 
     1 SWAP LSHIFT 255 XOR AND SWAP C! ; 
 
-: ∈! ( set,bit# -- )
-    BYTE-POS DUP C@ ROT
+: ∈! ( set,index -- )
+    SETOFFSET 
+    DUP C@ ROT
     1 SWAP LSHIFT OR SWAP C! ;
 
 : IS-PRIME? ( n -- flag )
-    DUP 2 < IF DROP FALSE ELSE
-    2 BEGIN
-        2DUP SQ > >R 2DUP MOD 0> R> AND 
-        WHILE 1+ 
-    REPEAT SQ < THEN ;
+    DUP 2 < IF DROP FALSE
+    ELSE
+        2 BEGIN
+            2DUP SQ > >R 2DUP MOD 0> R> AND 
+        WHILE 1+ REPEAT 
+        SQ < 
+    THEN ;
 
-184  CONSTANT δ       δ 8 / CONSTANT δSET%
-δ SQ CONSTANT Δ       Δ 8 / CONSTANT ΔSET%
+184    CONSTANT δ
+δ 8 /  CONSTANT δSET%
+δ SQ   CONSTANT Δ
+Δ 8 /  CONSTANT ΔSET%
 
 : δPRIMES, 
     δ 2 BEGIN
@@ -132,7 +137,7 @@ DEFER ΔPRIMESλ
         Δ I SETSTART MAP-ΔSET
         DROP
     LOOP 2DROP ;
-
+        
 : TO-DIGIT ( char -- n )
     [CHAR] 0 - ;
 
@@ -157,3 +162,4 @@ DEFER ΔPRIMESλ
     LOOP ;
 
     
+MAIN BYE
