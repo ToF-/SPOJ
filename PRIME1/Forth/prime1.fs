@@ -1,63 +1,50 @@
-: SQ ( n -- n^2 )
-    DUP * ;
+: SQ ( n -- n^2 ) DUP * ;
+: W, ( w -- ) 256 /MOD SWAP C, C, ;
 
-184    CONSTANT δ
-δ 8 /  CONSTANT δ-SET%
-δ SQ    CONSTANT Δ
-
-: IS-PRIME? ( n -- flag )
-    2 BEGIN
-        2DUP SQ   > >R
-        2DUP MOD 0> R> AND WHILE
-        1+
-    REPEAT 
-    SQ < ;
-
-: δ-PRIMES, 
-    δ 2 BEGIN
-        2DUP > WHILE
-        DUP IS-PRIME? IF DUP C, THEN
-        1+
-    REPEAT 2DROP ;
-
-CREATE δ-PRIMES δ-PRIMES,
-HERE δ-PRIMES - CONSTANT δ-PRIMES% 
-
-: δ-PRIME# ( index -- prime )
-    ASSERT( DUP δ-PRIMES% < )
-    δ-PRIMES + C@ ;
-
-DEFER λ-δ-PRIMES 
-
-: MAP-δ-PRIMES ( lambda -- )
-    δ-PRIMES% 0 DO I δ-PRIME# λ-δ-PRIMES LOOP ;
-
-: SET-OFFSET ( set,index -- offset )
+: SETOFFSET ( set,index -- offset )
     8 /MOD ROT + ;
 
 : ∈? ( set,index -- flag )
-    SET-OFFSET C@ SWAP 
+    SETOFFSET C@ SWAP 
     1 SWAP LSHIFT AND ;
 
 : ¬∈! ( set,index -- )
-    SET-OFFSET DUP C@ ROT 
+    SETOFFSET DUP C@ ROT 
     1 SWAP LSHIFT 255 XOR AND SWAP C! ; 
 
 : ∈! ( set,index -- )
-    SET-OFFSET 
+    SETOFFSET 
     DUP C@ ROT
     1 SWAP LSHIFT OR SWAP C! ;
 
-CREATE δ-SET δ-SET% ALLOT δ-SET δ-SET% 255 FILL
+: ISPRIME? ( n -- flag )
+    2 BEGIN
+        2DUP SQ > >R 2DUP MOD 0> R> AND 
+    WHILE 1+ REPEAT SQ < ;
 
-DEFER λ-δ-SET
+184    CONSTANT δ
+δ 8 /  CONSTANT δSET%
+δ SQ    CONSTANT Δ
 
-: MAP-δ-SET 
-    δ 0 DO 
-        δ-SET I ∈? IF 
-            I λ-δ-SET
-        THEN
-    LOOP ;
+: δPRIMES, 
+    δ 2 BEGIN
+        2DUP > WHILE
+        DUP ISPRIME? IF DUP C, THEN
+        1+
+    REPEAT 2DROP ;
+
+CREATE δPRIMES δPRIMES,
+HERE δPRIMES - CONSTANT δPRIMES% 
+
+: δPRIME# ( index -- prime ) δPRIMES + C@ ;
+
+DEFER δPRIMESλ 
+: MAP-δPRIMES δPRIMES% 0 DO I δPRIME# δPRIMESλ LOOP ;
+
+CREATE δSET δSET% ALLOT δSET δSET% 255 FILL
+
+DEFER δSETλ
+: MAP-δSET δ 0 DO δSET I ∈? IF I δSETλ THEN LOOP ;
 
 : Q ( start,prime -- offset )
     SWAP NEGATE SWAP MOD ;
@@ -69,50 +56,40 @@ DEFER λ-δ-SET
     DUP δ < -ROT > AND ;
 
 : SIEVE! ( set,limit,start,prime -- )
-    2>R 2R@                 \ keep start for debug purpose, and prime
-    CALC-OFFSET              \ set,limit,offset
+    2>R 2R@ CALC-OFFSET              
     BEGIN 2DUP WITHIN-RANGE WHILE
-        2 PICK OVER ¬∈!
-        R@ + 
+        2 PICK OVER ¬∈! R@ + 
     REPEAT 2R> DROP 2DROP 2DROP ;
 
-: SIEVE-WITH-PRIME! ( set,limit,start,prime -- set,limit,start )
-    2OVER 2OVER         \ keep the arguments for the next w
-    SIEVE!  DROP ;
+: SIEVE-ITER! ( set,limit,start,prime -- set,limit,start )
+    2OVER 2OVER SIEVE! DROP ;
 
 : δ-SIEVES! ( set,limit,start -- )
-    ['] SIEVE-WITH-PRIME! IS λ-δ-PRIMES
-    ROT DUP δ-SET% 255 FILL
-    -ROT
-    MAP-δ-PRIMES 
+    ['] SIEVE-ITER! IS δPRIMESλ
+    ROT DUP δSET% 255 FILL
+    -ROT MAP-δPRIMES 
     2DROP DROP ;
-    
-: W, ( w -- )
-    256 /MOD SWAP C, C, ;
 
-: Δ-PRIME, ( start,bit# -- start )
-    OVER + W, ;
+: ΔPRIME, ( start,bit# -- start ) OVER + W, ;
 
-: SET-START  ( size,index -- start )
-    * ;
-: SET-LIMITS ( size,index -- limit,start )
-    OVER SET-START   \ size,start
-    TUCK +           \ start,limit
-    SWAP ;
+: SETSTART  ( size,index -- start ) * ;
 
-: Δ-PRIMES,
-    ['] Δ-PRIME, is λ-δ-SET
+: SETLIMITS ( size,index -- limit,start )
+    OVER SETSTART TUCK + SWAP ;
+
+: ΔPRIMES,
+    ['] ΔPRIME, IS δSETλ
     δ 0 DO
-        δ-SET 
-        δ I SET-LIMITS δ-SIEVES!
-        δ I SET-START MAP-δ-SET 
+        δSET 
+        δ I SETLIMITS δ-SIEVES!
+        δ I SETSTART MAP-δSET 
         DROP
     LOOP ;
 
-CREATE Δ-PRIMES Δ-PRIMES,
-HERE Δ-PRIMES - 2/ CONSTANT Δ-PRIMES%
+CREATE ΔPRIMES ΔPRIMES,
+HERE ΔPRIMES - 2/ CONSTANT ΔPRIMES%
 
-: Δ-PRIME# ( index -- prime )
+: ΔPRIME# ( index -- prime )
     ASSERT( DUP Δ < )
-    2* Δ-PRIMES + W@ ;
+    2* ΔPRIMES + W@ ;
 
