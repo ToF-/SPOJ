@@ -1,92 +1,61 @@
-: SQUARE ( n -- n^2 )
+: SQ ( n -- n^2 )
     DUP * ;
 
-184          CONSTANT GAMMA
-GAMMA 8 /    CONSTANT SMALL-SET%
-GAMMA SQUARE CONSTANT DELTA
-DELTA 8 /    CONSTANT LARGE-SET%
+184    CONSTANT δ
+δ 8 /  CONSTANT δ-SET%
+δ SQ    CONSTANT Δ
 
 : IS-PRIME? ( n -- flag )
     2 BEGIN
-        2DUP SQUARE > >R
+        2DUP SQ   > >R
         2DUP MOD 0> R> AND WHILE
         1+
     REPEAT 
-    SQUARE < ;
+    SQ < ;
 
-: SMALL-PRIMES, ( limit -- )
-    2 BEGIN
+: δ-PRIMES, 
+    δ 2 BEGIN
         2DUP > WHILE
         DUP IS-PRIME? IF DUP C, THEN
         1+
     REPEAT 2DROP ;
 
-CREATE SMALL-PRIMES GAMMA SMALL-PRIMES,
-HERE SMALL-PRIMES - CONSTANT SMALL-PRIMES% 
+CREATE δ-PRIMES δ-PRIMES,
+HERE δ-PRIMES - CONSTANT δ-PRIMES% 
 
-DELTA 2* CONSTANT LARGE-PRIMES%  \ not the correct size!!
-\ how many primes from 2 to DELTA is the right size
-CREATE LARGE-PRIMES LARGE-PRIMES% ALLOT
+: δ-PRIME# ( index -- prime )
+    ASSERT( DUP δ-PRIMES% < )
+    δ-PRIMES + C@ ;
 
-: .SMALL-PRIMES 
-    SMALL-PRIMES% 0 DO 
-        SMALL-PRIMES I + C@ . 
-    LOOP ;
+DEFER λ-δ-PRIMES 
 
-: SMALL-PRIME# ( index -- prime )
-    ASSERT( DUP GAMMA < )
-    SMALL-PRIMES + C@ ;
-
-: LARGE-PRIME# ( index -- prime )
-    ASSERT( DUP DELTA < )
-    2* LARGE-PRIMES + W@ ;
-
-DEFER PROC-SMALL-PRIMES 
-
-: EXEC-SMALL-PRIMES ( -- )
-    SMALL-PRIMES% 0 DO
-        I SMALL-PRIME# PROC-SMALL-PRIMES
-    LOOP ;
-
-: SMALL-PRIMES>LARGE-PRIMES! ( prime -- )
-    SMALL-PRIMES% 0 DO
-            I SMALL-PRIME# 
-            I 2* LARGE-PRIMES + W!
-    LOOP ;
+: MAP-δ-PRIMES ( lambda -- )
+    δ-PRIMES% 0 DO I δ-PRIME# λ-δ-PRIMES LOOP ;
 
 : SET-OFFSET ( set,index -- offset )
     8 /MOD ROT + ;
 
-: INCLUDE? ( set,index -- flag )
+: ∈? ( set,index -- flag )
     SET-OFFSET C@ SWAP 
     1 SWAP LSHIFT AND ;
 
-: EXCLUDE! ( set,index -- )
+: ¬∈! ( set,index -- )
     SET-OFFSET DUP C@ ROT 
     1 SWAP LSHIFT 255 XOR AND SWAP C! ; 
 
-: INCLUDE! ( set,index -- )
+: ∈! ( set,index -- )
     SET-OFFSET 
     DUP C@ ROT
     1 SWAP LSHIFT OR SWAP C! ;
 
-CREATE SMALL-SET SMALL-SET% ALLOT SMALL-SET SMALL-SET% 255 FILL
-CREATE LARGE-SET LARGE-SET% ALLOT LARGE-SET LARGE-SET% 255 FILL
+CREATE δ-SET δ-SET% ALLOT δ-SET δ-SET% 255 FILL
 
-DEFER PROC-SMALL-SET
-DEFER PROC-LARGE-SET
+DEFER λ-δ-SET
 
-: EXEC-SMALL-SET 
-    GAMMA 0 DO 
-        SMALL-SET I INCLUDE? IF 
-            I PROC-SMALL-SET
-        THEN
-    LOOP ;
-
-: EXEC-LARGE-SET ( limit -- )
-    0 DO 
-        LARGE-SET I INCLUDE? IF 
-            I PROC-LARGE-SET
+: MAP-δ-SET 
+    δ 0 DO 
+        δ-SET I ∈? IF 
+            I λ-δ-SET
         THEN
     LOOP ;
 
@@ -97,14 +66,13 @@ DEFER PROC-LARGE-SET
     OVER 0> IF Q ELSE NIP 2* THEN ;
 
 : WITHIN-RANGE ( limit,offset -- flag )
-    DUP GAMMA < 
-    -ROT > AND ;
+    DUP δ < -ROT > AND ;
 
 : SIEVE! ( set,limit,start,prime -- )
     2>R 2R@                 \ keep start for debug purpose, and prime
     CALC-OFFSET              \ set,limit,offset
     BEGIN 2DUP WITHIN-RANGE WHILE
-        2 PICK OVER EXCLUDE!
+        2 PICK OVER ¬∈!
         R@ + 
     REPEAT 2R> DROP 2DROP 2DROP ;
 
@@ -112,31 +80,39 @@ DEFER PROC-LARGE-SET
     2OVER 2OVER         \ keep the arguments for the next w
     SIEVE!  DROP ;
 
-: SMALL-SIEVES! ( set,limit,start -- )
-    ROT DUP SMALL-SET% 255 FILL
+: δ-SIEVES! ( set,limit,start -- )
+    ['] SIEVE-WITH-PRIME! IS λ-δ-PRIMES
+    ROT DUP δ-SET% 255 FILL
     -ROT
-    ['] SIEVE-WITH-PRIME! IS PROC-SMALL-PRIMES
-    EXEC-SMALL-PRIMES 
+    MAP-δ-PRIMES 
     2DROP DROP ;
     
-: LARGE-PRIME! ( index,start,bit# -- index,start )
-    OVER +            \ index,start,prime
-    ROT DUP 1+ -ROT   \ start,index+1,prime,index
-    2*                \ start,index+1,prime,addr
-    LARGE-PRIMES + W! \ start,index+1
-    SWAP ;
-    
-    
+: W, ( w -- )
+    256 /MOD SWAP C, C, ;
 
-: INIT-LARGE-PRIMES 
-    ['] LARGE-PRIME! IS PROC-SMALL-SET 
-    0
-    GAMMA 0 DO
-        SMALL-SET
-        I GAMMA * 
-        DUP GAMMA + SWAP
-        SMALL-SIEVES! 
-        I GAMMA * EXEC-SMALL-SET 
+: Δ-PRIME, ( start,bit# -- start )
+    OVER + W, ;
+
+: SET-START  ( size,index -- start )
+    * ;
+: SET-LIMITS ( size,index -- limit,start )
+    OVER SET-START   \ size,start
+    TUCK +           \ start,limit
+    SWAP ;
+
+: Δ-PRIMES,
+    ['] Δ-PRIME, is λ-δ-SET
+    δ 0 DO
+        δ-SET 
+        δ I SET-LIMITS δ-SIEVES!
+        δ I SET-START MAP-δ-SET 
         DROP
-    LOOP DROP ;
+    LOOP ;
+
+CREATE Δ-PRIMES Δ-PRIMES,
+HERE Δ-PRIMES - 2/ CONSTANT Δ-PRIMES%
+
+: Δ-PRIME# ( index -- prime )
+    ASSERT( DUP Δ < )
+    2* Δ-PRIMES + W@ ;
 
