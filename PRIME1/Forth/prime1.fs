@@ -38,17 +38,8 @@ HERE δPRIMES - CONSTANT δPRIMES%
 
 : δPRIME# ( index -- prime ) δPRIMES + C@ ;
 
-DEFER δPRIMESλ 
-: MAP-δPRIMES δPRIMES% 0 DO I δPRIME# δPRIMESλ LOOP ;
-
 CREATE δSET δSET% ALLOT δSET δSET% 255 FILL
 CREATE ΔSET ΔSET% ALLOT ΔSET ΔSET% 255 FILL
-
-DEFER δSETλ
-: MAP-δSET δ 0 DO δSET I ∈? IF I δSETλ THEN LOOP ;
-
-DEFER ΔSETλ
-: MAP-ΔSET Δ 0 DO ΔSET I ∈? IF I ΔSETλ THEN LOOP ;
 
 : Q ( start,prime -- offset )
     SWAP NEGATE SWAP MOD ;
@@ -60,6 +51,7 @@ DEFER ΔSETλ
     + > ;
 
 : SIEVE! ( set,limit,start,prime -- )
+    ASSERT( OVER 1 AND 0= )
     2>R 2R@ CALC-OFFSET              
     BEGIN 2DUP 2R@ DROP WITHIN-RANGE WHILE
         2 PICK OVER ¬∈! R@ + 
@@ -68,16 +60,22 @@ DEFER ΔSETλ
 : SIEVE-ITER! ( set,limit,start,prime -- set,limit,start )
     2OVER 2OVER SIEVE! DROP ;
 
-: EXCLUDE-INITIAL-BITS ( limit,set )
-    SWAP 0= IF
-        DUP 0 ¬∈! 1 ¬∈! 
-    ELSE DROP THEN ;
-    
+2 BASE ! 
+10101100 CONSTANT INITIAL-BITS
+10101010 CONSTANT ODD-BITS
+DECIMAL
+
+: SET-INITIAL-BITS ( set,start )
+    0= IF INITIAL-BITS SWAP C! ELSE DROP THEN ;
+
+: INIT-SET ( start,set,size -- )
+    OVER SWAP ODD-BITS FILL
+    SWAP SET-INITIAL-BITS ;
+
 : δ-SIEVES! ( limit,start -- )
-    ['] SIEVE-ITER! IS δPRIMESλ
-    δSET DUP δSET% 255 FILL
-    2DUP EXCLUDE-INITIAL-BITS
-    -ROT MAP-δPRIMES 
+    DUP δSET δSET% INIT-SET
+    δSET -ROT 
+    δPRIMES% 0 DO I δPRIME# SIEVE-ITER! LOOP
     2DROP DROP ;
 
 : ΔPRIME, ( start,bit# -- start ) 
@@ -88,12 +86,15 @@ DEFER ΔSETλ
 : SETLIMITS ( size,index -- limit,start )
     OVER SETSTART TUCK + SWAP ;
 
+: δSET-ΔPRIME, ( start -- )
+    δ 0 DO 
+        δSET I ∈? IF I ΔPRIME, THEN 
+    LOOP DROP ;
+
 : ΔPRIMES,
-    ['] ΔPRIME, IS δSETλ
     δ 0 DO
         δ I SETLIMITS δ-SIEVES!
-        δ I SETSTART MAP-δSET 
-        DROP
+        δ I SETSTART δSET-ΔPRIME, 
     LOOP ;
 
 CREATE ΔPRIMES ΔPRIMES,
@@ -102,14 +103,10 @@ HERE ΔPRIMES - 2/ CONSTANT ΔPRIMES%
 : ΔPRIME# ( index -- prime )
     2* ΔPRIMES + W@ ;
 
-DEFER ΔPRIMESλ 
-: MAP-ΔPRIMES ΔPRIMES% 0 DO I ΔPRIME# ΔPRIMESλ LOOP ;
-
 : Δ-SIEVES! ( limit,start -- )
-    ['] SIEVE-ITER! IS ΔPRIMESλ
-    ΔSET DUP ΔSET% 255 FILL
-    2DUP EXCLUDE-INITIAL-BITS
-    -ROT MAP-ΔPRIMES 
+    DUP ΔSET ΔSET% INIT-SET
+    ΔSET -ROT 
+    ΔPRIMES% 1 DO I ΔPRIME# SIEVE-ITER! LOOP
     2DROP DROP ;
 
 : WITHIN-LIMITS? ( max,min,start,bit# -- flag )
@@ -123,14 +120,17 @@ DEFER ΔPRIMESλ
         DROP
     THEN ;
 
+: .ΔSET-PRIMES-WITHIN ( max,min,start -- max,min )
+    Δ 0 DO 
+        ΔSET I ∈? IF I .PRIMES-WITHIN THEN 
+    LOOP DROP ;
+
 : .PRIMES ( max,min -- )
     2DUP
     Δ / SWAP Δ / 1+ SWAP
     DO
         Δ I SETLIMITS Δ-SIEVES!
-        ['] .PRIMES-WITHIN IS ΔSETλ
-        Δ I SETSTART MAP-ΔSET
-        DROP
+        Δ I SETSTART .ΔSET-PRIMES-WITHIN 
     LOOP 2DROP ;
 
 : TO-DIGIT ( char -- n )
@@ -155,5 +155,3 @@ DEFER ΔPRIMESλ
         GET-NUMBER GET-NUMBER
         SWAP .PRIMES CR
     LOOP ;
-
-    

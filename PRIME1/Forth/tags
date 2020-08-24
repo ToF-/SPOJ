@@ -1,0 +1,130 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+.DELTA-SETS	draft.fs	/^: .DELTA-SETS ( limit -- )$/;"	d
+.PRIMES	draft.fs	/^: .PRIMES ( limit -- ) $/;"	d
+.PRIMES	prime1.fs	/^: .PRIMES ( max,min -- )$/;"	d
+.PRIMES	spoj.fs	/^: .PRIMES ( max,min -- )$/;"	d
+.PRIMES-UPTO	testprime1.fs	/^: .PRIMES-UPTO ( limit -- )$/;"	d
+.PRIMES-WITHIN	prime1.fs	/^: .PRIMES-WITHIN ( max,min,start,bit# -- max,min,start )$/;"	d
+.PRIMES-WITHIN	spoj.fs	/^: .PRIMES-WITHIN ( max,min,start,bit# -- max,min,start )$/;"	d
+.SET	draft.fs	/^: .SET ( set,limit,left -- )$/;"	d
+.ΔPRIMES	testprime1.fs	/^: .ΔPRIMES ( limit -- )$/;"	d
+BYTE-POS	prime1.fs	/^: BYTE-POS ( set,bit# -- addr )$/;"	d
+CALC-OFFSET	prime1.fs	/^: CALC-OFFSET ( start,prime -- offset )$/;"	d
+CALC-OFFSET	spoj.fs	/^: CALC-OFFSET ( start,prime -- offset )$/;"	d
+CHECK	draft.fs	/^: CHECK ASSERT( 3624 PRIME# 33851 = ) ;$/;"	d
+CHECK-ΔPRIMES	testprime1.fs	/^: CHECK-ΔPRIMES $/;"	d
+CHECK-ΔSIEVE	testprime1.fs	/^: CHECK-ΔSIEVE ( index -- max,min )$/;"	d
+CHECK-δPRIMES	testprime1.fs	/^: CHECK-δPRIMES $/;"	d
+CHECK-δSIEVE	testprime1.fs	/^: CHECK-δSIEVE ( index -- max,min )$/;"	d
+DELTA-MAX	draft.fs	/^HERE CONSTANT DELTA-MAX$/;"	c
+DELTA-SIEVE	draft.fs	/^: DELTA-SIEVE ( start -- )$/;"	d
+EXCLUDE!	draft.fs	/^: EXCLUDE! ( set,index -- )$/;"	d
+EXCLUDE-INITIAL-BITS	spoj.fs	/^: EXCLUDE-INITIAL-BITS ( limit,set )$/;"	d
+GAMMA-MAX	draft.fs	/^HERE CONSTANT GAMMA-MAX$/;"	c
+GAMMA-SIEVE	draft.fs	/^: GAMMA-SIEVE ( start -- )$/;"	d
+GAMMA>DELTA	draft.fs	/^: GAMMA>DELTA ( start -- )$/;"	d
+GET-NUMBER	prime1.fs	/^: GET-NUMBER ( -- n )$/;"	d
+GET-NUMBER	spoj.fs	/^: GET-NUMBER ( -- n )$/;"	d
+INCLUDE!	draft.fs	/^: INCLUDE! ( set,index -- )$/;"	d
+INCLUDE?	draft.fs	/^: INCLUDE? ( set,index -- flag )$/;"	d
+INIT-LARGE-SET	draft.fs	/^: INIT-LARGE-SET $/;"	d
+INITIAL-COUNT	draft.fs	/^GAMMA 8 \/ CONSTANT INITIAL-COUNT$/;"	c
+IS-DIGIT?	prime1.fs	/^: IS-DIGIT? ( char -- flag )$/;"	d
+IS-DIGIT?	spoj.fs	/^: IS-DIGIT? ( char -- flag )$/;"	d
+IS-PRIME?	prime1.fs	/^: IS-PRIME? ( n -- flag )$/;"	d
+IS-PRIME?	spoj.fs	/^: IS-PRIME? ( n -- flag )$/;"	d
+KEEP-MIN-AND-MAX	testprime1.fs	/^: KEEP-MIN-AND-MAX ( offset,max,min,bit# -- offset,max,min )$/;"	d
+LARGE-SET	draft.fs	/^CREATE LARGE-SET LARGE-SET% ALLOT LARGE-SET DELTA ERASE$/;"	a
+MAIN	prime1.fs	/^: MAIN$/;"	d
+MAIN	spoj.fs	/^: MAIN$/;"	d
+MAP-ΔPRIMES	prime1.fs	/^: MAP-ΔPRIMES ΔPRIMES% 0 DO I ΔPRIME# ΔPRIMESλ LOOP ;$/;"	d
+MAP-ΔPRIMES	spoj.fs	/^: MAP-ΔPRIMES ΔPRIMES% 0 DO I ΔPRIME# ΔPRIMESλ LOOP ;$/;"	d
+MAP-ΔSET	prime1.fs	/^: MAP-ΔSET Δ 0 DO ΔSET I ∈? IF I ΔSETλ THEN LOOP ;$/;"	d
+MAP-ΔSET	spoj.fs	/^: MAP-ΔSET Δ 0 DO ΔSET I ∈? IF I ΔSETλ THEN LOOP ;$/;"	d
+MAP-δPRIMES	prime1.fs	/^: MAP-δPRIMES δPRIMES% 0 DO I δPRIME# δPRIMESλ LOOP ;$/;"	d
+MAP-δPRIMES	spoj.fs	/^: MAP-δPRIMES δPRIMES% 0 DO I δPRIME# δPRIMESλ LOOP ;$/;"	d
+MAP-δSET	prime1.fs	/^: MAP-δSET δ 0 DO δSET I ∈? IF I δSETλ THEN LOOP ;$/;"	d
+MAP-δSET	spoj.fs	/^: MAP-δSET δ 0 DO δSET I ∈? IF I δSETλ THEN LOOP ;$/;"	d
+PRIME#	draft.fs	/^: PRIME# ( index -- prime )$/;"	d
+PRIME-CHECK	draft.fs	/^: PRIME-CHECK$/;"	d
+PRIMES	draft.fs	/^CREATE PRIMES PRIMES,$/;"	a
+PRIMES,	draft.fs	/^: PRIMES, $/;"	d
+PRIMES-COUNT	draft.fs	/^HERE PRIMES - 2\/ CONSTANT PRIMES-COUNT$/;"	c
+Q	draft.fs	/^: Q ( start,prime -- offset )$/;"	d
+Q	prime1.fs	/^: Q ( start,prime -- offset )$/;"	d
+Q	spoj.fs	/^: Q ( start,prime -- offset )$/;"	d
+RESET	draft.fs	/^: RESET ( set,size\/8 -- )$/;"	d
+SET-INITIAL-BITS	prime1.fs	/^: SET-INITIAL-BITS ( limit,set )$/;"	d
+SET-OFFSET	draft.fs	/^: SET-OFFSET ( set,index -- offset )$/;"	d
+SETLIMITS	prime1.fs	/^: SETLIMITS ( size,index -- limit,start )$/;"	d
+SETLIMITS	spoj.fs	/^: SETLIMITS ( size,index -- limit,start )$/;"	d
+SETOFFSET	spoj.fs	/^: SETOFFSET ( set,index -- offset )$/;"	d
+SETSTART	prime1.fs	/^: SETSTART  ( size,index -- start ) * ;$/;"	d
+SETSTART	spoj.fs	/^: SETSTART  ( size,index -- start ) * ;$/;"	d
+SHOW-IT	testprime1.fs	/^: SHOW-IT ( offset, prime -- offset ) OVER + . ;$/;"	d
+SIEVE!	draft.fs	/^: SIEVE! ( set,limit,start,prime -- )$/;"	d
+SIEVE!	prime1.fs	/^: SIEVE! ( set,limit,start,prime -- )$/;"	d
+SIEVE!	spoj.fs	/^: SIEVE! ( set,limit,start,prime -- )$/;"	d
+SIEVE-ITER!	prime1.fs	/^: SIEVE-ITER! ( set,limit,start,prime -- set,limit,start )$/;"	d
+SIEVE-ITER!	spoj.fs	/^: SIEVE-ITER! ( set,limit,start,prime -- set,limit,start )$/;"	d
+SKIP-NON-DIGIT	prime1.fs	/^: SKIP-NON-DIGIT ( -- char )$/;"	d
+SKIP-NON-DIGIT	spoj.fs	/^: SKIP-NON-DIGIT ( -- char )$/;"	d
+SLOW-INIT-LARGE-SET	draft.fs	/^: SLOW-INIT-LARGE-SET$/;"	d
+SMALL-PRIMES>LARGE-SET	draft.fs	/^: SMALL-PRIMES>LARGE-SET$/;"	d
+SMALL-SET	draft.fs	/^CREATE SMALL-SET SMALL-SET% ALLOT SMALL-SET SMALL-SET% RESET$/;"	a
+SMALL-SET>LARGE-SET	draft.fs	/^: SMALL-SET>LARGE-SET ( index -- )$/;"	d
+SQ	prime1.fs	/^: SQ ( n -- n^2 ) DUP * ;$/;"	d
+SQ	spoj.fs	/^: SQ ( n -- n^2 ) DUP * ;$/;"	d
+TO-DIGIT	prime1.fs	/^: TO-DIGIT ( char -- n )$/;"	d
+TO-DIGIT	spoj.fs	/^: TO-DIGIT ( char -- n )$/;"	d
+W,	draft.fs	/^: W, ( w -- )$/;"	d
+W,	prime1.fs	/^: W, ( w -- ) 256 \/MOD SWAP C, C, ;$/;"	d
+W,	spoj.fs	/^: W, ( w -- ) 256 \/MOD SWAP C, C, ;$/;"	d
+WITHIN-LIMITS?	prime1.fs	/^: WITHIN-LIMITS? ( max,min,start,bit# -- flag )$/;"	d
+WITHIN-LIMITS?	spoj.fs	/^: WITHIN-LIMITS? ( max,min,start,bit# -- flag )$/;"	d
+WITHIN-RANGE	prime1.fs	/^: WITHIN-RANGE ( limit,offset,start -- flag )$/;"	d
+WITHIN-RANGE	spoj.fs	/^: WITHIN-RANGE ( limit,offset,start -- flag )$/;"	d
+foo	testprime1.fs	/^    create foo 4807 W,$/;"	a
+¬∈!	prime1.fs	/^: ¬∈! ( set,bit# -- )$/;"	d
+¬∈!	spoj.fs	/^: ¬∈! ( set,index -- )$/;"	d
+Δ	prime1.fs	/^δ SQ CONSTANT Δ       Δ 8 \/ CONSTANT ΔSET%$/;"	c
+Δ	spoj.fs	/^δ SQ   CONSTANT Δ$/;"	c
+Δ-SIEVES!	prime1.fs	/^: Δ-SIEVES! ( limit,start -- )$/;"	d
+Δ-SIEVES!	spoj.fs	/^: Δ-SIEVES! ( limit,start -- )$/;"	d
+ΔPRIME#	prime1.fs	/^: ΔPRIME# ( index -- prime )$/;"	d
+ΔPRIME#	spoj.fs	/^: ΔPRIME# ( index -- prime )$/;"	d
+ΔPRIME,	prime1.fs	/^: ΔPRIME, ( start,bit# -- start ) $/;"	d
+ΔPRIME,	spoj.fs	/^: ΔPRIME, ( start,bit# -- start ) $/;"	d
+ΔPRIMES	prime1.fs	/^CREATE ΔPRIMES ΔPRIMES,$/;"	a
+ΔPRIMES	spoj.fs	/^CREATE ΔPRIMES ΔPRIMES,$/;"	a
+ΔPRIMES%	prime1.fs	/^HERE ΔPRIMES - 2\/ CONSTANT ΔPRIMES%$/;"	c
+ΔPRIMES%	spoj.fs	/^HERE ΔPRIMES - 2\/ CONSTANT ΔPRIMES%$/;"	c
+ΔPRIMES,	prime1.fs	/^: ΔPRIMES,$/;"	d
+ΔPRIMES,	spoj.fs	/^: ΔPRIMES,$/;"	d
+ΔSET	prime1.fs	/^CREATE ΔSET ΔSET% ALLOT ΔSET ΔSET% 255 FILL$/;"	a
+ΔSET	spoj.fs	/^CREATE ΔSET ΔSET% ALLOT ΔSET ΔSET% 255 FILL$/;"	a
+ΔSET%	spoj.fs	/^Δ 8 \/  CONSTANT ΔSET%$/;"	c
+δ	prime1.fs	/^184  CONSTANT δ       δ 8 \/ CONSTANT δSET%$/;"	c
+δ	spoj.fs	/^184    CONSTANT δ$/;"	c
+δ-SIEVES!	prime1.fs	/^: δ-SIEVES! ( limit,start -- )$/;"	d
+δ-SIEVES!	spoj.fs	/^: δ-SIEVES! ( limit,start -- )$/;"	d
+δPRIME#	prime1.fs	/^: δPRIME# ( index -- prime ) δPRIMES + C@ ;$/;"	d
+δPRIME#	spoj.fs	/^: δPRIME# ( index -- prime ) δPRIMES + C@ ;$/;"	d
+δPRIMES	prime1.fs	/^CREATE δPRIMES δPRIMES,$/;"	a
+δPRIMES	spoj.fs	/^CREATE δPRIMES δPRIMES,$/;"	a
+δPRIMES%	prime1.fs	/^HERE δPRIMES - CONSTANT δPRIMES% $/;"	c
+δPRIMES%	spoj.fs	/^HERE δPRIMES - CONSTANT δPRIMES% $/;"	c
+δPRIMES,	prime1.fs	/^: δPRIMES, $/;"	d
+δPRIMES,	spoj.fs	/^: δPRIMES, $/;"	d
+δSET	prime1.fs	/^CREATE δSET δSET% ALLOT δSET δSET% 255 FILL$/;"	a
+δSET	spoj.fs	/^CREATE δSET δSET% ALLOT δSET δSET% 255 FILL$/;"	a
+δSET%	spoj.fs	/^δ 8 \/  CONSTANT δSET%$/;"	c
+∈!	prime1.fs	/^: ∈! ( set,bit# -- )$/;"	d
+∈!	spoj.fs	/^: ∈! ( set,index -- )$/;"	d
+∈?	prime1.fs	/^: ∈? ( set,bit# -- flag )$/;"	d
+∈?	spoj.fs	/^: ∈? ( set,index -- flag )$/;"	d

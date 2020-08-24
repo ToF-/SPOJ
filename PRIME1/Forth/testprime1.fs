@@ -18,11 +18,6 @@ t{ ." δPRIMES is a small table of small primes" CR
     δPRIMES% 1- δPRIME# 181 ?S
 }t
 
-t{ ." MAP-δPRIMES allows for execution of a word for each small prime " CR
-    ' + IS δPRIMESλ 0 MAP-δPRIMES 3447 ?S
-    ' * IS δPRIMESλ 1 MAP-δPRIMES 1456955400340837138 ?S 
-}t
-
 t{ ." δSET is a bit set with a small capacity " CR
     δSET δSET% 255 FILL
     δSET 42 ∈? ?true
@@ -34,13 +29,6 @@ t{ ." WITHIN-RANGE tells if offset + start is within the current limit " CR
     100 42 17 WITHIN-RANGE ?true
     100 42 60 WITHIN-RANGE ?false
     100 42 58 WITHIN-RANGE ?false
-}t
-t{ ." MAP-δSET allows for execution of a word for each bit til a limit that is in the set " CR
-    δSET δSET% ERASE 
-    δSET 42 ∈!
-    δSET 17 ∈!
-    ' + IS δSETλ 0 MAP-δSET 59 ?S
-    ' * IS δSETλ 1 MAP-δSET 714 ?S
 }t
 
 t{ ." SIEVE! excludes multiples of a prime in a set " CR
@@ -64,9 +52,8 @@ t{ ." SIEVE! excludes multiples of a prime in a set " CR
 : CHECK-δSIEVE ( index -- max,min )
     >R
     δ R@ SETLIMITS δ-SIEVES!
-    ['] KEEP-MIN-AND-MAX IS δSETλ
     δ R@ SETSTART 2 100000000 
-    MAP-δSET 
+    δ 0 DO δSET I ∈? IF I KEEP-MIN-AND-MAX THEN LOOP
     ROT DROP 
     R> DROP ;
 
@@ -114,9 +101,8 @@ t{ ." ΔPRIMES is table of 2 bytes word primes that is not initialized " CR
 : CHECK-ΔSIEVE ( index -- max,min )
     >R
     Δ R@ SETLIMITS Δ-SIEVES!
-    ['] KEEP-MIN-AND-MAX IS ΔSETλ
     Δ R@ SETSTART 2 100000000 
-    MAP-ΔSET 
+    Δ 0 DO ΔSET I ∈? IF I KEEP-MIN-AND-MAX THEN LOOP
     ROT DROP 
     R> DROP ;
 
@@ -144,6 +130,6 @@ t{ ." WITHIN-LIMITS? says if a bit# added to start is within the limits " CR
 }t
 
 t{ ." .PRIMES outputs primes within limits " CR
-    190010 189900 .PRIMES
+    1000 900 .PRIMES
 }t
 bye
