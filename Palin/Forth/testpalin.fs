@@ -63,11 +63,17 @@ t{ ." SPLIT copies the two halves of a string of even length " cr
     s" 4433221" left  s-count ?equals
     s" 1998877" right s-count ?equals
 }t
-t{ ." SPLIT copies the two sides of a string of odd length and keeps the middle char " cr
-    s" 443322101998877" split
-    s" 4433221" left  s-count ?equals
-    s" 1998877" right s-count ?equals
-    middle c@ char 0 ?s
+
+t{ ." TRIM removes the first char from a string " cr
+    s" 01234" left copy
+    left trim
+    s" 1234" left s-count ?equals
+}t
+t{ ." SPLIT copies the two sides of a string of odd length each with the middle char " cr
+    s" 432109876" split
+    s" 43210" left  s-count ?equals
+    s" 09876" right s-count ?equals
+    middle @ 1 ?s
 }t
 t{ ." LEFT++RLEFT creates a result string with the left half and its reverse " cr
     s" 243179" split
@@ -79,8 +85,16 @@ t{ ." NEXT-PALINDROME creates a result string which is the next palindrome for s
     result s-count s" 243342" ?equals
     s" 7142" next-palindrome
     result s-count s" 7227" ?equals
+    s" 7117" next-palindrome
+    result s-count s" 7227" ?equals
     s" 1992" next-palindrome
     result s-count s" 2002" ?equals
+}t
+t{ ." NEXT-PALINDROME creates a result string which is the next palindrome for simple odd cases " cr
+    s" 2434179" next-palindrome
+    result s-count s" 2434342" ?equals
+    s" 71542" next-palindrome
+    result s-count s" 71617" ?equals
 }t
 .fut-tests-result
 bye

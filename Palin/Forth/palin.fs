@@ -8,6 +8,9 @@ VARIABLE MIDDLE
 : S-COUNT ( addr -- addr+8,count )
     DUP CELL + SWAP @ ;
 
+: EMPTY ( addr -- )
+    MAX-SIZE 2/ ERASE ;
+
 : COPY ( addr,count,dest -- )
     OVER OVER ! 
     CELL+ SWAP CMOVE ;
@@ -47,22 +50,30 @@ VARIABLE MIDDLE
     SWAP 1+ OVER [CHAR] 0 FILL
     1+ SWAP C! ;
 
-: GET-MIDDLE ( addr,count,flag -- )
-    IF + C@ ELSE 2DROP 0 THEN MIDDLE C! ;
+: TRIM ( addr -- )
+    DUP S-COUNT 1- 
+    OVER + SWAP DO I 1+ C@ I C! LOOP 
+    DUP @ 1- SWAP ! ;
+    
 
 : SPLIT ( addr,count -- )
+    LEFT EMPTY
+    RIGHT EMPTY
     DUP 1 AND >R 2/ 
-    OVER OVER R@     GET-MIDDLE 
-    OVER OVER        LEFT COPY
-    TUCK + R> + SWAP RIGHT COPY ;
+    R@ MIDDLE !
+    OVER OVER R@ +   LEFT COPY
+    SWAP OVER + SWAP R> + 
+    RIGHT COPY ;
 
 : LEFT++RLEFT
+    RESULT EMPTY
     LEFT S-COUNT RIGHT COPY
     RIGHT REVERSE
+    MIDDLE @ IF RIGHT TRIM THEN
     LEFT S-COUNT RESULT COPY
     RIGHT S-COUNT
     RESULT S-COUNT + SWAP CMOVE
-    RESULT @ 2* RESULT ! ;
+    LEFT @ RIGHT @ + RESULT ! ;
 
 : COMPARE-HALVES
     LEFT REVERSE
@@ -72,10 +83,12 @@ VARIABLE MIDDLE
     2DUP SPLIT
     COMPARE-HALVES -ROT
     SPLIT
-    0< IF 
+    DUP 0< SWAP 0= OR IF 
         LEFT INCREMENT
         IF LEFT EXTEND THEN
     THEN
     LEFT++RLEFT ;
 
+: .NEXT-PALINDROME ( addr,count -- )
+    NEXT-PALINDROME RESULT S-COUNT TYPE ;
 
