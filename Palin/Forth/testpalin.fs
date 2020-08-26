@@ -57,6 +57,31 @@ t{ ." EXTEND a n-digit string makes it a 1 followed by n zeroes" cr
     left extend
     s" 1000" left s-count ?equals
 }t
+
+t{ ." SPLIT copies the two halves of a string of even length " cr
+    s" 44332211998877" split
+    s" 4433221" left  s-count ?equals
+    s" 1998877" right s-count ?equals
+}t
+t{ ." SPLIT copies the two sides of a string of odd length and keeps the middle char " cr
+    s" 443322101998877" split
+    s" 4433221" left  s-count ?equals
+    s" 1998877" right s-count ?equals
+    middle c@ char 0 ?s
+}t
+t{ ." LEFT++RLEFT creates a result string with the left half and its reverse " cr
+    s" 243179" split
+    left++rleft
+    result s-count s" 243342" ?equals
+}t
+t{ ." NEXT-PALINDROME creates a result string which is the next palindrome for simple even cases " cr
+    s" 243179" next-palindrome
+    result s-count s" 243342" ?equals
+    s" 7142" next-palindrome
+    result s-count s" 7227" ?equals
+    s" 1992" next-palindrome
+    result s-count s" 2002" ?equals
+}t
 .fut-tests-result
 bye
 
