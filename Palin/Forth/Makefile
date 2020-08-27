@@ -1,7 +1,6 @@
 test : palin.fs spoj
 	sed -n -e 's/\(<- \)\(.*\)/\2/pw input.dat'     test.txt >/dev/null
-	sed -n -e 's/\(-> \)\(.*\)/\2/pw temp.dat'      test.txt >/dev/null
-	sed 's/\(.*\)/\1 /pw expected.dat'              temp.dat >/dev/null
+	sed -n -e 's/\(-> \)\(.*\)/\2/pw expected.dat'  test.txt >/dev/null
 	gforth spoj.fs <input.dat >result.dat
 	diff expected.dat result.dat
 
