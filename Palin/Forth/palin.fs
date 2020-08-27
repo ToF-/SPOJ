@@ -1,20 +1,31 @@
 1000000 CONSTANT MAX-SIZE
 
 VARIABLE LEFT MAX-SIZE 2/ ALLOT
+VARIABLE RLEFT MAX-SIZE 2/ ALLOT
 VARIABLE RIGHT MAX-SIZE 2/ ALLOT
 VARIABLE RESULT MAX-SIZE ALLOT
 VARIABLE MIDDLE
+VARIABLE EXTENDED
+
+: S-INIT  ( addr,count,dest -- )
+    OVER OVER !
+    CELL+ SWAP CMOVE ;
 
 : S-COUNT ( addr -- addr+8,count )
     DUP CELL + SWAP @ ;
 
-: EMPTY ( addr -- )
+: S-EMPTY ( addr -- )
     MAX-SIZE 2/ ERASE ;
 
-: COPY ( addr,count,dest -- )
-    OVER OVER ! 
-    CELL+ SWAP CMOVE ;
+: S-COPY ( srce,dest -- )
+    SWAP S-COUNT ROT S-INIT ;
 
+: S-APPEND ( addr,addr -- )
+    OVER S-COUNT + 
+    OVER S-COUNT 
+    -ROT SWAP ROT CMOVE
+    @ OVER @ + SWAP ! ;
+    
 : EXCHANGE ( addr,addr -- )
     2DUP C@ SWAP C@ ROT C! SWAP C! ;
 
@@ -52,42 +63,62 @@ VARIABLE MIDDLE
 
 : TRIM ( addr -- )
     DUP S-COUNT 1- 
-    OVER + SWAP DO I 1+ C@ I C! LOOP 
+    OVER + SWAP 
+    2DUP > IF
+        DO I 1+ C@ I C! LOOP 
+    ELSE
+        2DROP
+    THEN
     DUP @ 1- SWAP ! ;
     
 
 : SPLIT ( addr,count -- )
-    LEFT EMPTY
-    RIGHT EMPTY
+    LEFT  S-EMPTY
+    RIGHT S-EMPTY
     DUP 1 AND >R 2/ 
     R@ MIDDLE !
-    OVER OVER R@ +   LEFT COPY
+    OVER OVER R@ +   LEFT S-INIT
     SWAP OVER + SWAP R> + 
-    RIGHT COPY ;
+    RIGHT S-INIT ;
 
 : LEFT++RLEFT
-    RESULT EMPTY
-    LEFT S-COUNT RIGHT COPY
-    RIGHT REVERSE
-    MIDDLE @ IF RIGHT TRIM THEN
-    LEFT S-COUNT RESULT COPY
-    RIGHT S-COUNT
-    RESULT S-COUNT + SWAP CMOVE
-    LEFT @ RIGHT @ + RESULT ! ;
+    RESULT S-EMPTY
+    LEFT RLEFT S-COPY
+    RLEFT REVERSE
+    MIDDLE   @ IF RLEFT TRIM THEN
+    EXTENDED @ IF RLEFT TRIM THEN
+    LEFT RESULT S-COPY
+    RESULT RLEFT S-APPEND ;
 
 : COMPARE-HALVES
-    LEFT REVERSE
-    LEFT S-COUNT RIGHT S-COUNT COMPARE ;
+    LEFT RLEFT S-COPY
+    RLEFT REVERSE
+    RLEFT S-COUNT RIGHT S-COUNT COMPARE ;
 
-: NEXT-PALINDROME ( addr,count )
+: SPECIAL-CASE? ( addr,count -- flag )
+    S" 9" COMPARE 0= ;
+
+: NEXT-PALINDROME' ( addr,count )
+    EXTENDED OFF
     2DUP SPLIT
     COMPARE-HALVES -ROT
     SPLIT
     DUP 0< SWAP 0= OR IF 
         LEFT INCREMENT
-        IF LEFT EXTEND THEN
+        IF 
+            LEFT EXTEND 
+            EXTENDED ON
+        THEN
     THEN
     LEFT++RLEFT ;
+
+: NEXT-PALINDROME ( addr,count )
+    2DUP SPECIAL-CASE? 0= IF
+        NEXT-PALINDROME'
+    ELSE
+        2DROP 
+        S" 11" RESULT S-INIT 
+    THEN ;
 
 : .NEXT-PALINDROME ( addr,count -- )
     NEXT-PALINDROME RESULT S-COUNT TYPE ;
