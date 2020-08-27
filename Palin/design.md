@@ -13,8 +13,8 @@
         if N*2 < size(S)
 
             L ←  subs(S, 0, N+1)
-            R ←  subs(S, size(S), N+1)
             if rev(L) ≤ R
+            R ←  subs(S, size(S), N+1)
                 inc(L) ++ trim(rev(inc(L)))
             if rev(L) > R
                 L ++ trim(rev(L))
