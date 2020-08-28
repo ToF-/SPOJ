@@ -1,36 +1,41 @@
-1000000 CONSTANT MAX-SIZE
-VARIABLE INPUT MAX-SIZE ALLOT
-VARIABLE LEFT MAX-SIZE 2/ ALLOT
-VARIABLE RLEFT MAX-SIZE 2/ ALLOT
-VARIABLE RIGHT MAX-SIZE 2/ ALLOT
-VARIABLE RESULT MAX-SIZE ALLOT
+: BIG-STRING ( size <name> -- )
+    CREATE DUP , ALLOT
+    DOES>    ( -- addr,count ) 
+        DUP CELL+ SWAP @ ;
+
+1000000     CONSTANT MAX-SIZE
+MAX-SIZE 2/ CONSTANT HALF-SIZE
+
+MAX-SIZE  BIG-STRING INPUT
+HALF-SIZE BIG-STRING LEFT
+HALF-SIZE BIG-STRING RLEFT
+HALF-SIZE BIG-STRING RIGHT
+MAX-SIZE  BIG-STRING RESULT
+
 VARIABLE MIDDLE
 VARIABLE EXTENDED
 
-: S-INIT  ( addr,count,dest -- )
-    OVER OVER !
-    CELL+ SWAP CMOVE ;
+: S-SIZE  ( addr,count -- count )
+    NIP ;
 
-: S-COUNT ( addr -- addr+8,count )
-    DUP CELL + SWAP @ ;
+: S-COPY  ( addr,count,addr,count -- )
+    DROP 2DUP CELL - !
+    SWAP CMOVE ;
 
-: S-EMPTY ( addr -- )
-    MAX-SIZE 2/ ERASE ;
+: S-EMPTY ( addr,count -- )
+    2DUP ERASE
+    DROP CELL - 0 SWAP ! ;
 
-: S-COPY ( srce,dest -- )
-    SWAP S-COUNT ROT S-INIT ;
 
-: S-APPEND ( addr,addr -- )
-    OVER S-COUNT + 
-    OVER S-COUNT 
-    -ROT SWAP ROT CMOVE
-    @ OVER @ + SWAP ! ;
-    
+: S-APPEND ( addr,count,addr,count -- )
+    2>R OVER CELL - 
+    OVER R@ + SWAP ! 
+    + 2R> -ROT SWAP ROT CMOVE ; 
+
 : EXCHANGE ( addr,addr -- )
     2DUP C@ SWAP C@ ROT C! SWAP C! ;
 
-: REVERSE ( addr -- )
-    S-COUNT
+: REVERSE ( addr,count -- )
     1- OVER + 
     BEGIN
         2DUP < WHILE
@@ -45,8 +50,8 @@ VARIABLE EXTENDED
     ELSE 0 THEN
     SWAP ROT C! ;
 
-: INCREMENT ( addr -- carry )
-    S-COUNT 1- OVER + 
+: INCREMENT ( addr,count -- carry )
+    1- OVER + 
     1 -ROT
     BEGIN
         2DUP <= WHILE
@@ -55,21 +60,21 @@ VARIABLE EXTENDED
         -ROT 1-
     REPEAT 2DROP ;
 
-: EXTEND ( addr -- )
-    DUP S-COUNT 
+: EXTEND ( addr,count -- )
+    2DUP
     OVER [CHAR] 1 SWAP C!
-    SWAP 1+ OVER [CHAR] 0 FILL
-    1+ SWAP C! ;
+    SWAP 1+ SWAP [CHAR] 0 FILL
+    1+ SWAP CELL - ! ;
 
-: TRIM ( addr -- )
-    DUP S-COUNT 1- 
-    OVER + SWAP 
+: TRIM ( addr,count -- )
+    OVER -ROT
+    1- OVER + SWAP
     2DUP > IF
         DO I 1+ C@ I C! LOOP 
     ELSE
         2DROP
     THEN
-    DUP @ 1- SWAP ! ;
+    CELL - DUP @ 1- SWAP ! ;
     
 
 : SPLIT ( addr,count -- )
@@ -77,23 +82,23 @@ VARIABLE EXTENDED
     RIGHT S-EMPTY
     DUP 1 AND >R 2/ 
     R@ MIDDLE !
-    OVER OVER R@ +   LEFT S-INIT
+    OVER OVER R@ +   LEFT S-COPY
     SWAP OVER + SWAP R> + 
-    RIGHT S-INIT ;
+    RIGHT S-COPY ;
 
 : LEFT++RLEFT
-    RESULT S-EMPTY
+    RESULT     S-EMPTY
     LEFT RLEFT S-COPY
     RLEFT REVERSE
     MIDDLE   @ IF RLEFT TRIM THEN
     EXTENDED @ IF RLEFT TRIM THEN
-    LEFT RESULT S-COPY
-    RESULT RLEFT S-APPEND ;
+    LEFT   RESULT S-COPY
+    RESULT RLEFT  S-APPEND ;
 
 : COMPARE-HALVES
     LEFT RLEFT S-COPY
     RLEFT REVERSE
-    RLEFT S-COUNT RIGHT S-COUNT COMPARE ;
+    RLEFT RIGHT COMPARE ;
 
 : SPECIAL-CASE? ( addr,count -- flag )
     S" 9" COMPARE 0= ;
@@ -117,11 +122,11 @@ VARIABLE EXTENDED
         NEXT-PALINDROME'
     ELSE
         2DROP 
-        S" 11" RESULT S-INIT 
+        S" 11" RESULT S-COPY
     THEN ;
 
 : .NEXT-PALINDROME ( addr,count -- )
-    NEXT-PALINDROME RESULT S-COUNT TYPE ;
+    NEXT-PALINDROME RESULT TYPE ;
 
 
 : TO-DIGIT ( char -- n )
@@ -152,6 +157,6 @@ VARIABLE EXTENDED
 
 : MAIN
     GET-NUMBER 0 DO
-        INPUT GET-NUMERIC-STRING 
-        INPUT S-COUNT .NEXT-PALINDROME CR
+        INPUT DROP GET-NUMERIC-STRING 
+        INPUT .NEXT-PALINDROME CR
     LOOP ;
