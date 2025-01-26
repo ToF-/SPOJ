@@ -1,29 +1,33 @@
-182 CONSTANT SIZE-MAX
+CREATE BITMAP 256 DUP * ALLOT
 
-VARIABLE ROW-MAX
-VARIABLE COL-MAX
+: PIXEL-ADDR ( coord -- addr )
+    BITMAP + ;
 
-CREATE BITMAP SIZE-MAX DUP * ALLOT
-
-: PIXEL-ADDR ( col,row -- addr )
-    COL-MAX @ * + BITMAP + ;
-
-: PIXEL@ ( col,row -- p )
+: PIXEL@ ( coord -- p )
     PIXEL-ADDR C@ ;
 
-: PIXEL! ( p,col,row -- )
-    PIXEL-ADDR C! 
+: PIXEL! ( p,coord -- )
+    PIXEL-ADDR C! ;
 
-CREATE QUEUE SIZE-MAX DUP * ALLOT
+256 DUP * CONSTANT BITMAP-SIZE
+
+CREATE QUEUE 256 DUP ALLOT
 
 VARIABLE QUEUE-MAX
 
-: QUEUE+! ( n,m -- )
-    QUEUE QUEUE-MAX @ 2* + DUP
-    -ROT 1+ C! SWAP C!
-    1 QUEUE-MAX +!
+: W! ( word,addr -- )
+    OVER 255 AND OVER C!
+    SWAP 8 SHIFTR SWAP 1+ C! ;
 
-: QUEUE-@ ( -- n,m )
+: W@ ( addr -- word )
+    DUP C@ SWAP 1+ C@ 8 SHIFTL
+: QUEUE+! ( coord -- )
+    QUEUE QUEUE-MAX @ 2* + W!
+
+    1 QUEUE-MAX +! ;
+
+: QUEUE-@ ( -- coord )
+    QUEUE 
     QUEUE DUP C@ SWAP 1+ C@
     QUEUE DUP 2 + QUEUE-MAX 2*
     -1 QUEUE-MAX +! ;
