@@ -78,17 +78,18 @@ VARIABLE QUEUE-MAX
     COL-MAX @ < IF 1+ ELSE ILL-COORD THEN ;
 
 : MARK-COORD ( p,coord )
-    ." MARK-COORD " HEX DUP . DECIMAL CR
     DUP COORD? IF
         2DUP PIXEL@ < IF
             DUP QUEUE+!
             PIXEL!
+        ELSE
+            2DROP
         THEN
-    ELSE 2DROP ." NOPE" CR THEN ;
+    ELSE 2DROP THEN ;
 
 : EXPAND ( coord -- )
-    ." EXPAND " HEX DUP . DECIMAL CR
-    DUP PIXEL@ 1+ SWAP
+    DUP PIXEL@
+    1+ SWAP
     2DUP COORD>UP MARK-COORD
     2DUP COORD>DOWN MARK-COORD
     2DUP COORD>LEFT MARK-COORD
@@ -96,7 +97,6 @@ VARIABLE QUEUE-MAX
 
 : EXPAND-ALL
     BEGIN
-        .QUEUE
         QUEUE-EMPTY? 0= WHILE
         QUEUE-@ EXPAND
     REPEAT ;
