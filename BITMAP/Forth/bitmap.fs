@@ -1,3 +1,4 @@
+182 CONSTANT SIZE-MAX
 CREATE BITMAP 256 DUP * ALLOT
 
 : PIXEL-ADDR ( coord -- addr )
@@ -17,42 +18,46 @@ VARIABLE QUEUE-MAX
 
 : W! ( word,addr -- )
     OVER 255 AND OVER C!
-    SWAP 8 SHIFTR SWAP 1+ C! ;
+    SWAP 8 RSHIFT SWAP 1+ C! ;
 
 : W@ ( addr -- word )
-    DUP C@ SWAP 1+ C@ 8 SHIFTL
-: QUEUE+! ( coord -- )
-    QUEUE QUEUE-MAX @ 2* + W!
+    DUP C@ SWAP 1+ C@ 8 LSHIFT OR ;
 
-    1 QUEUE-MAX +! ;
-
-: QUEUE-@ ( -- coord )
-    QUEUE 
-    QUEUE DUP C@ SWAP 1+ C@
-    QUEUE DUP 2 + QUEUE-MAX 2*
-    -1 QUEUE-MAX +! ;
 
 : QUEUE-EMPTY? ( -- f )
     QUEUE-MAX @ 0= ;
 
-: COORD? ( n -- f )
-    DUP 0 >= SWAP SIZE-MAX < AND ;
+: QUEUE+! ( coord -- )
+    QUEUE QUEUE-MAX @ 2* + W!
+    1 QUEUE-MAX +! ;
 
-: COORDS? ( n,m -- f )
-    COORD? SWAP COORD? AND ;
+: QUEUE-@ ( -- coord )
+    ASSERT( QUEUE-EMPTY? 0= )
+    QUEUE DUP W@ SWAP
+    DUP 2 + QUEUE-MAX 2* CMOVE
+    -1 QUEUE-MAX +! ;
 
-: COORD>UP ( n,m -- n',m' )
-    SWAP 1 -  SWAP ;
+: COORD? ( coord -- f )
+    -1 <> ;
 
-: COORD>DOWN ( n,m -- n',m' )
-    SWAP 1+ SWAP ;
+: ILL-COORD ( coord -- coord' )
+    DROP -1 ;
 
-: COORD>LEFT ( n,m -- n',m' )
-    1 - ;
+: COORD>UP ( coord -- coord' )
+    DUP 8 RSHIFT 255 AND
+    IF 256 - ELSE ILL-COORD THEN ;
 
-: COORD>RIGHT ( n,m -- n',m' )
-    1+ ;
+: COORD>DOWN ( coord -- coord' )
+    DUP 8 RSHIFT 255 AND
+    SIZE-MAX < IF 256 + ELSE ILL-COORD THEN ;
 
+: COORD>LEFT ( coord -- coord' )
+    DUP 255 AND
+    IF 1 - ELSE ILL-COORD THEN ;
+
+: COORD>RIGHT ( coord -- coord' )
+    DUP 255 AND
+    SIZE-MAX < IF 1+ ELSE ILL-COORD THEN ;
 
 : SKIP-NON-DIGIT ( -- n )
     BEGIN KEY DIGIT? 0= WHILE REPEAT ;
