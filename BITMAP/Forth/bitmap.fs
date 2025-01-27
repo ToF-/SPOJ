@@ -5,71 +5,58 @@ VARIABLE COL-MAX
 
 CREATE BITMAP 256 DUP * ALLOT
 
-: PIXEL-ADDR ( coord -- addr )
-    BITMAP + ;
+: PIXEL-ADDR ( row,col -- addr )
+    SWAP 8 LSHIFT OR BITMAP + ;
 
-: PIXEL@ ( coord -- p )
+: PIXEL@ ( row,col -- p )
     PIXEL-ADDR C@ ;
 
-: PIXEL! ( p,coord -- )
+: PIXEL! ( p,row,col -- )
     PIXEL-ADDR C! ;
 
 CREATE QUEUE 256 DUP * ALLOT
 
 VARIABLE QUEUE-MAX
 
-: QW! ( w,addr -- )
-    OVER 255 AND OVER C!
-    1+ SWAP 8 RSHIFT SWAP C! ;
-
-: QW@ ( addr -- w )
-    DUP C@ SWAP 1+ C@
-    8 LSHIFT OR ;
+: EMPTY-QUEUE
+    QUEUE QUEUE-MAX ! ;
 
 : QUEUE-EMPTY? ( -- f )
-    QUEUE-MAX @ 0= ;
+    QUEUE-MAX @ QUEUE = ;
 
-: QUEUE+! ( coord -- )
-    QUEUE QUEUE-MAX @ 2* + QW!
-    1 QUEUE-MAX +! ;
+: QUEUE+! ( row,col -- )
+    QUEUE-MAX @ DUP 1+ -ROT C! C! 2 QUEUE-MAX +! ;
 
-: QUEUE-@ ( -- coord )
-    QUEUE QW@
-    QUEUE-MAX @ 0 DO
-        QUEUE I 1+ 2* + QW@
-        QUEUE I 2* + QW!
-    LOOP 
-    -1 QUEUE-MAX +! ;
+: QUEUE-@ ( -- row,col )
+    QUEUE DUP 1+ C@ SWAP C@
+    -2 QUEUE-MAX +!
+    QUEUE-MAX @ QUEUE - DUP IF
+        QUEUE QUEUE 2 + ROT CMOVE
+    ELSE DROP THEN ;
 
 : .QUEUE
-    HEX
-    QUEUE-MAX @ DUP IF 0 DO 
-        I 2* QUEUE + QW@ . 
-    LOOP CR ELSE DROP THEN DECIMAL ;
-
-: >COORD ( row,col -- coord )
-    SWAP 8 LSHIFT OR ;
+    QUEUE-MAX @ DUP IF
+        QUEUE DO 
+            I C@ .
+            I 1 AND IF SPACE THEN
+        LOOP
+    ELSE
+        DROP
+    THEN ;
 
 : .BITMAP
     ROW-MAX @ 0 DO
         COL-MAX @ 0 DO
-            J I >COORD PIXEL@ . LOOP CR LOOP ;
+            J I PIXEL@ . LOOP CR LOOP ;
 
-: COORD? ( coord -- f )
-    -1 <> ;
+: COORD>UP ( row,col -- row',col,1|0 )
+    OVER IF SWAP 1 - SWAP TRUE ELSE 2DROP FALSE THEN
 
-: ILL-COORD ( coord -- coord' )
-    DROP -1 ;
+: COORD>DOWN ( row,col -- row',col,1|0 )
+    OVER ROW-MAX @ < IF SWAP 1 + SWAP TRUE ELSE 2DROP FALSE THEN
 
-: COORD>UP ( coord -- coord' )
-    DUP 8 RSHIFT 255 AND
-    IF 256 - ELSE ILL-COORD THEN ;
+: COORD>LEFT ( row,col -- row,col',1|0 )
 
-: COORD>DOWN ( coord -- coord' )
-    DUP 8 RSHIFT 255 AND
-    ROW-MAX @ < IF 256 + ELSE ILL-COORD THEN ;
-
-: COORD>LEFT ( coord -- coord' )
     DUP 255 AND
     IF 1 - ELSE ILL-COORD THEN ;
 
