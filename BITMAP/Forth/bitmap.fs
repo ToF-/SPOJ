@@ -107,7 +107,7 @@ VARIABLE PIXEL
 : GET-COLS ( row -- )
     0 SKIP-NON-BINARY
     BEGIN
-        [CHAR] 1 = IF 2DUP QUEUE+! 0 ELSE 255 THEN
+        [CHAR] 1 = IF 2DUP QUEUE+! 0 ELSE 9999 THEN
         >R 2DUP R> -ROT PIXEL!
         1+
         KEY DUP BINARY? 0=
