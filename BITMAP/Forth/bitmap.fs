@@ -40,14 +40,12 @@ VARIABLE QUEUE-MAX
             I C@ .
             I 1 AND IF SPACE THEN
         LOOP
-    ELSE
-        DROP
     THEN CR ;
 
 : .BITMAP
     ROW-MAX @ 0 DO
         COL-MAX @ 0 DO
-            J I PIXEL@ . LOOP CR LOOP ;
+            J I PIXEL@ 0 .R I COL-MAX @ 1- < IF SPACE THEN LOOP CR LOOP ;
 
 : ILL-COORD ( row,col -- 0 )
     2DROP FALSE ;
