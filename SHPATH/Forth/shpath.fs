@@ -49,13 +49,10 @@ VARIABLE HEAP-NEXT
 
 CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
 
-CREATE PRIMES 29 C, 23 C, 19 C, 17 C, 13 C, 11 C, 7 C, 5 C, 3 C, 2 C,
-
 : HASH-KEY ( addr,count -- key )
     0 -ROT 0 DO
-        DUP I + C@ [CHAR] ` -
-        PRIMES I + C@ *
-        ROT + SWAP
+        DUP I + C@
+        ROT 33 * + SWAP
     LOOP DROP /HASH-TABLE MOD ;
 
 
