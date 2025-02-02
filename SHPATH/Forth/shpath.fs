@@ -49,10 +49,37 @@ VARIABLE HEAP-NEXT
 
 CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
 
+: HASH-TABLE-INIT
+    HASH-TABLE /HASH-TABLE CELLS ERASE ;
+
 : HASH-KEY ( addr,count -- key )
     0 -ROT 0 DO
         DUP I + C@
         ROT 33 * + SWAP
     LOOP DROP /HASH-TABLE MOD ;
+
+: INSERT-RECORD ( index,addr,count -- )
+    2DUP HASH-KEY CELLS HASH-TABLE + DUP >R
+    @ -ROT CREATE-RECORD R> ! ;
+
+: FIND-LINKED-RECORD ( addr,count,recAddr -- )
+    >R 0 -ROT
+    BEGIN
+        R@ WHILE
+        R@ RECORD-NAME COUNT 2OVER COMPARE
+        IF
+            R> RECORD-LINK >R
+        ELSE
+            2DROP DROP R> 0 >R
+        THEN
+    REPEAT R> DROP ;
+
+: FIND-RECORD ( addr,count -- addr|0 )
+    2DUP HASH-KEY CELLS HASH-TABLE +
+    @ DUP IF 
+        FIND-LINKED-RECORD
+    ELSE
+        DROP 2DROP 0
+    THEN ;
 
 
