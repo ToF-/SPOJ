@@ -3,6 +3,15 @@
 VARIABLE HEAP-START
 VARIABLE HEAP-NEXT
 
+: RECORD-NAME ( recAddr -- addr,count )
+    CELL+ CELL+ COUNT ;
+
+: RECORD-LINK ( recAddr -- addr )
+    @ ;
+
+: RECORD-INDEX ( recAddr -- n )
+    CELL+ @ ;
+
 : HEAP-ALLOCATE
     /HEAP ALLOCATE THROW
     HEAP-START ! ;
@@ -20,20 +29,22 @@ VARIABLE HEAP-NEXT
     HEAP-NEXT @ HEAP-START @ - OVER + ASSERT( /HEAP < )
     HEAP-NEXT +! ;
 
-: HEAP-,  ( n -- )
+: HEAP,  ( n -- )
     HEAP-HERE !
     CELL HEAP-NEXT +! ;
 
-: HEAP-C, ( c -- )
+: HEAPC, ( c -- )
     HEAP-HERE C!
     1 HEAP-NEXT +! ;
 
-: INSERT-LINK ( addr, count, link -- link' )
-    HEAP-HERE >R
-    HEAP-, DUP >R
-    HEAP-HERE SWAP CMOVE
-    R> HEAP-ALLOT R> ;
-    
+: CREATE-RECORD ( index,link,addr,count -- addr' )
+    HEAP-HERE >R 2>R
+    HEAP, HEAP,
+    2R> DUP HEAPC,
+    HEAP-HERE OVER HEAP-ALLOT
+    SWAP CMOVE 
+    R> ;
+
 
 
 
