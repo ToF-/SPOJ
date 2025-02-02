@@ -3,8 +3,8 @@
 VARIABLE HEAP-START
 VARIABLE HEAP-NEXT
 
-: RECORD-NAME ( recAddr -- addr,count )
-    CELL+ CELL+ COUNT ;
+: RECORD-NAME ( recAddr -- addr )
+    CELL+ CELL+ ;
 
 : RECORD-LINK ( recAddr -- addr )
     @ ;
