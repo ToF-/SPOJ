@@ -3,8 +3,11 @@
 VARIABLE HEAP-START
 VARIABLE HEAP-NEXT
 
-: RECORD-NAME ( recAddr -- addr )
-    CELL+ CELL+ ;
+\ a record holds :
+\   cell : a link to next record (or 0)
+\   cell : an index number
+\   byte : the length of name value
+\   bytes : the chars of name value 
 
 : RECORD-LINK ( recAddr -- addr )
     @ ;
@@ -12,39 +15,52 @@ VARIABLE HEAP-NEXT
 : RECORD-INDEX ( recAddr -- n )
     CELL+ @ ;
 
+: RECORD-NAME ( recAddr -- addr )
+    CELL+ CELL+ ;
+
+\ allocate memory on the heap
 : HEAP-ALLOCATE
     /HEAP ALLOCATE THROW
     HEAP-START ! ;
 
+\ free memory to the heap
 : HEAP-FREE
     HEAP-START @ FREE THROW ;
 
+\ heap-next is the address on the next available bytes
 : HEAP-INIT
     HEAP-START @ HEAP-NEXT ! ;
 
+\ next available bytes
 : HEAP-HERE ( -- addr )
     HEAP-NEXT @ ;
 
+\ like ALLOT, but for heap allocated memory
 : HEAP-ALLOT ( n -- ) 
     HEAP-NEXT @ HEAP-START @ - OVER + ASSERT( /HEAP < )
     HEAP-NEXT +! ;
 
+\ like , but for heap allocated memory
 : HEAP,  ( n -- )
     HEAP-HERE !
     CELL HEAP-NEXT +! ;
 
+\ like C, but for heap allocated memory
 : HEAPC, ( c -- )
     HEAP-HERE C!
     1 HEAP-NEXT +! ;
 
+\ allot and place a record in memory, return record address
 : CREATE-RECORD ( index,link,addr,count -- addr' )
-    HEAP-HERE >R 2>R
-    HEAP, HEAP,
-    2R> DUP HEAPC,
-    HEAP-HERE OVER HEAP-ALLOT
-    SWAP CMOVE 
-    R> ;
+    HEAP-HERE >R                \ stashed, return later
+    2SWAP HEAP, HEAP,           \ write link, then index
+    DUP HEAPC,                  \ write count
+    HEAP-HERE                   \ required for cmove
+    OVER HEAP-ALLOT             \ reserve name space
+    SWAP CMOVE R> ;             \ copy name, return record address
 
+\ Hash table = 10000 slots (cells) to records in heap allocated memory
+\ each slot is accessed via the hash key
 10000 CONSTANT /HASH-TABLE
 
 CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
@@ -52,12 +68,15 @@ CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
 : HASH-TABLE-INIT
     HASH-TABLE /HASH-TABLE CELLS ERASE ;
 
+\ hash ← hash * 33 + s[i] 
+\ good proportion between 0,1 and 2 collisions for 16000 10 char alphabetical entries 
 : HASH-KEY ( addr,count -- key )
     0 -ROT 0 DO
         DUP I + C@
         ROT 33 * + SWAP
     LOOP DROP /HASH-TABLE MOD ;
 
+\ compute the key, insert record
 : INSERT-RECORD ( index,addr,count -- )
     2DUP HASH-KEY CELLS HASH-TABLE + DUP >R
     @ -ROT CREATE-RECORD R> ! ;
@@ -67,18 +86,18 @@ CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
     BEGIN
         R@ WHILE
         R@ RECORD-NAME COUNT 2OVER COMPARE
-        IF
+        IF                      \ not found : follow the link
             R> RECORD-LINK >R
-        ELSE
+        ELSE                    \ found : set return value, force loop stop
             2DROP DROP R> 0 >R
         THEN
     REPEAT R> DROP ;
 
 : FIND-RECORD ( addr,count -- addr|0 )
     2DUP HASH-KEY CELLS HASH-TABLE +
-    @ DUP IF 
+    @ DUP IF                   \ there's a linked list record: search it
         FIND-LINKED-RECORD
-    ELSE
+    ELSE                       \ no record
         DROP 2DROP 0
     THEN ;
 
