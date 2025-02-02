@@ -45,6 +45,16 @@ VARIABLE HEAP-NEXT
     SWAP CMOVE 
     R> ;
 
+10000 CONSTANT /HASHTABLE
 
+CREATE HASHTABLE /HASHTABLE CELLS ALLOT
+
+CREATE PRIMES 2 , 3 , 5 , 7 , 11 , 13 , 17 , 19 , 23 , 29
+
+: HASH-KEY ( addr,count -- key )
+    OVER + SWAP 0 -ROT DO
+        C@ [CHAR] a -
+        PRIMES I CELLS + @ * +
+    LOOP /HASHTABLE MOD ;
 
 
