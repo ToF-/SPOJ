@@ -135,4 +135,12 @@ CREATE EDGE-TABLE /EDGE-TABLE ALLOT
     ROT DUP EDGE-LINK HEAP,
     ROT HEAP, SWAP HEAP, R> SWAP ! ;
 
+: IS-SPACE? ( c -- f )
+    DUP 32 = SWAP 9 = OR ;
 
+: SKIP-SPACE ( addr,count -- addr',count )
+    BEGIN
+        DUP IF OVER C@ IS-SPACE? ELSE FALSE THEN
+        WHILE
+            1- SWAP 1+ SWAP
+    REPEAT ;
