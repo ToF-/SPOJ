@@ -1,4 +1,5 @@
-65536 16 * CONSTANT /HEAP
+10000 CONSTANT NODE-MAX
+65536 64 * CONSTANT /HEAP
 
 VARIABLE HEAP-START
 VARIABLE HEAP-NEXT
@@ -61,7 +62,7 @@ VARIABLE HEAP-NEXT
 
 \ Hash table = 10000 slots (cells) to records in heap allocated memory
 \ each slot is accessed via the hash key
-10000 CONSTANT /HASH-TABLE
+NODE-MAX CONSTANT /HASH-TABLE
 
 CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
 
@@ -78,7 +79,7 @@ CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
 
 : HASH-CELL ( key -- addr )
     CELLS HASH-TABLE + ;
-    
+
 \ compute the key, insert record
 : INSERT-RECORD ( index,addr,count -- )
     2DUP HASH-KEY HASH-CELL DUP >R
@@ -104,4 +105,38 @@ CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
         -ROT 2DROP
     THEN ;
 
+\ edge node
+\   cell: link to the following edge node or 0
+\   cell: edge dest node index
+\   cell: edge weight
 
+3 CELLS CONSTANT /EDGE
+
+: EDGE-LINK ( edgeAddr -- edgeAddr' )
+    @ ;
+
+: EDGE-INDEX ( edgeAddr -- indexAddr )
+    CELL+ ;
+
+: EDGE-WEIGHT ( edgeAddr -- weightAddr )
+    CELL+ CELL+ ;
+
+NODE-MAX CELLS CONSTANT /EDGE-TABLE
+CREATE EDGE-TABLE /EDGE-TABLE ALLOT
+
+: EDGE-TABLE-INIT
+    EDGE-TABLE /EDGE-TABLE ERASE ;
+
+: EDGES ( index -- edgAddr )
+    CELLS EDGE-TABLE + ;
+
+: ADD-EDGE ( edgAddr,index,weight -- )
+    HEAP-HERE >R
+    ROT DUP EDGE-LINK HEAP,
+    ROT HEAP, SWAP HEAP, R> SWAP ! ;
+
+
+
+
+
+    
