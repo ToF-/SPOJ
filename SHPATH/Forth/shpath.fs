@@ -115,11 +115,11 @@ CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
 : EDGE-LINK ( edgeAddr -- edgeAddr' )
     @ ;
 
-: EDGE-INDEX ( edgeAddr -- indexAddr )
-    CELL+ ;
+: EDGE-INDEX ( edgeAddr -- index )
+    CELL+ @ ;
 
-: EDGE-WEIGHT ( edgeAddr -- weightAddr )
-    CELL+ CELL+ ;
+: EDGE-WEIGHT ( edgeAddr -- weight )
+    CELL+ CELL+ @ ;
 
 NODE-MAX CELLS CONSTANT /EDGE-TABLE
 CREATE EDGE-TABLE /EDGE-TABLE ALLOT
@@ -135,8 +135,3 @@ CREATE EDGE-TABLE /EDGE-TABLE ALLOT
     ROT DUP EDGE-LINK HEAP,
     ROT HEAP, SWAP HEAP, R> SWAP ! ;
 
-
-
-
-
-    
