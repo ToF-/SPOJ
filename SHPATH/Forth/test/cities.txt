@@ -1,0 +1,29 @@
+
+1 paris
+    2 462
+    3 931
+    4 380
+    5 488
+    6 746
+    7 219
+    8 348
+    9 143
+    10 575
+2 lyon
+    1 462
+    3 472
+    4 681
+    5 494
+    6 302
+    7 689
+    8 718
+    9 487
+    10 107
+3 nice
+4 nantes
+5 strasbourg
+6 montpellier
+7 lille
+8 rennes
+9 reims
+10  grenoble
