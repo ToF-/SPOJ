@@ -76,29 +76,32 @@ CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
         ROT 33 * + SWAP
     LOOP DROP /HASH-TABLE MOD ;
 
+: HASH-CELL ( key -- addr )
+    CELLS HASH-TABLE + ;
+    
 \ compute the key, insert record
 : INSERT-RECORD ( index,addr,count -- )
-    2DUP HASH-KEY CELLS HASH-TABLE + DUP >R
+    2DUP HASH-KEY HASH-CELL DUP >R
     @ -ROT CREATE-RECORD R> ! ;
 
-: FIND-LINKED-RECORD ( addr,count,recAddr -- )
-    >R 0 -ROT
+: FIND-LINKED-RECORD ( addr,count,recAddr -- recAddr'|0 )
     BEGIN
-        R@ WHILE
-        R@ RECORD-NAME COUNT 2OVER COMPARE
-        IF                      \ not found : follow the link
-            R> RECORD-LINK >R
-        ELSE                    \ found : set return value, force loop stop
-            2DROP DROP R> 0 >R
+        ?DUP WHILE
+        >R 2DUP
+        R@ RECORD-NAME COUNT
+        COMPARE R> SWAP IF
+            RECORD-LINK
+        ELSE
+            -ROT 0
         THEN
-    REPEAT R> DROP ;
+    REPEAT 2DROP ;
 
 : FIND-RECORD ( addr,count -- addr|0 )
-    2DUP HASH-KEY CELLS HASH-TABLE +
-    @ DUP IF                   \ there's a linked list record: search it
+    2DUP HASH-KEY HASH-CELL @
+    DUP IF
         FIND-LINKED-RECORD
-    ELSE                       \ no record
-        DROP 2DROP 0
+    ELSE
+        -ROT 2DROP
     THEN ;
 
 
