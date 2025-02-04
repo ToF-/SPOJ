@@ -138,6 +138,7 @@ CREATE EDGE-TABLE /EDGE-TABLE ALLOT
 : IS-SPACE? ( c -- f )
     DUP 32 = SWAP 9 = OR ;
 
+\ advance a string to the 1st non space char
 : SKIP-SPACE ( addr,count -- addr',count' )
     BEGIN
         DUP IF OVER C@ IS-SPACE? ELSE FALSE THEN
@@ -145,6 +146,7 @@ CREATE EDGE-TABLE /EDGE-TABLE ALLOT
             1- SWAP 1+ SWAP
     REPEAT ;
 
+\ extract a int, advancing the string to the 1st space char
 : STR>INT ( addr,count -- n,addr',count' )
     0 -ROT
     BEGIN
@@ -154,6 +156,7 @@ CREATE EDGE-TABLE /EDGE-TABLE ALLOT
             1- SWAP 1+ SWAP
     REPEAT ;
 
+\ copy a space delimited token to dest, advancing the string to the 1st space char
 : STR>NAME ( addr,count,dest -- addr',count' )
     >R 2DUP 2>R
     BEGIN
