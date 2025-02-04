@@ -167,5 +167,78 @@ CREATE EDGE-TABLE /EDGE-TABLE ALLOT
     DUP 2R> ROT -                 \ addr',count',addr,count''
     DUP R@ C! R> 1+ SWAP CMOVE ;  \ addr',count'
 
+2 CELLS CONSTANT /QUEUE-ITEM
+
+NODE-MAX /QUEUE-ITEM * CONSTANT /QUEUE
+
+CREATE QUEUE /QUEUE ALLOT
+
+VARIABLE QUEUE-COUNT
+
+: QUEUE-INIT
+    QUEUE /QUEUE ERASE
+    QUEUE-COUNT OFF ;
+
+: QUEUE-ITEM ( itemIndex -- addr )
+    /QUEUE-ITEM * QUEUE + ;
+
+: QUEUE-ITEM-WEIGHT ( i -- n )
+    @ ;
+
+: QUEUE-ITEM-INDEX ( i -- index )
+    CELL+ @ ;
+
+: QUEUE-COMPARE ( i,j -- n )
+    SWAP QUEUE-ITEM QUEUE-ITEM-WEIGHT
+    SWAP QUEUE-ITEM QUEUE-ITEM-WEIGHT - ;
+
+: QUEUE-SWAP ( i,j -- )
+    SWAP QUEUE-ITEM SWAP QUEUE-ITEM        \ addrI,addrJ
+    OVER 2@ 2>R                            \ addrI,addrJ [data-I]
+    TUCK 2@ ROT 2!                         \ addrJ
+    2R> ROT 2! ;
+
+: QUEUE-SIFT-UP ( i -- )
+    BEGIN
+        DUP 1 > WHILE
+        DUP 2/
+        2DUP QUEUE-COMPARE 0< IF
+            2DUP QUEUE-SWAP
+            NIP
+        ELSE
+            2DROP 0
+        THEN
+    REPEAT DROP ;
+
+: QUEUE-SIFT-DOWN ( i -- )
+    BEGIN
+        DUP 2*                               \ i,c
+        DUP QUEUE-COUNT @ <= WHILE           \ i,c   if c>n exit
+        DUP QUEUE-COUNT @ < IF           \ i,c
+            DUP 1+ 2DUP QUEUE-COMPARE
+            0< IF DROP ELSE NIP THEN
+        THEN
+        2DUP QUEUE-COMPARE 0> IF
+            2DUP QUEUE-SWAP
+            NIP
+        ELSE
+            DROP QUEUE-COUNT @
+        THEN
+    REPEAT 2DROP ;
+
+: INSERT-QUEUE-ITEM ( index,weight -- )
+    1 QUEUE-COUNT +!
+    QUEUE-COUNT @ QUEUE-ITEM 2!
+    QUEUE-COUNT @ QUEUE-SIFT-UP ;
+
+: EXTRACT-QUEUE-ITEM ( -- index,weight )
+    ASSERT( QUEUE-COUNT @ )
+    1 QUEUE-ITEM 2@
+    1 QUEUE-COUNT @ QUEUE-SWAP
+    -1 QUEUE-COUNT +!
+    1 QUEUE-SIFT-DOWN ;
+
+
+
 
 
