@@ -153,5 +153,16 @@ CREATE EDGE-TABLE /EDGE-TABLE ALLOT
             >R ROT 10 * R> + -ROT
             1- SWAP 1+ SWAP
     REPEAT ;
-    
+
+: STR>NAME ( addr,count,dest -- addr',count' )
+    >R 2DUP 2>R
+    BEGIN
+        DUP IF OVER C@ IS-SPACE? 0= ELSE FALSE THEN
+        WHILE
+            1- SWAP 1+ SWAP
+    REPEAT
+    DUP 2R> ROT -                 \ addr',count',addr,count''
+    DUP R@ C! R> 1+ SWAP CMOVE ;  \ addr',count'
+
+
 
