@@ -1,4 +1,4 @@
-10000 CONSTANT NODE-MAX
+20000 CONSTANT NODE-MAX
 65536 64 * CONSTANT /HEAP
 
 
@@ -121,12 +121,12 @@ CREATE BITSET /BITSET ALLOT
     1 SWAP LSHIFT ;
 
 : BITSET-INCLUDE? ( index -- f )
-    8 /MOD BITSET-OFFSET @
+    8 /MOD BITSET-OFFSET C@
     SWAP BITSET-MASK AND ;
 
 : BITSET-MARK ( index -- )
-    8 /MOD BITSET-OFFSET DUP @
-    ROT BITSET-MASK OR SWAP ! ;
+    8 /MOD BITSET-OFFSET DUP C@
+    ROT BITSET-MASK OR SWAP C! ;
 
 \ edge node
 \   cell: link to the following edge node or 0
@@ -253,13 +253,15 @@ VARIABLE QUEUE-COUNT
     REPEAT 2DROP ;
 
 : INSERT-QUEUE-ITEM ( index,weight -- )
+    ." INSERT-QUEUE-ITEM " .S CR
     1 QUEUE-COUNT +!
     QUEUE-COUNT @ QUEUE-ITEM 2!
     QUEUE-COUNT @ QUEUE-SIFT-UP ;
 
 : EXTRACT-QUEUE-ITEM ( -- index,weight )
+    ." EXTRACT-QUEUE-ITEM "
     ASSERT( QUEUE-COUNT @ )
-    1 QUEUE-ITEM 2@
+    1 QUEUE-ITEM 2@ .S CR
     1 QUEUE-COUNT @ QUEUE-SWAP
     -1 QUEUE-COUNT +!
     1 QUEUE-SIFT-DOWN ;
@@ -280,12 +282,15 @@ VARIABLE CURRENT-WEIGHT
             DUP BITSET-MARK
             EDGES @ 
             BEGIN
-                ?DUP WHILE           \ weight,dest,node,edge
-                DUP EDGE-INDEX BITSET-INCLUDE? 0= IF
-                    DUP EDGE CURRENT-WEIGHT @ +
-                THEN 
+                ?DUP WHILE           \ weight,dest,node,edgeAddr
+                DUP EDGE             \ weight,dest,node,edgeAddr,index,weight
+                OVER BITSET-INCLUDE? 0= IF
+                    CURRENT-WEIGHT @ + INSERT-QUEUE-ITEM
+                ELSE
+                    2DROP
+                THEN
                 EDGE-LINK
             REPEAT
         THEN
-    REPEAT ;
+    REPEAT DROP CURRENT-WEIGHT @ ;
 
