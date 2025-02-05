@@ -1,6 +1,7 @@
 10000 CONSTANT NODE-MAX
 65536 64 * CONSTANT /HEAP
 
+
 VARIABLE HEAP-START
 VARIABLE HEAP-NEXT
 
@@ -104,6 +105,28 @@ CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
     ELSE
         -ROT 2DROP
     THEN ;
+
+\ bitset
+
+NODE-MAX 1+ 8 / CONSTANT /BITSET
+CREATE BITSET /BITSET ALLOT
+
+: BITSET-INIT
+    BITSET /BITSET ERASE ;
+
+: BITSET-OFFSET ( n -- addr )
+    BITSET + ;
+
+: BITSET-MASK ( u8 -- u8 )
+    1 SWAP LSHIFT ;
+
+: BITSET-INCLUDE? ( index -- f )
+    8 /MOD BITSET-OFFSET @
+    SWAP BITSET-MASK AND ;
+
+: BITSET-MARK ( index -- )
+    8 /MOD BITSET-OFFSET DUP @
+    ROT BITSET-MASK OR SWAP ! ;
 
 \ edge node
 \   cell: link to the following edge node or 0
