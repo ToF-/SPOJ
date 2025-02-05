@@ -144,6 +144,9 @@ CREATE BITSET /BITSET ALLOT
 : EDGE-WEIGHT ( edgeAddr -- weight )
     CELL+ CELL+ @ ;
 
+: EDGE ( edgeAddr -- index,weight )
+    CELL+ 2@ SWAP ;
+
 NODE-MAX CELLS CONSTANT /EDGE-TABLE
 CREATE EDGE-TABLE /EDGE-TABLE ALLOT
 
@@ -261,7 +264,28 @@ VARIABLE QUEUE-COUNT
     -1 QUEUE-COUNT +!
     1 QUEUE-SIFT-DOWN ;
 
+VARIABLE CURRENT-WEIGHT
 
-
-
+: PATH-WEIGHT ( start,dest -- weight )
+    BITSET-INIT
+    QUEUE-INIT
+    SWAP 0 INSERT-QUEUE-ITEM
+    BEGIN
+        QUEUE-COUNT @ WHILE
+        EXTRACT-QUEUE-ITEM
+        CURRENT-WEIGHT !           \ dest,node
+        2DUP = IF
+            2DROP QUEUE-INIT
+        ELSE                         \ weight,dest,node
+            DUP BITSET-MARK
+            EDGES @ 
+            BEGIN
+                ?DUP WHILE           \ weight,dest,node,edge
+                DUP EDGE-INDEX BITSET-INCLUDE? 0= IF
+                    DUP EDGE CURRENT-WEIGHT @ +
+                THEN 
+                EDGE-LINK
+            REPEAT
+        THEN
+    REPEAT ;
 
