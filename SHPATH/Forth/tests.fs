@@ -1,5 +1,8 @@
 REQUIRE ffl/tst.fs
-REQUIRE shpath.fs
+REQUIRE test-array.fs
+REQUIRE test-heap.fs
+
+BYE
 
 HEAP-ALLOCATE HEAP-INIT
 NAMES-INIT

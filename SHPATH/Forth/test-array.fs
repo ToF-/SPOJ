@@ -1,0 +1,12 @@
+REQUIRE ffl/tst.fs
+REQUIRE array.fs
+
+T{
+    2 CELLS 5 ARRAY foo
+    4807 2317 foo ARRAY-NEXT 2!
+    256 1024 foo ARRAY-NEXT 2!
+    12345 54321 foo ARRAY-NEXT 2!
+    0 foo ARRAY-ITEM 2@ SWAP 4807 ?S 2317 ?S
+    2 foo ARRAY-ITEM 2@ SWAP 12345 ?S 54321 ?S
+
+}T
