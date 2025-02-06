@@ -1,0 +1,26 @@
+REQUIRE ffl/tst.fs
+REQUIRE heap.fs
+REQUIRE link.fs
+
+T{
+1000 HEAP-ALLOCATE zone
+
+zone HEAP-HERE
+4807 zone HEAP,
+zone HEAP-HERE
+2317 zone HEAP,
+
+0 SWAP zone LINK-ADD
+
+  SWAP zone LINK-ADD
+
+VARIABLE MyList
+MyList !
+
+MyList @ LINK-RECORD @ 4807 ?S
+MyList @ LINK-NEXT LINK-RECORD @ 2317 ?S
+
+zone HEAP-FREE
+}T
+
+

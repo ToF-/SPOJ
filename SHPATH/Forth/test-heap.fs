@@ -2,7 +2,7 @@ REQUIRE ffl/tst.fs
 REQUIRE heap.fs
 
 T{
-    10 HEAP-ALLOCATE myMem
+    16 HEAP-ALLOCATE myMem
     4807 myMem HEAP,
     myMem HEAP-HERE CELL - @ 4807 ?S
     23 myMem HEAPC,

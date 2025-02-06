@@ -21,7 +21,7 @@ constructs
 
 - linked list : to represent sequences of records
     
-    LINKED-ADD
+    LINK-ADD
     LINK-NEXT
 
 - hash table : to map efficiently any key value to a record
