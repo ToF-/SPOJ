@@ -1,17 +1,24 @@
 
 : HEAP-ALLOCATE ( size <name> -- )
-    CREATE DUP , ALLOCATE THROW
+    CREATE ALLOCATE THROW
     DUP , , ;
 
-: HEAP-HERE ( addr -- addr )
-    CELL+ CELL+ @ ;
+: HEAP-HERE ( heap -- addr )
+    CELL+ @ ;
 
-: HEAP, ( n,addr -- )
-    CELL+ CELL+ DUP
+: HEAP, ( n,heap-- )
+    CELL+ DUP
     @ ROT SWAP ! CELL SWAP +! ;
 
+: HEAPC, ( c,heap -- )
+    CELL+ DUP
+    @ ROT SWAP C! 1 SWAP +! ;
+    
+: HEAP-ALLOT ( n,heap -- )
+    CELL+ +! ;
+
 : HEAP-FREE ( addr ) 
-    CELL+ @ FREE THROW ; 
+    @ FREE THROW ; 
 
      
     
