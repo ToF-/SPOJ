@@ -1,24 +1,8 @@
-20000 CONSTANT NODE-MAX
+20000 1+ CONSTANT NODE-MAX
 65536 64 * CONSTANT /HEAP
-
 
 VARIABLE HEAP-START
 VARIABLE HEAP-NEXT
-
-\ a record holds :
-\   cell : a link to next record (or 0)
-\   cell : an index number
-\   byte : the length of name value
-\   bytes : the chars of name value 
-
-: RECORD-LINK ( recAddr -- addr )
-    @ ;
-
-: RECORD-INDEX ( recAddr -- n )
-    CELL+ @ ;
-
-: RECORD-NAME ( recAddr -- addr )
-    CELL+ CELL+ ;
 
 \ allocate memory on the heap
 : HEAP-ALLOCATE
@@ -52,14 +36,47 @@ VARIABLE HEAP-NEXT
     HEAP-HERE C!
     1 HEAP-NEXT +! ;
 
-\ allot and place a record in memory, return record address
-: CREATE-RECORD ( index,link,addr,count -- addr' )
+\ names array mapping index → addr of name
+\ name count start at 1, not 0
+CREATE NAMES NODE-MAX CELLS ALLOT
+
+VARIABLE NAME-COUNT
+
+: NAMES-INIT
+    NAME-COUNT OFF ;
+
+: NAME^ ( index -- addr )
+    CELLS NAMES + ;
+
+: COPY-NAME ( addr, count -- addrName )
+    HEAP-HERE -ROT
+    DUP HEAPC, HEAP-HERE -ROT
+    DUP HEAP-ALLOT
+    ROT SWAP CMOVE ;
+
+: ADD-NAME ( addr, count )
+    ASSERT( NAME-COUNT @ NODE-MAX < )
+    COPY-NAME
+    NAME-COUNT @ 1+ SWAP
+    OVER NAME^ ! NAME-COUNT ! ;
+
+\ a record holds :
+\   cell : a link to next record (or 0)
+\   cell : an index number
+
+: RECORD-LINK ( recAddr -- addr )
+    @ ;
+
+: RECORD-INDEX ( recAddr -- n )
+    CELL+ @ ;
+
+: RECORD-NAME ( recAddr -- addr )
+    RECORD-INDEX NAME^ @ ;
+
+: CREATE-RECORD ( index,link -- addr' )
     HEAP-HERE >R                \ stashed, return later
-    2SWAP HEAP, HEAP,           \ write link, then index
-    DUP HEAPC,                  \ write count
-    HEAP-HERE                   \ required for cmove
-    OVER HEAP-ALLOT             \ reserve name space
-    SWAP CMOVE R> ;             \ copy name, return record address
+    HEAP, HEAP,                 \ write link, then index
+    R> ;                        \  record address
 
 \ Hash table = 10000 slots (cells) to records in heap allocated memory
 \ each slot is accessed via the hash key
@@ -81,10 +98,10 @@ CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
 : HASH-CELL ( key -- addr )
     CELLS HASH-TABLE + ;
 
-\ compute the key, insert record
-: INSERT-RECORD ( index,addr,count -- )
-    2DUP HASH-KEY HASH-CELL DUP >R
-    @ -ROT CREATE-RECORD R> ! ;
+\ create name, compute the key, insert record
+: INSERT-RECORD ( addr,count -- )
+    2DUP ADD-NAME HASH-KEY HASH-CELL
+    NAME-COUNT @ OVER @ CREATE-RECORD SWAP ! ;
 
 : FIND-LINKED-RECORD ( addr,count,recAddr -- recAddr'|0 )
     BEGIN
