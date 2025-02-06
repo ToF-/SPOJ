@@ -13,12 +13,10 @@
 : HEAPC, ( c,heap -- )
     CELL+ DUP
     @ ROT SWAP C! 1 SWAP +! ;
-    
+
 : HEAP-ALLOT ( n,heap -- )
     CELL+ +! ;
 
-: HEAP-FREE ( addr ) 
-    @ FREE THROW ; 
+: HEAP-FREE ( addr )
+    @ FREE THROW ;
 
-     
-    
