@@ -9,7 +9,7 @@
 : HASH-KEY ( addr,count,table -- key )
     @ -ROT
     0 -ROT 0 DO
-        DUP I+ C@
+        DUP I + C@
         ROT 33 * + SWAP
     LOOP DROP SWAP MOD ;
 
@@ -17,6 +17,4 @@
     2 CELLS + SWAP /HASH-RECORD * + ;
 
 : INSERT-RECORD ( addr,count,table -- )
-    2DUP 
-    
-    
+   ;
