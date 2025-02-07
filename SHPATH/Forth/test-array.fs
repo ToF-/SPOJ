@@ -4,7 +4,7 @@ REQUIRE array.fs
 T{
     2 CELLS 10 ARRAY foo
     4807 2317 foo ARRAY-NEXT 2!
-    foo ARRAY-MAX 1 ?S
+    foo @ 1 ?S
     256 1024 foo ARRAY-NEXT 2!
     12345 54321 foo ARRAY-NEXT 2!
     0 foo ARRAY-ITEM 2@ SWAP 4807 ?S 2317 ?S
