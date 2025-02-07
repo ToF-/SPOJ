@@ -2,8 +2,12 @@ REQUIRE ffl/tst.fs
 REQUIRE hash-table.fs
 
 T{
-    10000 HEAP-ALLOCATE zone
+    SEE HASH-KEY-INDEX
+    HASH-TABLE myTable
+    myTable HASH-TABLE-INIT
+    4807 S" foo" myTable DBG HASH-INSERT-RECORD
 
+    HASH-SPACE FREE THROW
 }T
 
 

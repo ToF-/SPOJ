@@ -5,17 +5,16 @@
 /HASH-TABLE /HASH-CELL * HEAP-ALLOCATE HASH-SPACE
 
 : HASH-TABLE ( <name> )
-   CREATE /HASH-TABLE CELLS * ALLOT ;
+   CREATE /HASH-TABLE CELLS ALLOT ;
 
 : HASH-TABLE-INIT ( table )
-    HASH-TABLE CELLS * ERASE ;
+    /HASH-TABLE CELLS ERASE ;
 
 : HASH-KEY-INDEX ( addr,count -- index )
-    @ -ROT
-    0 -ROT 0 DO
-        DUP I + C@
-        ROT 33 * + SWAP
-    LOOP DROP /HASH-TABLE MOD ;
+    OVER + SWAP 0 -ROT DO
+        I C@
+        SWAP 33 * + SWAP
+    LOOP /HASH-TABLE MOD ;
 
 : HASH-ADD-KEY ( addr,count -- keyAddr )
     HASH-SPACE HEAP-HERE -ROT             \ addr,count,keyAddr
