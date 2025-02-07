@@ -1,13 +1,10 @@
 
+\ creates an arry, storing record size, count to 0
 : ARRAY ( item-size,capacity -- )
-    CREATE OVER , 0 , * ALLOT ;
-
-: ARRAY-MAX ( array -- n )
-    CELL+ @ ;
+    CREATE 0 , SWAP DUP , * ALLOT ;
 
 : ARRAY-ITEM ( index,array -- addr )
-    TUCK @ * CELL+ CELL+ + ;
+    CELL+ DUP @ ROT *  CELL+ + ;
 
 : ARRAY-NEXT ( array -- addr )
-    >R R@ ARRAY-MAX R@ ARRAY-ITEM
-    1 R> CELL+ +! ;
+    DUP @ OVER ARRAY-ITEM 1 ROT +! ;
