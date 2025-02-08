@@ -3,6 +3,7 @@ REQUIRE HEAP-MEMORY.fs
 10000 CONSTANT /HASH-TABLE
 
 H-CREATE HASH-TABLE
+    /HASH-TABLE CELLS H-ALLOT
 
 : HASH-TABLE-INIT
     HASH-TABLE /HASH-TABLE CELLS ERASE ;
@@ -12,17 +13,23 @@ H-CREATE HASH-TABLE
         33 * I C@ + 
     LOOP /HASH-TABLE MOD ;
 
-: HASH-INSERT-RECORD ( value,addr,count -- )
-    2DUP HASH-KEY               \ value,addr,count,key
-    H-HERE 2SWAP H-STR,         \ value,key,keyAddr 
-    SWAP CELLS HASH-TABLE +     \ value,keyAddr,slotAddr
-    DUP @ H-HERE SWAP           \ value,keyAddr,slotAddr,link',link
-    H-, 2SWAP H-, H-,           \ slotAddr,link'
-    SWAP ! ;
+: HASH-ADD-KEY ( addr,count -- keyAddr )
+    H-HERE -ROT H-STR, ;
 
+: HASH-CELL-ADDRESS ( addr,count -- cellAddr )
+    HASH-KEY CELLS HASH-TABLE + ;
+
+: HASH-ADD-CELL ( value,keyAddr,link -- linkAddr )
+    H-HERE >R H-, H-, H-, R> ;
+
+: HASH-INSERT-RECORD ( value,addr,count -- )
+    2DUP HASH-ADD-KEY                 \ value,addr,count,keyAddr
+    -ROT HASH-CELL-ADDRESS            \ value,keyAddr,cellAddr
+    DUP @ SWAP >R                     \ value,keyAddr,link [cellAddr]
+    HASH-ADD-CELL R> ! ;
 
 : HASH-FIND-RECORD ( addr,count -- value,1|0 )
-    2>R 2R@ HASH-KEY CELLS HASH-TABLE + @
+    2>R 2R@ HASH-CELL-ADDRESS @
     TRUE SWAP
     BEGIN                             \ flag,link
         2DUP AND WHILE
