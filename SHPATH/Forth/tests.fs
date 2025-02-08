@@ -1,4 +1,7 @@
 REQUIRE ffl/tst.fs
+REQUIRE TEST-HEAP-MEMORY.fs
+
+BYE
 REQUIRE test-array.fs
 REQUIRE test-heap.fs
 REQUIRE test-link.fs

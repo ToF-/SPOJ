@@ -1,4 +1,14 @@
 
+declare arrays and all other structures on the heap memory
+
+shorten words for heap memory use 
+    ALLOT → H-ALLOT
+    HERE → H-HERE
+    , → H-,
+    C, → H-C,
+    CREATE → H-CREATE
+
+
 constructs
 
 - array : to map an integer index value to a record
