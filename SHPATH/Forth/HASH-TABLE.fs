@@ -1,3 +1,5 @@
+REQUIRE HEAP-MEMORY.fs
+
 10000 CONSTANT /HASH-TABLE
 
 H-CREATE HASH-TABLE
@@ -28,8 +30,8 @@ H-CREATE HASH-TABLE
         IF
             @                         \ true,link'
         ELSE 
-            SWAP FALSE SWAP           \ false,link
+            NIP FALSE SWAP           \ false,link
             DUP CELL+ CELL+ @ -ROT    \ value,false,link
         THEN
     REPEAT
-    2R> 2DROP IF DROP 1 ELSE DROP 0 THEN ;
+    2R> 2DROP NIP ;

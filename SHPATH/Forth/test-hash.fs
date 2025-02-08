@@ -6,8 +6,6 @@ T{
     HASH-TABLE myTable
     myTable HASH-TABLE-INIT
     4807 S" foo" myTable DBG HASH-INSERT-RECORD
-
-    HASH-SPACE FREE THROW
 }T
 
 
