@@ -253,7 +253,7 @@ S" Brest" GN S" Grenoble"               GN 1076 AE
 S" Brest" GN S" Nîmes"                  GN 1171 AE
 S" Brest" GN S" Aix-en-Provence"        GN 1269 AE
 
- HEAP-MEMORY-FREE
  ASSERT( GRAPH @ )
  S" Paris" GN S" Lille" GN DBG GRAPH-MIN-WEIGHT 0 ?S
+ HEAP-MEMORY-FREE
  BYE

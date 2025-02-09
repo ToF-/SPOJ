@@ -47,30 +47,29 @@ VARIABLE MIN-WEIGHT
     BITSET-INIT
     0 PQUEUE-UPDATE 
     BEGIN PQUEUE @ WHILE
-        PQUEUE-EXTRACT            \ node,cost
-        OVER TARGET-NODE @ <> IF
-            OVER BITSET-INCLUDE!
-            SWAP GRAPH-NODE-ADDRESS   \ cost,nodeAddr
-            @ >R
-            BEGIN R@ WHILE
-                DUP R@ GRAPH-EDGE ROT +   \ cost,node,cost+weight
+        PQUEUE-EXTRACT SWAP            \ cost,node
+        DUP TARGET-NODE @ <> IF
+            DUP BITSET-INCLUDE!
+            GRAPH-NODE-ADDRESS @       \ cost,edges
+            BEGIN DUP WHILE
+                DUP GRAPH-EDGE               \ cost,edges,node,weight
+                2>R OVER 2R> ROT +           \ cost,edges,node,weight'
                 OVER BITSET-INCLUDE? 0= IF
-                    OVER PQUEUE-POSITION^ @   \ cost,node',cost+weight,initial
-                    OVER > IF                 \ cost,node',cost+weight
+                    OVER PQUEUE-POSITION^ @  \ cost,edges,node,weight',initial
+                    OVER > IF                \ cost,edges,node,weight'
                         PQUEUE-UPDATE
                     ELSE
                         2DROP
-                    THEN                       \ cost
-                ELSE                       \ cost,node,cost+weight already visited
+                    THEN                     \ cost,edges
+                ELSE                         \ cost,edges,node,weight'
                     2DROP
-                THEN
-                R> @ >R
+                THEN                         \ cost,edges
+                @                            \ cost,edges'
             REPEAT
-            R> 2DROP
-        ELSE
-            MIN-WEIGHT !
-            PQUEUE-INIT
-            DROP
+             2DROP
+        ELSE                        \ cost,node
+            DROP MIN-WEIGHT !
+            PQUEUE OFF
         THEN
     REPEAT MIN-WEIGHT @ ;
 
