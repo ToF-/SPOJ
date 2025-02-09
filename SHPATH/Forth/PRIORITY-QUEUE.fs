@@ -10,9 +10,18 @@ H-CREATE PQUEUE-INDEX /PQUEUE 1+ CELLS H-ALLOT
     PQUEUE /PQUEUE CELLS 2* CELL+ ERASE
     PQUEUE-INDEX /PQUEUE 1+ CELLS ERASE ;
 
+: DUMP-ALL
+    PQUEUE 12 CELLS DUMP
+    PQUEUE-INDEX 5 CELLS DUMP
+    .S CR
+    KEY DROP ;
+
 
 : PQUEUE-ITEM^ ( i -- addr )
     CELLS 2* PQUEUE + ;
+
+: .PQUEUE-ITEM ( i -- )
+    PQUEUE-ITEM^ 2@ SWAP . . ;
 
 : PQUEUE-INDEX^ ( i -- addr )
     PQUEUE-ITEM^ CELL+ @ CELLS PQUEUE-INDEX + ;
@@ -45,19 +54,21 @@ H-CREATE PQUEUE-INDEX /PQUEUE 1+ CELLS H-ALLOT
         THEN
     REPEAT DROP ;
 
+: PQUEUE-SELECT-SMALLER ( i,j -- i|j )
+    2DUP PQUEUE-COMPARE 0< IF DROP ELSE NIP THEN ;
+
+    
 : PQUEUE-SIFT-DOWN ( index -- )
     BEGIN
         DUP 2*
         DUP PQUEUE @ <= WHILE
         DUP PQUEUE @ < IF
-            DUP 1+ 2DUP PQUEUE-COMPARE
-            0< IF DROP ELSE NIP THEN
+            DUP 1+ PQUEUE-SELECT-SMALLER
         THEN
         2DUP PQUEUE-COMPARE 0> IF
-            2DUP PQUEUE-SWAP
-            NIP
+            2DUP PQUEUE-SWAP NIP
         ELSE
-            DROP PQUEUE @
+            2DROP PQUEUE @
         THEN
     REPEAT 2DROP ;
 
@@ -77,8 +88,8 @@ H-CREATE PQUEUE-INDEX /PQUEUE 1+ CELLS H-ALLOT
     
 : PQUEUE-UPDATE ( record,prority -- )
     SWAP CELLS PQUEUE-INDEX + @          \ priority,position
-    .S KEY DROP
-    TUCK PQUEUE-ITEM^ DUP 2@ .S 2DROP CELL+ !       \ position
-    DUP PQUEUE-SIFT-UP PQUEUE-SIFT-DOWN ;
+    TUCK PQUEUE-ITEM^ !                  \ position
+    DUP PQUEUE-SIFT-UP
+    PQUEUE-SIFT-DOWN ;
 
 
