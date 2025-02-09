@@ -6,6 +6,7 @@ HEAP-MEMORY-START OFF
 
 
 : HEAP-MEMORY-INIT ( size )
+    DUP . ." HEAP-MEMORY-INIT" CR
     HEAP-MEMORY-START @ IF
         HEAP-MEMORY-START @ FREE THROW
     THEN 
@@ -41,6 +42,7 @@ HEAP-MEMORY-START OFF
 
 \ run time : push address on heap memory
 : H-CREATE ( <name> )
+    ASSERT( H-HERE )
     CREATE  H-HERE ,
     DOES> @ ;
 

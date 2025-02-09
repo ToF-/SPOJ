@@ -5,9 +5,6 @@ REQUIRE HASH-TABLE.fs
 
 10001 CONSTANT /GRAPH
 
-HEAP-MEMORY-FREE
-1000000 HEAP-MEMORY-INIT
-
 H-CREATE GRAPH /GRAPH CELLS H-ALLOT
 
 : GRAPH-INIT
@@ -21,9 +18,9 @@ H-CREATE GRAPH /GRAPH CELLS H-ALLOT
     GRAPH @ -ROT HASH-INSERT-RECORD
     GRAPH @ GRAPH-NODE-ADDRESS OFF ;
 
-: GRAPH-ADD-EDGE ( index,weight -- )
-    GRAPH @ GRAPH-NODE-ADDRESS DUP @        \ index,weight,node-addr,link
-    H-HERE SWAP H-, 2SWAP                   \ node-addr,link',index,weight
+: GRAPH-ADD-EDGE ( start,index,weight -- )
+    ROT GRAPH-NODE-ADDRESS DUP @ \ index,weight,node-addr,link
+    H-HERE SWAP H-, 2SWAP     \ node-addr,link',index,weight
     H-2, SWAP ! ;
 
 : GRAPH-NODE ( addr,count -- index )
