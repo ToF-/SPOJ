@@ -1,97 +1,102 @@
 REQUIRE HEAP-MEMORY.fs
 
-10000 CONSTANT /PQUEUE
+10000 CONSTANT Q-CELL-MAX
 
-H-CREATE PQUEUE /PQUEUE 1+ CELLS 2* H-ALLOT
-H-CREATE PQUEUE-INDEX /PQUEUE 1+ CELLS H-ALLOT
-
-: PQUEUE-INIT
-    PQUEUE /PQUEUE CELLS 2* CELL+ ERASE
-    PQUEUE-INDEX /PQUEUE 1+ CELLS ERASE ;
-
-: DUMP-ALL
-    PQUEUE 12 CELLS DUMP
-    PQUEUE-INDEX 5 CELLS DUMP
-    .S CR
-    KEY DROP ;
+H-CREATE Q-CELLS      Q-CELL-MAX 1+ CELLS H-ALLOT
+H-CREATE Q-INDEX     Q-CELL-MAX 1+ 2* H-ALLOT
 
 
-: PQUEUE-ITEM^ ( i -- addr )
-    CELLS 2* PQUEUE + ;
+: Q-CELL^ ( i -- addr )
+    CELLS Q-CELLS + ;
 
-: .PQUEUE-ITEM ( i -- )
-    PQUEUE-ITEM^ 2@ SWAP . . ;
+: Q-INDEX^ ( i -- addr )
+    2* Q-INDEX + ;
 
-: PQUEUE-INDEX^ ( i -- addr )
-    PQUEUE-ITEM^ CELL+ @ CELLS PQUEUE-INDEX + ;
+: Q-CELLS-INIT
+    Q-CELLS OFF ;
 
-: PQUEUE-POSITION^ ( j -- addr )
-    CELLS PQUEUE-INDEX + @ PQUEUE-ITEM^ ;
+: Q-CELL! ( from,dest,priority,addr -- )
+    2SWAP SWAP 16 LSHIFT SWAP OR
+    ROT 32 LSHIFT OR SWAP ! ;
+    
+: PRIORITY ( qcell -- priority )
+    32 RSHIFT ;
 
-: TRACK-PQUEUE-POSITION ( i -- )
-    DUP PQUEUE-INDEX^ ! ;
+: FROM-NODE ( qcell -- node )
+    16 RSHIFT 65535 AND ;
 
-: PQUEUE-COMPARE ( i,j -- n )
-    SWAP PQUEUE-ITEM^ @
-    SWAP PQUEUE-ITEM^ @ - ;
+: DEST-NODE ( qcell -- node )
+    65535 AND ;
 
-: PQUEUE-SWAP-QUEUE-CELLS ( i,j -- )
-    PQUEUE-ITEM^ SWAP PQUEUE-ITEM^
-    2DUP 2@ 2>R 2@ ROT 2! 2R> ROT 2! ;
+: Q-CELLS ( i,j -- qcellI,qcellJ )
+    SWAP Q-CELL^ @
+    SWAP Q-CELL^ @ ;
 
-: PQUEUE-SWAP ( i,j -- )
-    2DUP PQUEUE-SWAP-QUEUE-CELLS
-    TRACK-PQUEUE-POSITION
-    TRACK-PQUEUE-POSITION ;
+: COMPARE-Q-CELLS ( i,j -- n )
+    Q-CELLS - ;
 
-: PQUEUE-SIFT-UP ( index -- )
+: TRACK-POSITION ( index -- )
+    DUP Q-CELL^ @ DEST-NODE Q-INDEX^ W! ;
+
+: POSITION ( node -- index )
+    Q-INDEX^ W@ ;
+
+: SWAP-Q-CELLS ( i,j -- )
+    2DUP 2DUP Q-CELLS      \ i,j,i,j,qcellI,qcellJ
+    SWAP ROT Q-CELL^ !     \ i,j,i,qcellJ
+    SWAP Q-CELL^ !         \ i,j
+    TRACK-POSITION
+    TRACK-POSITION ;
+
+: P-QUEUE-SIFT-UP ( index -- )
     BEGIN
         DUP 1 > WHILE
         DUP 2/
-        2DUP PQUEUE-COMPARE 0< IF
-            2DUP PQUEUE-SWAP
+        2DUP COMPARE-Q-CELLS 0< IF
+            2DUP SWAP-Q-CELLS
             NIP
         ELSE
             2DROP 0
         THEN
     REPEAT DROP ;
 
-: PQUEUE-SELECT-SMALLER ( i,j -- i|j )
-    2DUP PQUEUE-COMPARE 0< IF DROP ELSE NIP THEN ;
+: P-QUEUE-SELECT-SMALLER ( i,j -- i|j )
+    2DUP COMPARE-Q-CELLS 0< IF DROP ELSE NIP THEN ;
 
     
-: PQUEUE-SIFT-DOWN ( index -- )
+: P-QUEUE-SIFT-DOWN ( index -- )
     BEGIN
         DUP 2*
-        DUP PQUEUE @ <= WHILE
-        DUP PQUEUE @ < IF
-            DUP 1+ PQUEUE-SELECT-SMALLER
+        DUP P-CELLS @ <= WHILE
+        DUP P-CELLS @ < IF
+            DUP 1+ P-QUEUE-SELECT-SMALLER
         THEN
-        2DUP PQUEUE-COMPARE 0> IF
-            2DUP PQUEUE-SWAP NIP
+        2DUP COMPARE-Q_CELLS 0> IF
+            2DUP SWAP-Q-CELLS NIP
         ELSE
-            2DROP PQUEUE @
+            2DROP P-CELLS @
         THEN
     REPEAT 2DROP ;
 
-: PQUEUE-INSERT ( record, priority -- )
-    ASSERT( PQUEUE @ /PQUEUE <= )
-    1 PQUEUE +!
-    PQUEUE @ PQUEUE-ITEM^ 2!
-    PQUEUE @ TRACK-PQUEUE-POSITION
-    PQUEUE @ PQUEUE-SIFT-UP ;
+: P-QUEUE-INSERT ( record, priority -- )
+    ASSERT( P-CELLS @ /
+    ASSERT( Q-CELLS @ Q-CELL-MAX <= )
+    1 Q-CELLS +!
+    0 -ROT                     \ 0,record,priority
+    Q-CELLS @ Q-CELL^ Q-CELL!
+    Q-CELLS @ DUP TRACK-POSITION
+    Q-CELLS-SIFT-UP ;
 
-: PQUEUE-EXTRACT ( -- record, priority )
-    ASSERT( PQUEUE @ )
-    1 PQUEUE-ITEM^ 2@
-    1 PQUEUE @ PQUEUE-SWAP
-    -1 PQUEUE +!
-    1 PQUEUE-SIFT-DOWN ;
+: Q-CELLS-EXTRACT ( -- qcell )
+    ASSERT( Q-CELLS @ )
+    1 Q-CELL^ @
+    1 Q-CELLS @ Q-CELLS-SWAP
+    -1 Q-CELLS +!
+    1 Q-CELLS-SIFT-DOWN ;
     
-: PQUEUE-UPDATE ( record,prority -- )
-    SWAP CELLS PQUEUE-INDEX + @          \ priority,position
-    TUCK PQUEUE-ITEM^ !                  \ position
-    DUP PQUEUE-SIFT-UP
-    PQUEUE-SIFT-DOWN ;
-
+: Q-CELLS-UPDATE ( from,dest,prority -- )
+    OVER I-CELL^ W@ >R
+    Q-CELL^ CELL! R>
+    DUP Q-CELLS-SIFT-UP
+    Q-CELLS-SIFT-DOWN ;
 
