@@ -15,17 +15,17 @@ H-CREATE Q-INDEX     Q-CELL-MAX 1+ 2* H-ALLOT
 : Q-CELLS-INIT
     Q-CELLS OFF ;
 
-: Q-CELL! ( from,dest,priority,addr -- )
+: Q-CELL! ( info,index,priority,addr -- )
     2SWAP SWAP 16 LSHIFT SWAP OR
     ROT 32 LSHIFT OR SWAP ! ;
     
 : PRIORITY ( qcell -- priority )
     32 RSHIFT ;
 
-: FROM-NODE ( qcell -- node )
+: QC-INFO ( qcell -- node )
     16 RSHIFT 65535 AND ;
 
-: DEST-NODE ( qcell -- node )
+: QC-NODE ( qcell -- node )
     65535 AND ;
 
 : Q-CELLS ( i,j -- qcellI,qcellJ )
