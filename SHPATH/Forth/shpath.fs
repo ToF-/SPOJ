@@ -1,24 +1,55 @@
 \ shpath.fs
 
-11      CONSTANT /NAME
+12      CONSTANT /NAME
+2       CONSTANT /INDEX
 10000   CONSTANT MAX-NODE
-500000  CONSTANT MAX-EDGE
+100000  CONSTANT MAX-EDGE
+
+$03FFF     CONSTANT INDEX-MASK
+$03FFFF    CONSTANT COST-MASK
+$0FFFFFFFF CONSTANT EDGE-INDEX-MASK
+
+
 
 CREATE NAMES 0 , MAX-NODE /NAME * ALLOT
-HERE CONSTANT NAMES-LIMIT
-CREATE NODES 0 , MAX-NODE CELLS ALLOT
+CREATE NODES 0 , MAX-NODE /INDEX * ALLOT
 CREATE EDGES 0 , MAX-EDGE CELLS ALLOT
+CREATE LINKS 0 , MAX-NODE CELLS ALLOT
+CREATE PATH  0 , MAX-NODE /INDEX * ALLOT
+CREATE HASH-TABLE 0 , MAX-NODE /INDEX * ALLOT
+CREATE BITSET MAX-NODE 8 / 1+ ALLOT
+CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
 
-\ reset names zone, next name to be stored at beginning
 : INIT-NAMES
-    NAMES CELL+ NAMES ! ;
+    NAMES OFF ;
 
-\ copy a name in the names zone
-: ADD-NAME ( addr,count -- addr )
-    ASSERT( DUP 1+ NAMES @ + NAMES-LIMIT < )
-    DUP 1+ -ROT
-    NAMES @ 2DUP C! 1+ SWAP CMOVE
-    NAMES @ SWAP NAMES +! ;
+: NAME^ ( index -- addr )
+    /NAME * NAMES CELL+ + ;
 
-\ a node is an int between 1 and 10000
-\ an edge is a link, and a cell with dest and cost
+: ADD-NAME ( addr,count -- )
+    1 NAMES +!
+    NAMES @ NAME^ 2DUP
+    C! 1+ SWAP CMOVE ;
+
+: INIT-EDGES
+    EDGES OFF ;
+
+: EDGE^ ( index -- addr )
+    /INDEX * EDGES CELL+ + ;
+
+: EDGE>DEST ( edge -- index )
+    16383 AND ;
+
+: EDGE>COST ( edge -- cost )
+    14 RSHIFT 262143 AND ;
+
+: EDGE>LINK ( edge -- index )
+    32 RSHIFT EDGE-INDEX-MASK AND ;
+
+: ADD-EDGE ( link,cost,edge )
+    SWAP 14 LSHIFT OR
+    SWAP 32 LSHIFT OR
+    1 EDGES +!
+    EDGES @ EDGE^ ! ;
+    
+    
