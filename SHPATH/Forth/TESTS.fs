@@ -21,7 +21,12 @@ T{
     s" mennecy"  INSERT-NODE
     s" salazac"  INSERT-NODE
     S" furmeyer" FIND-NODE
-    LINK>NAME NAME^ COUNT S" furmeyer" ?STR
+    DUP LINK>NAME NAME^ COUNT S" furmeyer" ?STR
+    LINK>NODE 1 ?S
+
+    S" salazac"  FIND-NODE
+    DUP LINK>NAME NAME^ COUNT S" salazac" ?STR
+    LINK>NODE 3 ?S
     S" coulomb" FIND-NODE ?FALSE
 
 }T

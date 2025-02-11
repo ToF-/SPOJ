@@ -64,10 +64,13 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
 : LINK^ ( key -- addr )
     CELLS LINKS CELL+ + ;
 
-: LINK>NAME ( link-record -- name )
+: LINK>NODE ( lcell -- node )
+    INDEX-MASK AND ;
+
+: LINK>NAME ( lcell -- name )
     16 RSHIFT INDEX-MASK AND ;
 
-: LINK>NEXT ( link-record -- link )
+: LINK>NEXT ( lcell -- link )
     32 RSHIFT INDEX-MASK AND ;
 
 : ADD-LINK ( link,name,node -- link' )
@@ -100,21 +103,16 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
     SWAP W! ;
 
 : FIND-NODE ( addr,count -- lcell,T|F)
-    2DUP HASH-KEY HASH-RECORD^ W@     ( addr,count,link )
-    FALSE                             ( addr,count,link,FALSE)
+    FALSE -ROT
+    2DUP HASH-KEY HASH-RECORD^ W@     ( F,addr,count,link )
     BEGIN
-        0= WHILE                      ( addr,count,link )
-        DUP IF
-            LINK^ @ DUP               ( addr,count,lcell,lcell )
-            LINK>NAME                 ( addr,count,lcell,name )
-            2OVER ROT NAME^ COUNT     ( addr,count,lcell,addr,count,addr',count' )
-            COMPARE 0= IF
-                TRUE                  ( addr,count,lcell,T )
+        DUP IF LINK^ @ THEN           ( F,addr,count,lcell )
+        DUP WHILE
+            DUP >R LINK>NAME NAME^ COUNT
+            2OVER COMPARE 0= IF
+                ROT DROP R> -ROT FALSE
             ELSE
-                LINK>NEXT FALSE       ( addr,count,link,F )
+                R> LINK>NEXT
             THEN
-        ELSE
-            DROP 0 TRUE
-        THEN
-    REPEAT -ROT 2DROP ;
+    REPEAT DROP 2DROP ;
 
