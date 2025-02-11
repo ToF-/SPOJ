@@ -35,7 +35,7 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
     EDGES OFF ;
 
 : EDGE^ ( index -- addr )
-    /INDEX * EDGES CELL+ + ;
+    CELLS EDGES CELL+ + ;
 
 : EDGE>DEST ( edge -- index )
     16383 AND ;
@@ -43,7 +43,7 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
 : EDGE>COST ( edge -- cost )
     14 RSHIFT 262143 AND ;
 
-: EDGE>LINK ( edge -- index )
+: EDGE>NEXT ( edge -- index )
     32 RSHIFT EDGE-INDEX-MASK AND ;
 
 : ADD-EDGE ( link,cost,edge )
@@ -51,5 +51,57 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
     SWAP 32 LSHIFT OR
     1 EDGES +!
     EDGES @ EDGE^ ! ;
-    
-    
+
+: LINK^ ( key -- addr )
+    CELLS LINKS CELL+ + ;
+
+: LINK>NAME ( link-record -- name )
+    16 RSHIFT INDEX-MASK AND ;
+
+: LINK>NEXT ( link-record -- link )
+    32 RSHIFT INDEX-MASK AND ;
+
+: ADD-LINK ( link,name,node -- link' )
+    1 LINKS +!
+    ROT 32 LSHIFT
+    SWAP 16 LSHIFT OR OR
+    LINKS @ LINK^ !
+    LINKS @ ;
+
+: HASH-RECORD^ ( key -- addr )
+    /INDEX * HASH-TABLE + ;
+
+: HASH-KEY ( addr,count -- key )
+    OVER + SWAP
+    0 -ROT DO
+        33 * I C@ +
+    LOOP MAX-NODE MOD ;
+
+: NODE^ ( index -- addr )
+    /INDEX * NODES CELL+ + ;
+
+: ADD-NODE
+    1 NODES +!
+    NODES @ NODE^ 0 SWAP W! ;
+
+: INSERT-NODE ( addr,count -- )
+    ADD-NODE
+    2DUP ADD-NAME
+    HASH-KEY HASH-RECORD^
+    DUP W@ NAMES @ NODES @ ADD-LINK
+    SWAP W! ;
+
+: FIND-NODE ( addr,count -- addr )
+    2DUP HASH-KEY HASH-RECORD^ W@
+    BEGIN
+        DUP WHILE
+        LINK^ @
+        DUP LINK>NAME
+        2OVER ROT NAME^
+        COUNT COMPARE 0= IF
+            0
+        ELSE
+            LINK>NEXT
+        THEN
+    REPEAT ;
+

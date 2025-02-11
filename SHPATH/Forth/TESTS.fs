@@ -1,6 +1,7 @@
 REQUIRE ffl/tst.fs
 REQUIRE shpath.fs
 
+PAGE
 T{
     INIT-NAMES
     S" foo bar" ADD-NAME
@@ -14,7 +15,11 @@ T{
     EDGES @ EDGE^ @
     DUP EDGE>DEST 42 ?S
     DUP EDGE>COST 4807 ?S
-    EDGE>LINK 2317 ?S
+    EDGE>NEXT 2317 ?S
+
+    S" furmeyer" dbg INSERT-NODE
+    S" furmeyer" DBG FIND-NODE
+    LINK>NAME COUNT S" furmeyer" ?STR
 
 }T
 BYE
