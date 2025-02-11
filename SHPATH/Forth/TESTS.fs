@@ -17,9 +17,12 @@ T{
     DUP EDGE>COST 4807 ?S
     EDGE>NEXT 2317 ?S
 
-    S" furmeyer" dbg INSERT-NODE
-    S" furmeyer" DBG FIND-NODE
-    LINK>NAME COUNT S" furmeyer" ?STR
+    S" furmeyer" INSERT-NODE
+    s" mennecy"  INSERT-NODE
+    s" salazac"  INSERT-NODE
+    S" furmeyer" FIND-NODE
+    LINK>NAME NAME^ COUNT S" furmeyer" ?STR
+    S" coulomb" FIND-NODE ?FALSE
 
 }T
 BYE

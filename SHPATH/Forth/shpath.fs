@@ -31,6 +31,12 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
     NAMES @ NAME^ 2DUP
     C! 1+ SWAP CMOVE ;
 
+: LAST-NAME ( -- name )
+    NAMES @ ;
+
+: LAST-NODE ( -- node )
+    NODES @ ;
+    
 : INIT-EDGES
     EDGES OFF ;
 
@@ -52,6 +58,9 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
     1 EDGES +!
     EDGES @ EDGE^ ! ;
 
+: LAST-LINK ( -- link )
+    LINKS @ ;
+
 : LINK^ ( key -- addr )
     CELLS LINKS CELL+ + ;
 
@@ -63,10 +72,9 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
 
 : ADD-LINK ( link,name,node -- link' )
     1 LINKS +!
-    ROT 32 LSHIFT
-    SWAP 16 LSHIFT OR OR
-    LINKS @ LINK^ !
-    LINKS @ ;
+    ROT 32 LSHIFT                ( name,node,link<<32 )
+    ROT 16 LSHIFT OR OR          ( node|link<<32|name<<16 )
+    LAST-LINK TUCK LINK^ ! ;
 
 : HASH-RECORD^ ( key -- addr )
     /INDEX * HASH-TABLE + ;
@@ -88,20 +96,25 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
     ADD-NODE
     2DUP ADD-NAME
     HASH-KEY HASH-RECORD^
-    DUP W@ NAMES @ NODES @ ADD-LINK
+    DUP W@ LAST-NAME LAST-NODE ADD-LINK
     SWAP W! ;
 
-: FIND-NODE ( addr,count -- addr )
-    2DUP HASH-KEY HASH-RECORD^ W@
+: FIND-NODE ( addr,count -- lcell,T|F)
+    2DUP HASH-KEY HASH-RECORD^ W@     ( addr,count,link )
+    FALSE                             ( addr,count,link,FALSE)
     BEGIN
-        DUP WHILE
-        LINK^ @
-        DUP LINK>NAME
-        2OVER ROT NAME^
-        COUNT COMPARE 0= IF
-            0
+        0= WHILE                      ( addr,count,link )
+        DUP IF
+            LINK^ @ DUP               ( addr,count,lcell,lcell )
+            LINK>NAME                 ( addr,count,lcell,name )
+            2OVER ROT NAME^ COUNT     ( addr,count,lcell,addr,count,addr',count' )
+            COMPARE 0= IF
+                TRUE                  ( addr,count,lcell,T )
+            ELSE
+                LINK>NEXT FALSE       ( addr,count,link,F )
+            THEN
         ELSE
-            LINK>NEXT
+            DROP 0 TRUE
         THEN
-    REPEAT ;
+    REPEAT -ROT 2DROP ;
 
