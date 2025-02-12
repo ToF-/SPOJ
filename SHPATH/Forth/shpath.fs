@@ -20,9 +20,6 @@ CREATE HASH-TABLE 0 , MAX-NODE /INDEX * ALLOT
 CREATE BITSET MAX-NODE 8 / 1+ ALLOT
 CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
 
-: INIT-NAMES
-    NAMES OFF ;
-
 : NAME^ ( index -- addr )
     /NAME * NAMES CELL+ + ;
 
@@ -36,27 +33,30 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
 
 : LAST-NODE ( -- node )
     NODES @ ;
-    
-: INIT-EDGES
-    EDGES OFF ;
+
+: LAST-EDGE ( -- edge )
+    EDGES @ ;
 
 : EDGE^ ( index -- addr )
     CELLS EDGES CELL+ + ;
 
-: EDGE>DEST ( edge -- index )
+: EDGE>DEST ( ecell -- index )
     16383 AND ;
 
-: EDGE>COST ( edge -- cost )
+: EDGE>COST ( ecell -- cost )
     14 RSHIFT 262143 AND ;
 
-: EDGE>NEXT ( edge -- index )
+: EDGE>NEXT ( ecell -- index )
     32 RSHIFT EDGE-INDEX-MASK AND ;
 
-: ADD-EDGE ( link,cost,edge )
+: ECELL ( link,cost,edge -- ecell) 
     SWAP 14 LSHIFT OR
-    SWAP 32 LSHIFT OR
+    SWAP 32 LSHIFT OR ;
+
+: ADD-EDGE ( link,cost,edge -- edge )
     1 EDGES +!
-    EDGES @ EDGE^ ! ;
+    ECELL
+    LAST-EDGE TUCK EDGE^ ! ;
 
 : LAST-LINK ( -- link )
     LINKS @ ;
@@ -73,33 +73,33 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
 : LINK>NEXT ( lcell -- link )
     32 RSHIFT INDEX-MASK AND ;
 
+: LCELL ( link,name,node -- lcell)
+    ROT 32 LSHIFT                ( name,node,link<<32 )
+    ROT 16 LSHIFT OR OR ;        ( node|link<<32|name<<16 )
+
 : ADD-LINK ( link,name,node -- link' )
     1 LINKS +!
-    ROT 32 LSHIFT                ( name,node,link<<32 )
-    ROT 16 LSHIFT OR OR          ( node|link<<32|name<<16 )
+    LCELL
     LAST-LINK TUCK LINK^ ! ;
 
 : HASH-RECORD^ ( key -- addr )
     /INDEX * HASH-TABLE + ;
 
 : HASH-KEY ( addr,count -- key )
-    OVER + SWAP
-    0 -ROT DO
-        33 * I C@ +
-    LOOP MAX-NODE MOD ;
+    0 -ROT OVER + SWAP
+    DO 33 * I C@ + LOOP
+    MAX-NODE MOD ;
 
 : NODE^ ( index -- addr )
     /INDEX * NODES CELL+ + ;
 
-: ADD-NODE
+: NEW-NODE ( -- node )
     1 NODES +!
-    NODES @ NODE^ 0 SWAP W! ;
+    0 LAST-NODE TUCK NODE^ W! ;
 
 : INSERT-NODE ( addr,count -- )
-    ADD-NODE
-    2DUP ADD-NAME
-    HASH-KEY HASH-RECORD^
-    DUP W@ LAST-NAME LAST-NODE ADD-LINK
+    2DUP ADD-NAME HASH-KEY HASH-RECORD^
+    DUP W@ LAST-NAME NEW-NODE ADD-LINK
     SWAP W! ;
 
 : FIND-NODE ( addr,count -- lcell,T|F)

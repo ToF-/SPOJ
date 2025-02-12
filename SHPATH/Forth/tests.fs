@@ -3,16 +3,16 @@ REQUIRE shpath.fs
 
 PAGE
 T{
-    INIT-NAMES
+    NAMES OFF
     S" foo bar" ADD-NAME
     S" qux" ADD-NAME
 
     2 NAME^ COUNT S" qux" ?STR
     1 NAME^ COUNT S" foo bar" ?STR
 
-    INIT-EDGES
+    EDGES OFF
     2317 4807 42 ADD-EDGE
-    EDGES @ EDGE^ @
+    EDGE^ @
     DUP EDGE>DEST 42 ?S
     DUP EDGE>COST 4807 ?S
     EDGE>NEXT 2317 ?S
