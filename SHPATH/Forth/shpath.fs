@@ -186,3 +186,16 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     1 SIFT-DOWN
     ;
 
+: BITSET-INIT
+    BITSET MAX-NODE 8 / 1+ ERASE ;
+
+: BITSET^ ( index -- mask,addr )
+    8 /MOD BITSET +
+    1 ROT LSHIFT SWAP ;
+
+: BITSET-INCLUDE? ( index -- f )
+    BITSET^ C@ AND ;
+
+: BITSET-INCLUDE! ( index -- )
+    BITSET^ TUCK C@ OR SWAP C! ;
+    
