@@ -18,7 +18,8 @@ CREATE LINKS 0 , MAX-NODE CELLS ALLOT
 CREATE PATH  0 , MAX-NODE /INDEX * ALLOT
 CREATE HASH-TABLE 0 , MAX-NODE /INDEX * ALLOT
 CREATE BITSET MAX-NODE 8 / 1+ ALLOT
-CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
+CREATE PQUEUE 0 , MAX-NODE CELLS ALLOT
+CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
 
 : NAME^ ( index -- addr )
     /NAME * NAMES CELL+ + ;
@@ -115,4 +116,73 @@ CREATE PQUEUE 0 , MAX-NODE /INDEX * ALLOT
                 R> LINK>NEXT
             THEN
     REPEAT DROP 2DROP ;
+
+: PQUEUE^ ( index -- addr )
+    CELLS PQUEUE + ;
+
+: PQUEUE-INDEX^ ( index -- addr )
+    /INDEX * PQUEUE-INDEX 2 + + ;
+
+: PQUEUE-INDEX! ( node,index -- )
+    SWAP PQUEUE-INDEX^ W! ;
+
+: QCELL ( node,cost -- qcell )
+    32 LSHIFT OR ;
+
+: QCELL! ( qcell,index -- )
+    OVER INDEX-MASK AND OVER PQUEUE-INDEX! PQUEUE^ ! ;
+
+: QCELL@ ( addr -- node,cost )
+    @ DUP INDEX-MASK AND SWAP 32 RSHIFT ;
+
+: PQUEUE-COMPARE ( i,j -- n )
+    SWAP PQUEUE^ @
+    SWAP PQUEUE^ @ - ;
+
+: PQUEUE-SWAP ( i,j -- )
+    2DUP PQUEUE^ @ SWAP PQUEUE^ @     ( i,j,cj,ci )
+    ROT QCELL! SWAP QCELL! ;
+
+: PQUEUE-SELECT-SMALLER ( i,j -- i|j )
+    2DUP PQUEUE-COMPARE 0< CR IF DROP ELSE NIP THEN ;
+
+: SIFT-DOWN ( index )
+    BEGIN
+        DUP 2*
+        DUP PQUEUE @ <= WHILE
+        DUP PQUEUE @ < IF
+            DUP 1+ PQUEUE-SELECT-SMALLER
+        THEN
+        2DUP PQUEUE-COMPARE 0> IF
+            2DUP PQUEUE-SWAP NIP
+        ELSE
+            2DROP PQUEUE @
+        THEN
+    REPEAT 2DROP ;
+            
+: SIFT-UP ( index )
+    BEGIN DUP 1 > WHILE
+        DUP 2/
+        2DUP PQUEUE-COMPARE 0< IF
+            2DUP PQUEUE-SWAP
+        THEN
+        NIP
+    REPEAT DROP ;
+
+: PQUEUE-INSERT ( node,cost -- )
+    1 PQUEUE +!
+    QCELL PQUEUE @ QCELL!
+    PQUEUE @ SIFT-UP ;
+
+: PQUEUE-UPDATE ( node,cost -- )
+    OVER PQUEUE-INDEX^ W@ DUP
+    2SWAP QCELL ROT QCELL!
+    DUP SIFT-UP SIFT-DOWN ;
+
+: PQUEUE-EXTRACT-MIN ( -- node,cost )
+    1 PQUEUE^ QCELL@
+    PQUEUE @ 1 PQUEUE-SWAP
+    -1 PQUEUE +!
+    1 SIFT-DOWN
+    ;
 
