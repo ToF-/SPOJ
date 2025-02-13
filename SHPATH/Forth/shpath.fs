@@ -121,16 +121,20 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     CELLS PQUEUE + ;
 
 : PQUEUE-INDEX^ ( index -- addr )
-    /INDEX * PQUEUE-INDEX 2 + + ;
+    /INDEX * PQUEUE-INDEX + ;
+
+: PQUEUE-INDEX@ ( node -- index )
+    PQUEUE-INDEX^ W@ ;
 
 : PQUEUE-INDEX! ( node,index -- )
+    ." node[" over . ." ]←" dup . CR
     SWAP PQUEUE-INDEX^ W! ;
 
 : QCELL ( node,cost -- qcell )
     32 LSHIFT OR ;
 
 : QCELL! ( qcell,index -- )
-    OVER INDEX-MASK AND OVER PQUEUE-INDEX! PQUEUE^ ! ;
+    PQUEUE^ ! ;
 
 : QCELL@ ( addr -- node,cost )
     @ DUP INDEX-MASK AND SWAP 32 RSHIFT ;
@@ -139,8 +143,14 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     SWAP PQUEUE^ @
     SWAP PQUEUE^ @ - ;
 
+: PQUEUE-INDEX-SWAP ( n,m -- )
+    2DUP PQUEUE-INDEX@ SWAP PQUEUE-INDEX@
+    ROT PQUEUE-INDEX! SWAP PQUEUE-INDEX! ;
+
 : PQUEUE-SWAP ( i,j -- )
     2DUP PQUEUE^ @ SWAP PQUEUE^ @     ( i,j,cj,ci )
+    OVER INDEX-MASK AND OVER INDEX-MASK AND
+    PQUEUE-INDEX-SW:AP
     ROT QCELL! SWAP QCELL! ;
 
 : PQUEUE-SELECT-SMALLER ( i,j -- i|j )
@@ -169,18 +179,26 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
         NIP
     REPEAT DROP ;
 
-: PQUEUE-INSERT ( node,cost -- )
+: (PQUEUE-INSERT) ( node,cost -- )
     1 PQUEUE +!
+    OVER PQUEUE @ PQUEUE-INDEX!
     QCELL PQUEUE @ QCELL!
     PQUEUE @ SIFT-UP ;
 
-: PQUEUE-UPDATE ( node,cost -- )
-    OVER PQUEUE-INDEX^ W@ DUP
-    2SWAP QCELL ROT QCELL!
+: (PQUEUE-UPDATE) ( node,cost,index -- )
+    DUP 2SWAP QCELL ROT QCELL!
     DUP SIFT-UP SIFT-DOWN ;
+
+: PQUEUE-UPDATE ( node,cost -- )
+    OVER PQUEUE-INDEX@ ?DUP IF
+        (PQUEUE-UPDATE)
+    ELSE
+        (PQUEUE-INSERT)
+    THEN ;
 
 : PQUEUE-EXTRACT-MIN ( -- node,cost )
     1 PQUEUE^ QCELL@
+    OVER 0 PQUEUE-INDEX!
     PQUEUE @ 1 PQUEUE-SWAP
     -1 PQUEUE +!
     1 SIFT-DOWN
@@ -198,4 +216,3 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
 
 : BITSET-INCLUDE! ( index -- )
     BITSET^ TUCK C@ OR SWAP C! ;
-    
