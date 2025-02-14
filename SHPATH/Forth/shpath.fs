@@ -127,33 +127,32 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     PQUEUE-INDEX^ W@ ;
 
 : PQUEUE-INDEX! ( node,index -- )
-    SWAP PQUEUE-INDEX^ W! ;
+    ." pqueue-index! " .S CR
+    SWAP PQUEUE-INDEX^ W!
+    PQUEUE-INDEX 12 DUMP ;
 
 : QCELL ( node,cost -- qcell )
     32 LSHIFT OR ;
 
 : QCELL! ( qcell,index -- )
+    ." qcell! " .S CR
+    OVER INDEX-MASK AND OVER ( qcell,index,node,index )
+    PQUEUE-INDEX!
     PQUEUE^ ! ;
 
 : QCELL@ ( addr -- node,cost )
     @ DUP INDEX-MASK AND SWAP 32 RSHIFT ;
 
 : PQUEUE-COMPARE ( i,j -- n )
-    ." pqueue-compare " .S CR
     SWAP PQUEUE^ @
     SWAP PQUEUE^ @ - ;
 
-: PQUEUE-INDEX-SWAP ( n,m -- )
-    ." swapping positions of nodes " over . ." and " dup . CR
-    2DUP PQUEUE-INDEX@ SWAP PQUEUE-INDEX@
-    ROT PQUEUE-INDEX! SWAP PQUEUE-INDEX! ;
-
 : PQUEUE-SWAP ( i,j -- )
-    2DUP PQUEUE^ @ SWAP PQUEUE^ @ ( i,j,jcell,icell )
-    OVER INDEX-MASK AND           ( i,j,jcell,icell,jnode)
-    OVER INDEX-MASK AND           ( i,j,jcell,icell,jnode,inode)
-    PQUEUE-INDEX-SWAP
-    ROT QCELL! SWAP QCELL! ;
+    OVER PQUEUE^ @            ( i,j,icell )
+    OVER PQUEUE^ @            ( i,j,icell,jcell )
+    SWAP                     ( i,j,jcell,icell )
+    ROT QCELL!               ( i,jcell )           \ j ← icell
+    SWAP QCELL! ;
 
 : PQUEUE-SELECT-SMALLER ( i,j -- i|j )
     2DUP PQUEUE-COMPARE 0< CR IF DROP ELSE NIP THEN ;
@@ -173,7 +172,6 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     REPEAT 2DROP ;
 
 : SIFT-UP ( index )
-    ." sift up " .S CR
     BEGIN DUP 1 > WHILE
         DUP 2/
         2DUP PQUEUE-COMPARE 0< IF
@@ -183,14 +181,12 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     REPEAT DROP ;
 
 : (PQUEUE-INSERT) ( node,cost -- )
-    ." (pqueue-insert) " .S CR
     1 PQUEUE +!
     OVER PQUEUE @ PQUEUE-INDEX!
     QCELL PQUEUE @ QCELL!
     PQUEUE @ SIFT-UP ;
 
 : (PQUEUE-UPDATE) ( node,cost,index -- )
-    ." (pqueue-update) " .S CR
     DUP 2SWAP QCELL ROT QCELL!
     DUP SIFT-UP SIFT-DOWN ;
 
@@ -202,6 +198,7 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     THEN ;
 
 : PQUEUE-EXTRACT-MIN ( -- node,cost )
+    ." pqueue-extract-min " .S CR
     1 PQUEUE^ QCELL@
     OVER 0 PQUEUE-INDEX!
     PQUEUE @ 1 PQUEUE-SWAP
