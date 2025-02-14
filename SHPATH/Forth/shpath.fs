@@ -127,15 +127,12 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     PQUEUE-INDEX^ W@ ;
 
 : PQUEUE-INDEX! ( node,index -- )
-    ." pqueue-index! " .S CR
-    SWAP PQUEUE-INDEX^ W!
-    PQUEUE-INDEX 12 DUMP ;
+    SWAP PQUEUE-INDEX^ W! ;
 
 : QCELL ( node,cost -- qcell )
     32 LSHIFT OR ;
 
 : QCELL! ( qcell,index -- )
-    ." qcell! " .S CR
     OVER INDEX-MASK AND OVER ( qcell,index,node,index )
     PQUEUE-INDEX!
     PQUEUE^ ! ;
@@ -198,13 +195,10 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     THEN ;
 
 : PQUEUE-EXTRACT-MIN ( -- node,cost )
-    ." pqueue-extract-min " .S CR
     1 PQUEUE^ QCELL@
     OVER 0 PQUEUE-INDEX!
-    PQUEUE @ 1 PQUEUE-SWAP
-    -1 PQUEUE +!
-    1 SIFT-DOWN
-    ;
+    PQUEUE @ PQUEUE^ @ 1 QCELL!
+    -1 PQUEUE +!  1 SIFT-DOWN ;
 
 : BITSET-INIT
     BITSET MAX-NODE 8 / 1+ ERASE ;
