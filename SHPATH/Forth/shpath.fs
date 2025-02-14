@@ -217,3 +217,39 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
 
 : BITSET-INCLUDE! ( index -- )
     BITSET^ TUCK C@ OR SWAP C! ;
+
+CREATE NUMBERS 10 CELLS ALLOT
+
+: NUMBER^ ( index -- addr )
+    CELLS NUMBERS + ;
+
+VARIABLE IN-DIGIT?
+
+: IS-DIGIT? ( c -- f )
+    DUP [CHAR] 0 >= SWAP [CHAR] 9 <= AND ;
+
+: CHAR>>NUMBER ( c -- )
+    NUMBERS @ NUMBER^
+    DUP @ 10 *
+    ROT [CHAR] 0 - + SWAP ! ;
+
+: CHAR>NUMBER ( c -- )
+    1 NUMBERS +!
+    NUMBERS @ NUMBER^
+    SWAP [CHAR] 0 - SWAP ! ;
+
+: STR>NUMBERS ( addr,count -- )
+    NUMBERS OFF
+    OVER + SWAP FALSE -ROT DO
+        I C@ DUP IS-DIGIT? IF
+            OVER IF
+                CHAR>>NUMBER
+            ELSE
+                CHAR>NUMBER
+                DROP TRUE
+            THEN
+        ELSE
+            2DROP FALSE
+        THEN
+    LOOP DROP ;
+
