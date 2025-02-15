@@ -61,4 +61,16 @@ T{
     NUMBERS 1 CELLS + @ 2317 ?S
     NUMBERS 2 CELLS + @ 4807 ?S
 }T
+
+T{
+    S"      foo" SKIP-SPACE S" foo" ?STR
+    S"    " SKIP-SPACE S" " ?STR
+    S" bar" SKIP-SPACE S" bar" ?STR
+
+    S" foo  bar" SKIP-NON-SPACE S"   bar" ?STR
+    S" foo" SKIP-NON-SPACE S" " ?STR
+
+    S"    foo     bar   "
+    SKIP-SPACE 2DUP SKIP-NON-SPACE EXTRACT-STR .S
+}T
 BYE

@@ -4,6 +4,7 @@
 2       CONSTANT /INDEX
 10000   CONSTANT MAX-NODE
 100000  CONSTANT MAX-EDGE
+100     CONSTANT MAX-REQUEST
 
 $03FFF     CONSTANT INDEX-MASK
 $03FFFF    CONSTANT COST-MASK
@@ -20,6 +21,7 @@ CREATE HASH-TABLE 0 , MAX-NODE /INDEX * ALLOT
 CREATE BITSET MAX-NODE 8 / 1+ ALLOT
 CREATE PQUEUE 0 , MAX-NODE CELLS ALLOT
 CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
+CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
 
 : NAME^ ( index -- addr )
     /NAME * NAMES CELL+ + ;
@@ -231,6 +233,9 @@ CREATE NUMBERS MAX-NUMBERS CELLS ALLOT
     CURRENT-NUMBER DUP @
     10 * ROT + SWAP ! ;
 
+: NUMBER@ ( i -- n )
+    CELLS NUMBERS + @ ;
+
 : STR>NUMBERS ( addr,count -- )
     NUMBERS OFF
     OVER + SWAP TRUE -ROT DO
@@ -244,4 +249,69 @@ CREATE NUMBERS MAX-NUMBERS CELLS ALLOT
           DROP TRUE
         THEN
     LOOP DROP ;
+
+: REQUEST^ ( n -- addr )
+    CELLS REQUESTS + ;
+
+: REQUEST@ ( n -- start,dest )
+    REQUEST^ @
+    DUP 32 RSHIFT SWAP INDEX-MASK AND ;
+
+: REQUEST! ( start,dest,n -- )
+    REQUEST^
+    ROT 32 LSHIFT ROT OR SWAP ! ;
+
+: SKIP-SPACE ( addr,count -- addr',count' )
+    OVER + DUP DUP 2SWAP ( dest,dest,addr,dest )
+    SWAP DO
+        I C@ BL <> IF
+            DROP I LEAVE
+        THEN
+    LOOP TUCK - ;
+
+: SKIP-NON-SPACE ( addr,count -- addr',count' )
+    OVER + DUP DUP 2SWAP
+    SWAP DO
+        I C@ BL = IF
+            DROP I LEAVE
+        THEN
+    LOOP TUCK - ;
+
+: EXTRACT-STR ( addr,count,addr',count' -- )
+    NIP - ;
+
+256 CONSTANT LINE-LENGTH
+CREATE LINE-BUFFER LINE-LENGTH ALLOT
+
+: READ-NUMBERS
+    LINE-BUFFER DUP LINE-LENGTH STDIN THROW IF
+        STR>NUMBERS
+    THEN ;
+
+: READ-NAME
+    LINE-BUFFER DUP LINE-LENGTH STDIN THROW DROP ;
+
+VARIABLE TESTS-CASES
+VARIABLE NODE-COUNT
+
+\ : READ-INPUT
+\     NAMES OFF
+\     EDGES OFF
+\     REQUESTS OFF
+\     READ-NUMBERS
+\     1 NUMBER@ 0 DO
+\         READ-NUMBERS
+\         1 NUMBER@ 0 DO
+\             READ-NAME INSERT-NODE
+\             READ-NUMBERS
+\             1 NUMBER@ 0 DO
+\                 READ-NUMBERS
+\                 LAST-NODE NODE^ @ DUP
+\                 1 NUMBER@ 2 NUMBER@
+\                 ADD-EDGE SWAP !
+\             LOOP
+\         LOOP
+\         READ-NUMBERS
+\ 
+\                 
 
