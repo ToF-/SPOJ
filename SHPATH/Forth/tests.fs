@@ -58,7 +58,7 @@ T{
 T{
     S"   2317  4807  " STR>NUMBERS
     NUMBERS @ 2 ?S
-    1 NUMBER^ @ 2317 ?S
-    2 NUMBER^ @ 4807 ?S
+    NUMBERS 1 CELLS + @ 2317 ?S
+    NUMBERS 2 CELLS + @ 4807 ?S
 }T
 BYE
