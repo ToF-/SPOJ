@@ -294,6 +294,49 @@ CREATE LINE-BUFFER LINE-LENGTH ALLOT
 VARIABLE TESTS-CASES
 VARIABLE NODE-COUNT
 
+2 CONSTANT MAX-TOKENS
+CREATE STR-TOKENS MAX-TOKENS 2 CELLS * ALLOT
+
+VARIABLE TOKEN-MAX
+
+: STR-TOKEN-ADDR^ ( n -- addr )
+    2 CELLS * STR-TOKENS + ;
+    
+: STR-TOKEN-COUNT^ ( n -- addr )
+    2 CELLS * STR-TOKENS + CELL+ ;
+
+: STR-TOKEN@ ( n -- addr,count )
+    STR-TOKEN-ADDR^ DUP @
+    SWAP CELL+ @ ;
+
+: EXTRACT-TOKENS ( addr, count )
+    TOKEN-MAX OFF
+    OVER + SWAP FALSE -ROT DO
+        I C@ BL = IF
+            IF
+                TOKEN-MAX @ STR-TOKEN-ADDR^ @
+                I SWAP - TOKEN-MAX @ STR-TOKEN-COUNT^ !
+                1 TOKEN-MAX +!
+                FALSE
+            ELSE
+                FALSE
+            THEN
+        ELSE
+            0= IF
+                I TOKEN-MAX @ STR-TOKEN-ADDR^ !
+                TRUE
+            ELSE
+                TRUE
+            THEN
+        THEN
+    LOOP DROP ;
+        
+            
+
+
+        
+
+
 \ : READ-INPUT
 \     NAMES OFF
 \     EDGES OFF
