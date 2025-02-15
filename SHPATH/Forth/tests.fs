@@ -56,15 +56,13 @@ T{
 }T
 
 T{
-    S"   2317  4807  " STR>NUMBERS
-    NUMBERS @ 2 ?S
-    NUMBERS 1 CELLS + @ 2317 ?S
-    NUMBERS 2 CELLS + @ 4807 ?S
-}T
-T{
     S"  foo  bar  " EXTRACT-TOKENS 
     0 STR-TOKEN@ S" foo" ?STR
     1 STR-TOKEN@ S" bar" ?STR
+}T
+T{
+    S"   2317  4807  " STR>NUMBERS
+    4807 ?S 2317 ?S
 }T
 
 BYE

@@ -219,36 +219,56 @@ CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
 : BITSET-INCLUDE! ( index -- )
     BITSET^ TUCK C@ OR SWAP C! ;
 
-2 CONSTANT MAX-NUMBERS
-CREATE NUMBERS MAX-NUMBERS CELLS ALLOT
+2 CONSTANT MAX-TOKENS
+CREATE STR-TOKENS MAX-TOKENS 2 CELLS * ALLOT
 
-: CURRENT-NUMBER ( -- addr )
-    NUMBERS DUP @ CELLS + ;
+VARIABLE TOKEN-MAX
 
-: NEW-NUMBER
-    1 NUMBERS +!
-    CURRENT-NUMBER OFF ;
+: STR-TOKEN-ADDR^ ( n -- addr )
+    2 CELLS * STR-TOKENS + ;
 
-: ACC-NUMBER ( c -- )
-    CURRENT-NUMBER DUP @
-    10 * ROT + SWAP ! ;
+: STR-TOKEN-COUNT^ ( n -- addr )
+    2 CELLS * STR-TOKENS + CELL+ ;
 
-: NUMBER@ ( i -- n )
-    CELLS NUMBERS + @ ;
+: STR-TOKEN@ ( n -- addr,count )
+    STR-TOKEN-ADDR^ DUP @
+    SWAP CELL+ @ ;
 
-: STR>NUMBERS ( addr,count -- )
-    NUMBERS OFF
-    OVER + SWAP TRUE -ROT DO
-        I C@ DIGIT? IF
-            OVER IF 
-                NEW-NUMBER
-                NIP FALSE SWAP
+: STR-TOKEN-COUNT! ( addr )
+    TOKEN-MAX @ STR-TOKEN-ADDR^ @ -
+    TOKEN-MAX @ STR-TOKEN-COUNT^ ! ;
+
+: STR-TOKEN-ADDR! ( addr )
+    TOKEN-MAX @ STR-TOKEN-ADDR^ ! ;
+
+: EXTRACT-TOKENS ( addr, count )
+    TOKEN-MAX OFF
+    OVER + SWAP FALSE -ROT DO
+        I C@ BL = IF
+            DUP IF
+                I STR-TOKEN-COUNT!
+                1 TOKEN-MAX +!
+                DROP FALSE
             THEN
-            ACC-NUMBER
         ELSE
-          DROP TRUE
+            DUP 0= IF
+                I STR-TOKEN-ADDR!
+                DROP TRUE
+            THEN
         THEN
     LOOP DROP ;
+
+: STR>NUMBER ( addr,count -- n )
+    0 -ROT OVER + SWAP DO
+        I C@ [CHAR] 0 - 
+        SWAP 10 * +
+    LOOP ;
+
+: STR>NUMBERS ( addr,count -- n,m… )
+    EXTRACT-TOKENS
+    TOKEN-MAX @ 0 DO
+        I STR-TOKEN@ STR>NUMBER
+    LOOP ;
 
 : REQUEST^ ( n -- addr )
     CELLS REQUESTS + ;
@@ -294,42 +314,6 @@ CREATE LINE-BUFFER LINE-LENGTH ALLOT
 VARIABLE TESTS-CASES
 VARIABLE NODE-COUNT
 
-2 CONSTANT MAX-TOKENS
-CREATE STR-TOKENS MAX-TOKENS 2 CELLS * ALLOT
-
-VARIABLE TOKEN-MAX
-
-: STR-TOKEN-ADDR^ ( n -- addr )
-    2 CELLS * STR-TOKENS + ;
-    
-: STR-TOKEN-COUNT^ ( n -- addr )
-    2 CELLS * STR-TOKENS + CELL+ ;
-
-: STR-TOKEN@ ( n -- addr,count )
-    STR-TOKEN-ADDR^ DUP @
-    SWAP CELL+ @ ;
-
-: EXTRACT-TOKENS ( addr, count )
-    TOKEN-MAX OFF
-    OVER + SWAP FALSE -ROT DO
-        I C@ BL = IF
-            IF
-                TOKEN-MAX @ STR-TOKEN-ADDR^ @
-                I SWAP - TOKEN-MAX @ STR-TOKEN-COUNT^ !
-                1 TOKEN-MAX +!
-                FALSE
-            ELSE
-                FALSE
-            THEN
-        ELSE
-            0= IF
-                I TOKEN-MAX @ STR-TOKEN-ADDR^ !
-                TRUE
-            ELSE
-                TRUE
-            THEN
-        THEN
-    LOOP DROP ;
         
             
 
