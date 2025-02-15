@@ -55,8 +55,7 @@ CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
     SWAP 32 LSHIFT OR ;
 
 : ADD-EDGE ( link,cost,edge -- edge )
-    1 EDGES +!
-    ECELL
+    1 EDGES +!  ECELL
     LAST-EDGE TUCK EDGE^ ! ;
 
 : LAST-LINK ( -- link )
