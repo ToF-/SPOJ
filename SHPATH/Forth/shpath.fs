@@ -219,43 +219,19 @@ CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
 : BITSET-INCLUDE! ( index -- )
     BITSET^ TUCK C@ OR SWAP C! ;
 
-2 CONSTANT MAX-TOKENS
-CREATE STR-TOKENS MAX-TOKENS 2 CELLS * ALLOT
-
-VARIABLE TOKEN-MAX
-
-: STR-TOKEN-ADDR^ ( n -- addr )
-    2 CELLS * STR-TOKENS + ;
-
-: STR-TOKEN-COUNT^ ( n -- addr )
-    2 CELLS * STR-TOKENS + CELL+ ;
-
-: STR-TOKEN@ ( n -- addr,count )
-    STR-TOKEN-ADDR^ DUP @
-    SWAP CELL+ @ ;
-
-: STR-TOKEN-COUNT! ( addr )
-    TOKEN-MAX @ STR-TOKEN-ADDR^ @ -
-    TOKEN-MAX @ STR-TOKEN-COUNT^ ! ;
-
-: STR-TOKEN-ADDR! ( addr )
-    TOKEN-MAX @ STR-TOKEN-ADDR^ ! ;
-
-: EXTRACT-TOKENS ( addr, count )
-    TOKEN-MAX OFF
-    OVER + SWAP FALSE -ROT DO
-        I C@ BL = IF
-            DUP IF
-                I STR-TOKEN-COUNT!
-                1 TOKEN-MAX +!
-                DROP FALSE
+: STR-TOKENS ( addr,count -- add1,c1,add2,c2,…,n )
+    0 FALSE 2SWAP
+    OVER + SWAP DO I C@
+        BL <> IF
+            DUP 0= IF
+                I ROT 1+
+                ROT DROP TRUE
             THEN
         ELSE
-            DUP 0= IF
-                I STR-TOKEN-ADDR!
-                DROP TRUE
-            THEN
-        THEN
+            DUP IF
+                ROT I OVER -
+                2SWAP DROP FALSE
+        THEN THEN
     LOOP DROP ;
 
 : STR>NUMBER ( addr,count -- n )
@@ -263,82 +239,4 @@ VARIABLE TOKEN-MAX
         I C@ [CHAR] 0 - 
         SWAP 10 * +
     LOOP ;
-
-: STR>NUMBERS ( addr,count -- n,m… )
-    EXTRACT-TOKENS
-    TOKEN-MAX @ 0 DO
-        I STR-TOKEN@ STR>NUMBER
-    LOOP ;
-
-: REQUEST^ ( n -- addr )
-    CELLS REQUESTS + ;
-
-: REQUEST@ ( n -- start,dest )
-    REQUEST^ @
-    DUP 32 RSHIFT SWAP INDEX-MASK AND ;
-
-: REQUEST! ( start,dest,n -- )
-    REQUEST^
-    ROT 32 LSHIFT ROT OR SWAP ! ;
-
-: SKIP-SPACE ( addr,count -- addr',count' )
-    OVER + DUP DUP 2SWAP ( dest,dest,addr,dest )
-    SWAP DO
-        I C@ BL <> IF
-            DROP I LEAVE
-        THEN
-    LOOP TUCK - ;
-
-: SKIP-NON-SPACE ( addr,count -- addr',count' )
-    OVER + DUP DUP 2SWAP
-    SWAP DO
-        I C@ BL = IF
-            DROP I LEAVE
-        THEN
-    LOOP TUCK - ;
-
-: EXTRACT-STR ( addr,count,addr',count' -- )
-    NIP - ;
-
-256 CONSTANT LINE-LENGTH
-CREATE LINE-BUFFER LINE-LENGTH ALLOT
-
-: READ-NUMBERS
-    LINE-BUFFER DUP LINE-LENGTH STDIN THROW IF
-        STR>NUMBERS
-    THEN ;
-
-: READ-NAME
-    LINE-BUFFER DUP LINE-LENGTH STDIN THROW DROP ;
-
-VARIABLE TESTS-CASES
-VARIABLE NODE-COUNT
-
-        
-            
-
-
-        
-
-
-\ : READ-INPUT
-\     NAMES OFF
-\     EDGES OFF
-\     REQUESTS OFF
-\     READ-NUMBERS
-\     1 NUMBER@ 0 DO
-\         READ-NUMBERS
-\         1 NUMBER@ 0 DO
-\             READ-NAME INSERT-NODE
-\             READ-NUMBERS
-\             1 NUMBER@ 0 DO
-\                 READ-NUMBERS
-\                 LAST-NODE NODE^ @ DUP
-\                 1 NUMBER@ 2 NUMBER@
-\                 ADD-EDGE SWAP !
-\             LOOP
-\         LOOP
-\         READ-NUMBERS
-\ 
-\                 
 

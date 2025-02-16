@@ -56,13 +56,11 @@ T{
 }T
 
 T{
-    S"  foo  bar  " EXTRACT-TOKENS 
-    0 STR-TOKEN@ S" foo" ?STR
-    1 STR-TOKEN@ S" bar" ?STR
-}T
-T{
-    S"   2317  4807  " STR>NUMBERS
-    4807 ?S 2317 ?S
+    S"  foo  bar   quux " STR-TOKENS
+    3 ?S
+    S" quux" ?STR
+    S" bar" ?STR
+    S" foo" ?STR
 }T
 
 BYE
