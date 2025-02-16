@@ -61,6 +61,32 @@ T{
     S" quux" ?STR
     S" bar" ?STR
     S" foo" ?STR
+    s" dug" STR-TOKENS
+    1 ?S
+    S" dug" ?STR
+    s" dig dug" STR-TOKENS
+    2 ?S
+    S" dug" ?STR
+    S" dig" ?STR
 }T
 
+T{
+    INITIALIZE
+\ foobarqux
+\ 2
+\ 200 2317
+\ 300 4807
+    S" test/one-node.txt" R/O OPEN-FILE THROW INPUT-FILE !
+    READ-NODE
+    INPUT-FILE @ CLOSE-FILE THROW
+    S" foobarqux" FIND-NODE
+    DUP LINK>NAME NAME^ COUNT S" foobarqux" ?STR
+    LINK>NODE 1 ?S
+    1 NODE^ @ EDGE^ @
+    DUP EDGE>DEST 300 ?S
+    DUP EDGE>COST 4807 ?S
+    EDGE>NEXT EDGE^ @ 
+    DUP EDGE>DEST 200 ?S
+    EDGE>COST 2317 ?S
+}T
 BYE
