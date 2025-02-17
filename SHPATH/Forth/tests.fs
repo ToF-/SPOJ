@@ -56,18 +56,14 @@ T{
 }T
 
 T{
-    S"  foo  bar   quux " STR-TOKENS
-    3 ?S
-    S" quux" ?STR
-    S" bar" ?STR
-    S" foo" ?STR
-    s" dug" STR-TOKENS
-    1 ?S
-    S" dug" ?STR
-    s" dig dug" STR-TOKENS
-    2 ?S
-    S" dug" ?STR
-    S" dig" ?STR
+    S" "          STR-TOKENS 0 ?S
+    S"     "      STR-TOKENS 0 ?S
+    S" foo"       STR-TOKENS 1 ?S S" foo" ?STR
+    S"  bar"      STR-TOKENS 1 ?S S" bar" ?STR
+    S"   qux  "   STR-TOKENS 1 ?S S" qux" ?STR
+    S" foo bar "  STR-TOKENS 2 ?S S" bar" ?STR S" foo" ?STR
+    S" a b c d"   STR-TOKENS 4 ?S S" d" ?STR S" c" ?STR
+    2DROP 2DROP 
 }T
 
 T{

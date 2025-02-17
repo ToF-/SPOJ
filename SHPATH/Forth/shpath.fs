@@ -226,26 +226,24 @@ CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
 : BITSET-INCLUDE! ( index -- )
     BITSET^ TUCK C@ OR SWAP C! ;
 
-: STR-TOKENS ( addr,count -- add1,c1,add2,c2,…,n )
-    2DUP + >R
+: (STR-TOKENS) ( addr,count -- add1,c1,add2,c2,…,n )
     0 FALSE 2SWAP
-    OVER + SWAP DO I C@
-        BL <> IF
-            DUP 0= IF
-                I ROT 1+
-                ROT DROP TRUE
-            THEN
-        ELSE
-            DUP IF
-                ROT I OVER -
-                2SWAP DROP FALSE
-        THEN THEN
-    LOOP
-    IF
-        SWAP R> OVER - ROT 
+    OVER + DUP >R SWAP
+    DO I C@ BL <> IF
+        DUP 0= IF
+            I ROT 1+
+            ROT DROP TRUE
+        THEN
     ELSE
-        R> DROP
-    THEN ;
+        DUP IF
+            ROT I OVER -
+            2SWAP DROP FALSE
+    THEN THEN LOOP
+    R> SWAP
+    IF ROT TUCK - ROT ELSE DROP THEN ;
+
+: STR-TOKENS ( addr,count -- add1,c1,add2,c2,…,n )
+    DUP IF (STR-TOKENS) ELSE NIP THEN ;
 
 : STR>NUMBER ( addr,count -- n )
     0 -ROT OVER + SWAP DO
