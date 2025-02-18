@@ -30,6 +30,12 @@ CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
     NAMES OFF
     HASH-TABLE OFF ;
 
+: NODE^ ( index -- addr )
+    /INDEX * CELL+ NODES + ;
+
+: NODE@ ( index -- edge )
+    NODE^ W@ ;
+
 : NAME^ ( index -- addr )
     /NAME * NAMES CELL+ + ;
 
@@ -226,6 +232,42 @@ CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
 : BITSET-INCLUDE! ( index -- )
     BITSET^ TUCK C@ OR SWAP C! ;
 
+VARIABLE TARGET-NODE
+
+: FIND-PATH ( start,end -- cost )
+    PATH MAX-NODE /INDEX * ERASE
+    BITSET-INIT
+    TARGET-NODE !
+    0 PQUEUE-UPDATE
+    BEGIN
+        PQUEUE @ WHILE
+        PQUEUE-EXTRACT-MIN         \ node,cost
+        OVER TARGET-NODE @ <> IF   \ node,cost
+            SWAP NODE@             \ cost,edge
+            BEGIN DUP WHILE
+                EDGE^ @            \ cost,ecell
+                DUP EDGE>DEST      \ cost,ecell,dest
+                OVER EDGE>COST     \ cost,ecell,dest,cost
+                2>R OVER 2R> ROT + \ cost,ecell,dest,cost'
+                OVER BITSET-INCLUDE? 0= IF
+                    OVER PQUEUE-INDEX@ QCELL@ QCELL>COST
+                    OVER > IF
+                        PQUEUE-UPDATE
+                    ELSE
+                        2DROP
+                    THEN
+                ELSE
+                    2DROP
+                THEN
+                EDGE>NEXT         \ cost,edge
+            REPEAT
+            2DROP
+        ELSE
+            DROP
+            PQUEUE OFF            \ cost
+        THEN
+    REPEAT ;                      \ cost
+
 : (STR-TOKENS) ( addr,count -- add1,c1,add2,c2,…,n )
     0 FALSE 2SWAP
     OVER + DUP >R SWAP
@@ -304,10 +346,6 @@ VARIABLE INPUT-FILE
 
 : READ-TEST-CASE
     INITIALIZE READ-NODES READ-REQUESTS ;
-
-: FIND-PATH ( start,end )
-    ." FIND-PATH " .S CR
-    2DROP ;
 
 : EXEC-REQUEST ( rcell -- )
     DUP INDEX-MASK AND SWAP 32 RSHIFT
