@@ -200,8 +200,12 @@ CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
     PQUEUE @ SIFT-UP ;
 
 : (PQUEUE-UPDATE) ( node,cost,index -- )
-    DUP 2SWAP QCELL ROT QCELL!
-    DUP SIFT-UP SIFT-DOWN ;
+    OVER >R DUP QCELL@ QCELL>COST R> > IF
+        DUP 2SWAP QCELL ROT QCELL!
+        DUP SIFT-UP SIFT-DOWN
+    ELSE
+        DROP 2DROP
+    THEN ;
 
 : PQUEUE-UPDATE ( node,cost -- )
     OVER PQUEUE-INDEX@ ?DUP IF
@@ -242,6 +246,7 @@ VARIABLE TARGET-NODE
     BEGIN
         PQUEUE @ WHILE
         PQUEUE-EXTRACT-MIN         \ node,cost
+        OVER BITSET-INCLUDE!
         OVER TARGET-NODE @ <> IF   \ node,cost
             SWAP NODE@             \ cost,edge
             BEGIN DUP WHILE
@@ -250,12 +255,7 @@ VARIABLE TARGET-NODE
                 OVER EDGE>COST     \ cost,ecell,dest,cost
                 2>R OVER 2R> ROT + \ cost,ecell,dest,cost'
                 OVER BITSET-INCLUDE? 0= IF
-                    OVER PQUEUE-INDEX@ QCELL@ QCELL>COST
-                    OVER > IF
-                        PQUEUE-UPDATE
-                    ELSE
-                        2DROP
-                    THEN
+                    PQUEUE-UPDATE
                 ELSE
                     2DROP
                 THEN
@@ -349,7 +349,7 @@ VARIABLE INPUT-FILE
 
 : EXEC-REQUEST ( rcell -- )
     DUP INDEX-MASK AND SWAP 32 RSHIFT
-    FIND-PATH ;
+    FIND-PATH . ;
 
 : EXEC-REQUESTS
     REQUESTS @ 1+ 1 DO
