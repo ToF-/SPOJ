@@ -85,4 +85,10 @@ T{
     DUP EDGE>DEST 200 ?S
     EDGE>COST 2317 ?S
 }T
+
+T{
+    S" test/sample.txt" R/O OPEN-FILE THROW INPUT-FILE !
+    PROCESS
+    INPUT-FILE @ CLOSE-FILE THROW
+}T
 BYE
