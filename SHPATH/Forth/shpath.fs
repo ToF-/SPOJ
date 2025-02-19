@@ -33,7 +33,7 @@ CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
 : NODE^ ( index -- addr )
     /INDEX * CELL+ NODES + ;
 
-: NODE@ ( index -- edge )
+: NODE>EDGES ( index -- edge )
     NODE^ W@ ;
 
 : NAME^ ( index -- addr )
@@ -248,7 +248,7 @@ VARIABLE TARGET-NODE
         PQUEUE-EXTRACT-MIN         \ node,cost
         OVER BITSET-INCLUDE!
         OVER TARGET-NODE @ <> IF   \ node,cost
-            SWAP NODE@             \ cost,edge
+            SWAP NODE>EDGES        \ cost,edges
             BEGIN DUP WHILE
                 EDGE^ @            \ cost,ecell
                 DUP EDGE>DEST      \ cost,ecell,dest
