@@ -87,7 +87,7 @@ T{
 
 T{
     S" test/sample.txt" R/O OPEN-FILE THROW INPUT-FILE !
-    DBG PROCESS
+    PROCESS
     INPUT-FILE @ CLOSE-FILE THROW
 }T
 BYE
