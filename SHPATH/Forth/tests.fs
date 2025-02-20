@@ -1,4 +1,6 @@
 REQUIRE ffl/tst.fs
+REQUIRE test-names.fs
+BYE
 REQUIRE shpath.fs
 
 PAGE
