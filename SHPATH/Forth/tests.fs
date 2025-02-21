@@ -2,6 +2,8 @@ REQUIRE ffl/tst.fs
 REQUIRE test-names.fs
 REQUIRE test-bitset.fs
 REQUIRE test-linked-list.fs
+REQUIRE test-input.fs
+REQUIRE test-parse.fs
 BYE
 REQUIRE shpath.fs
 
