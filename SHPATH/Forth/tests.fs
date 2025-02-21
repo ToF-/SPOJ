@@ -1,5 +1,6 @@
 REQUIRE ffl/tst.fs
 REQUIRE test-names.fs
+REQUIRE test-bitset.fs
 BYE
 REQUIRE shpath.fs
 
