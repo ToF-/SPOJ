@@ -15,13 +15,17 @@ CREATE NAMES-SPACE
 : NAME^ ( n -- addr )
     CELLS NAMES CELL+ + ;
 
+: ADD-NAME-ADDR ( addr -- )
+    1 NAMES +! NAMES @ NAME^ ! ;
+
+: STORE-STR ( addr,count,dest -- )
+    2DUP C! 1+ SWAP MOVE ;
+
 : ADD-NAME ( addr, count -- )
-    1 NAMES +!
-    NAMES-SPACE @                       \ addr,count,dest
-    2DUP C!                             \ addr,count,dest
-    1+ SWAP DUP >R MOVE
-    NAMES-SPACE DUP @ NAMES @ NAME^ !
-    R> 1+ SWAP +! ;
+    DUP -ROT
+    NAMES-SPACE @ STORE-STR
+    NAMES-SPACE @ ADD-NAME-ADDR
+    1+ NAMES-SPACE +! ;
 
 : NAME@ ( n -- addr,count )
     NAME^ @ COUNT ;
