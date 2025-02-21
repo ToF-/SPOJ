@@ -4,7 +4,8 @@ REQUIRE hash-table.fs
 ." test hash-table" CR
 
 T{
-    s" foo" ADD-NAME
+    S" foo" ADD-NAME
     NAMES @ 4807 INSERT-RECORD
-    S" foo" DBG FIND-RECORD ?TRUE 
+    S" foo" FIND-RECORD ?TRUE
+    RECORD> NAME@ S" foo" ?STR 4807 ?S
 }T
