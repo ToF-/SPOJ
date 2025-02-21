@@ -38,7 +38,7 @@ CREATE HASH-TABLE
     HASH-RECORD^ @                  \ list
     BEGIN
         ITEM>NEXT WHILE             \ item,list
-            OVER >RECORD DROP       \ item,list,nameIndex
+            OVER RECORD> NIP       \ item,list,nameIndex
             NAME@ 2R@ COMPARE 0= IF \ item,list
                 DROP TRUE NIL       \ item,T,nil
             ELSE
