@@ -4,6 +4,9 @@ REQUIRE test-bitset.fs
 REQUIRE test-linked-list.fs
 REQUIRE test-input.fs
 REQUIRE test-parse.fs
+REQUIRE test-hash-table.fs
+
+REQUIRE free.fs
 BYE
 REQUIRE shpath.fs
 

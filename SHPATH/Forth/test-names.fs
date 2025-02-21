@@ -10,6 +10,4 @@ T{
     1 NAME@ S" foo" ?STR
     2 NAME@ S" bar" ?STR
     3 NAME@ S" quux" ?STR
-
-    NAMES-SPACE-FREE
 }T
