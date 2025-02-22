@@ -8,5 +8,5 @@ T{
     NAMES @ 4807 INSERT-RECORD
     S" foo" FIND-RECORD ?TRUE
     RECORD> NAME@ S" foo" ?STR 4807 ?S
-    S" bar" dbg FIND-RECORD
+    S" bar" FIND-RECORD ?FALSE
 }T

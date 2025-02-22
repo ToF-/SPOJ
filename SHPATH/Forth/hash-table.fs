@@ -37,16 +37,20 @@ CREATE HASH-TABLE
     2DUP 2>R HASH-KEY               \ key
     FALSE SWAP                      \ F,key
     HASH-RECORD^ @                  \ F,list
-    BEGIN
-        ITEM>NEXT WHILE             \ F,record,list
-            OVER RECORD> NIP        \ F,record,list,nameIndex
-            NAME@ 2R@ COMPARE 0= IF \ F,record,list
-                DROP NIP            \ record
-                TRUE SWAP NIL       \ T,record,nil
-            ELSE
-                2DROP NIL NIL       \ T,nil,nil
-            THEN
-     REPEAT                         \ f,record
-     2R> 2DROP
-     OVER IF SWAP ELSE 2DROP FALSE THEN ;
+    ?DUP IF
+        BEGIN
+            ITEM>NEXT WHILE             \ F,record,list
+                OVER RECORD> NIP        \ F,record,list,nameIndex
+                NAME@ 2R@ COMPARE 0= IF \ F,record,list
+                    DROP NIP            \ record
+                    TRUE SWAP NIL       \ T,record,nil
+                ELSE
+                    2DROP NIL NIL       \ T,nil,nil
+                THEN
+         REPEAT                         \ f,record
+    ELSE
+        NIL
+    THEN
+    2R> 2DROP
+    OVER IF SWAP ELSE 2DROP FALSE THEN ;
 
