@@ -17,10 +17,4 @@
     REPEAT DROP ;
 
 : REVERSE ( n -- m )
-    DUP 123 = IF
-        DROP 321 ELSE
-    DUP 495 = IF
-        DROP 594 ELSE
-    DUP 10 >= IF
-        0 SWAP (REVERSE)
-    THEN THEN THEN ;
+    0 SWAP (REVERSE) ;
