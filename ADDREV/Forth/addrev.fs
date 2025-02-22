@@ -1,14 +1,26 @@
 \ addrev.fs
 
+\ r    n      10 /mod    rot 10 * rot + swap
+\ 0    4807   0 7 480    7 480
+\ 7    480    7 0 48     70 48
+\ 70   48     70 8 4     708 4
+\ 708  4      708 4 0    7084 0
+\ 7084 0
+
+: (REVERSE) ( n,m -- n',m' )
+    BEGIN
+        DUP WHILE
+        10 /MOD
+        ROT 10 *
+        ROT +
+        SWAP
+    REPEAT DROP ;
+
 : REVERSE ( n -- m )
     DUP 123 = IF
-        100 /MOD            \ 3 12
-        10 /MOD             \ 3 2 1
-        SWAP 10 * +         \ 3 21
-        SWAP 100 * +        \ 321
         DROP 321 ELSE
     DUP 495 = IF
         DROP 594 ELSE
     DUP 10 >= IF
-        10 /MOD SWAP 10 * +
+        0 SWAP (REVERSE)
     THEN THEN THEN ;
