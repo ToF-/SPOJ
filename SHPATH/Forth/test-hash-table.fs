@@ -9,4 +9,10 @@ T{
     S" foo" FIND-RECORD ?TRUE
     RECORD> 4807 ?S NAME@ S" foo" ?STR
     S" bar" FIND-RECORD ?FALSE
+
+    S" quux" ADD-NAME
+    NAMES @ 2317 INSERT-RECORD
+    S" quux" FIND-RECORD ?TRUE
+    DUP RECORD>NAME S" quux" ?STR
+    RECORD>VALUE 2317 ?S
 }T

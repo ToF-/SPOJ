@@ -32,7 +32,7 @@ CREATE HASH-TABLE
     RECORD> DROP NAME@ ;
 
 : RECORD>VALUE ( record -- value )
-    RECORD> 23 RSHIFT ;
+    RECORD> NIP ;
 
 : INSERT-RECORD ( nameIndex, value -- )
     OVER NAME@ HASH-KEY HASH-RECORD^
