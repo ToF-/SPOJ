@@ -4,22 +4,14 @@
 #define MAX_LINE 40;
 
 int reverse(int n) {
-    int result;
-    char buffer[20];
-    sprintf(buffer, "%d", n);
-    int l = strlen(buffer);
-    int i = 0;
-    int j = l-1;
-    do {
-        char t = buffer[i];
-        buffer[i] = buffer[j];
-        buffer[j] = t;
-        i++;
-        j--;
-    } while (i<=j);
-    sscanf(buffer, "%d", &result);
-    return result;
+    int r = 0;
+    while(n) {
+        r = r * 10 + n % 10;
+        n /= 10;
+    }
+    return r;
 }
+
 int main() {
     int max_case;
     scanf("%d", &max_case);
