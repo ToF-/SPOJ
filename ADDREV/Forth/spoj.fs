@@ -22,7 +22,6 @@
 : READLN ( -- addr,count )
     PAD DUP 128 STDIN
     READ-LINE THROW DROP ;
-    
 
 : MAIN
     READLN EVALUATE
@@ -31,7 +30,6 @@
         REVERSE SWAP REVERSE
         + REVERSE . CR
     LOOP ;
-    
 
 MAIN BYE
 
