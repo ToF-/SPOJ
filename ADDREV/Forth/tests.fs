@@ -8,5 +8,6 @@ T{
     42  REVERSE 24 ?S
     7   REVERSE 7  ?S
     123 REVERSE 321 ?S
+    495 REVERSE 594 ?S
 }T
 BYE
