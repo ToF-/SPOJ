@@ -25,32 +25,34 @@ CREATE HASH-TABLE
     32 LSHIFT OR ;
 
 : RECORD> ( record -- nameIndex,value )
-    DUP 32 RSHIFT
-    SWAP VALUE-MASK AND ;
+    DUP VALUE-MASK AND
+    SWAP 32 RSHIFT ;
+
+: RECORD>NAME ( record -- addr,count )
+    RECORD> DROP NAME@ ;
+
+: RECORD>VALUE ( record -- value )
+    RECORD> 23 RSHIFT ;
 
 : INSERT-RECORD ( nameIndex, value -- )
-    OVER -ROT >RECORD                 \ nameIndex,record
-    SWAP NAME@ HASH-KEY HASH-RECORD^ \ record,addr
-    ADD-ITEM! ;
+    OVER NAME@ HASH-KEY HASH-RECORD^
+    -ROT >RECORD SWAP ADD-ITEM! ;
 
 : FIND-RECORD ( addr,count -- record,T|F )
-    2DUP 2>R HASH-KEY               \ key
-    FALSE SWAP                      \ F,key
-    HASH-RECORD^ @                  \ F,list
-    ?DUP IF
-        BEGIN
-            ITEM>NEXT WHILE             \ F,record,list
-                OVER RECORD> NIP        \ F,record,list,nameIndex
-                NAME@ 2R@ COMPARE 0= IF \ F,record,list
-                    DROP NIP            \ record
-                    TRUE SWAP NIL       \ T,record,nil
-                ELSE
-                    2DROP NIL NIL       \ T,nil,nil
-                THEN
-         REPEAT                         \ f,record
+    2DUP HASH-KEY
+    HASH-RECORD^ @
+    BEGIN
+        ITEM>NEXT WHILE
+        2OVER 2SWAP OVER
+        RECORD>NAME 2ROT
+        COMPARE 0= IF
+            DROP TRUE NIL
+        ELSE
+            NIP
+        THEN
+    REPEAT
+    DUP TRUE = IF
+        2SWAP 2DROP
     ELSE
-        NIL
-    THEN
-    2R> 2DROP
-    OVER IF SWAP ELSE 2DROP FALSE THEN ;
-
+        2DROP FALSE
+    THEN ;
