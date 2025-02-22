@@ -1,29 +1,35 @@
-\ reverse the number on the stack
-\ 4807 -- 7084
-\ 1400 -- 41
-: REVERSE 
-    0 SWAP
+\ addrev.fs
+
+\ r    n      10 /mod    rot 10 * rot + swap
+\ 0    4807   0 7 480    7 480
+\ 7    480    7 0 48     70 48
+\ 70   48     70 8 4     708 4
+\ 708  4      708 4 0    7084 0
+\ 7084 0
+
+: (REVERSE) ( n,m -- n',m' )
     BEGIN
-        10 /MOD 
+        DUP WHILE
+        10 /MOD
         ROT 10 *
         ROT +
         SWAP
-    ?DUP 0= UNTIL ;
+    REPEAT DROP ;
 
-\ read a line on stdin, assume no exception
-: READLN ( -- addr,l )
-    PAD DUP 40 
-    STDIN READ-LINE THROW
-    DROP ;
+: REVERSE ( n -- m )
+    0 SWAP (REVERSE) ;
+
+: READLN ( -- addr,count )
+    PAD DUP 128 STDIN
+    READ-LINE THROW DROP ;
+    
 
 : MAIN
     READLN EVALUATE
     0 DO
         READLN EVALUATE
-        REVERSE 
-        SWAP REVERSE 
-        + REVERSE
-        . CR
+        REVERSE SWAP REVERSE
+        + REVERSE . CR
     LOOP ;
     
 

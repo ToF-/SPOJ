@@ -18,3 +18,17 @@
 
 : REVERSE ( n -- m )
     0 SWAP (REVERSE) ;
+
+: READLN ( -- addr,count )
+    PAD DUP 128 STDIN
+    READ-LINE THROW DROP ;
+    
+
+: MAIN
+    READLN EVALUATE
+    0 DO
+        READLN EVALUATE
+        REVERSE SWAP REVERSE
+        + REVERSE . CR
+    LOOP ;
+    
