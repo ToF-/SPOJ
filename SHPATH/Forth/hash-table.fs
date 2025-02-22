@@ -35,14 +35,18 @@ CREATE HASH-TABLE
 
 : FIND-RECORD ( addr,count -- record,T|F )
     2DUP 2>R HASH-KEY               \ key
-    HASH-RECORD^ @                  \ list
+    FALSE SWAP                      \ F,key
+    HASH-RECORD^ @                  \ F,list
     BEGIN
-        ITEM>NEXT WHILE             \ item,list
-            OVER RECORD> NIP       \ item,list,nameIndex
-            NAME@ 2R@ COMPARE 0= IF \ item,list
-                DROP TRUE NIL       \ item,T,nil
+        ITEM>NEXT WHILE             \ F,record,list
+            OVER RECORD> NIP        \ F,record,list,nameIndex
+            NAME@ 2R@ COMPARE 0= IF \ F,record,list
+                DROP NIP            \ record
+                TRUE SWAP NIL       \ T,record,nil
             ELSE
-                NIP                 \ list
+                2DROP NIL NIL       \ T,nil,nil
             THEN
-     REPEAT 2R> 2DROP ;
+     REPEAT                         \ f,record
+     2R> 2DROP
+     OVER IF SWAP ELSE 2DROP FALSE THEN ;
 

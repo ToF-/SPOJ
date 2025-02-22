@@ -6,7 +6,7 @@ REQUIRE hash-table.fs
 T{
     S" foo" ADD-NAME
     NAMES @ 4807 INSERT-RECORD
-    S" foo" FIND-RECORD ?TRUE .S CR KEY DROP
+    S" foo" FIND-RECORD ?TRUE
     RECORD> NAME@ S" foo" ?STR 4807 ?S
-    S" bar" DBG FIND-RECORD ?FALSE
+    S" bar" dbg FIND-RECORD
 }T
