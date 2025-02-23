@@ -18,7 +18,8 @@ CREATE EDGE-DEGREE 10001 CELLS ALLOT
     BEGIN
         READ-INPUT-LINE WHILE
         ADD-NAME
-    REPEAT ;
+    REPEAT
+    CLOSE-INPUT-FILE ;
 
 : .NAMES
     MAX-NAMES 1+ 1 DO
@@ -46,38 +47,57 @@ CREATE EDGE-DEGREE 10001 CELLS ALLOT
     10000 1 ADD-EDGE
     1 10000 ADD-EDGE ;
 
+: RANDOM-NODE ( -- n )
+    RND 10000 MOD 1+ ;
+
 : RANDOM-EDGES
-    1000 0 DO
+    10000 0 DO
         BEGIN
-            RND 10000 MOD 1+
-            RND 10000 MOD 1+
+            RANDOM-NODE
+            RANDOM-NODE
             2DUP EDGE>KEY INCLUDE? WHILE
                 2DROP
         REPEAT
         ADD-EDGE
     LOOP ;
 
-VARIABLE CURRENT-NODE
 : .EDGES
-    CURRENT-NODE OFF
-    MAX-ELEMENTS 0 DO
-        I INCLUDE? IF
-            I KEY>EDGE
-            SWAP DUP CURRENT-NODE @ <> IF
-                DUP . DUP NAME@ TYPE CR
-                DUP EDGE-DEGREE^ @ . CR
-                DUP CURRENT-NODE !
-            THEN
-            . . RND 50 MOD . CR
+    10000 0 .R CR
+    10001 1 DO
+        I EDGE-DEGREE^ @ DUP IF
+            I NAME@ TYPE CR
+            0 .R CR
+            10001 1 DO
+                J I EDGE>KEY INCLUDE? IF
+                    I  . RND 100 MOD 1+ 0 .R CR
+                THEN
+            LOOP
         THEN
+    LOOP ;
+
+: .REQUESTS
+    100 0 .R CR
+    100 0 DO
+        BEGIN
+            RANDOM-NODE
+            RANDOM-NODE
+        2DUP <> UNTIL
+        NAME@ TYPE SPACE NAME@ TYPE CR
+    LOOP ;
+
+: .TESTS
+    10 0 .R CR
+    10 0 DO
+        .EDGES
+        .REQUESTS
+        CR
     LOOP ;
 
 READ-NAMES
 EDGE-DEGREE 10001 CELLS ERASE
-CLOSE-INPUT-FILE
 RANDOM-EDGES
 N-CYCLE
-.EDGES
+.TESTS
 BYE
 
 
