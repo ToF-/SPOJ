@@ -8,8 +8,7 @@
             I ROT 1+
             ROT DROP TRUE
         THEN
-    ELSE
-        DUP IF
+    ELSE DUP IF
             ROT I OVER -
             2SWAP DROP FALSE
     THEN THEN LOOP
