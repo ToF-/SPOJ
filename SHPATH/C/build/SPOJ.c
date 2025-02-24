@@ -1,3 +1,10 @@
+int doit();
+
+#include "shpath.h"
+
+int doit() {
+    return 42;
+}
 #include <stdio.h>
 #include "shpath.h"
 

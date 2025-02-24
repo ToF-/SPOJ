@@ -1,15 +1,15 @@
 #include "unity.h"
 #include "unity_fixture.h"
 #include "unity_memory.h"
-#include "app.h"
+#include "shpath.h"
 
-TEST_GROUP(app);
+TEST_GROUP(shpath);
 
-TEST_SETUP(app) { }
+TEST_SETUP(shpath) { }
 
-TEST_TEAR_DOWN(app) { }
+TEST_TEAR_DOWN(shpath) { }
 
-TEST(app, dummy) {
+TEST(shpath, dummy) {
   int result;
   result = doit();
   TEST_ASSERT_EQUAL(42, result);
