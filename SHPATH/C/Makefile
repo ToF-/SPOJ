@@ -23,8 +23,8 @@ INC_DIRS=-Isrc -I$(UNITY_ROOT)/src -I$(UNITY_ROOT)/extras/fixture/src -I$(UNITY_
 
 unit:
 	mkdir -p test/runner
-	./gen_test_runner.awk test/app_tests.c >test/runner/test_runner.c
-	./gen_all_tests.awk test/app_tests.c >test/runner/all_tests.c
+	./gen_test_runner.awk test/shpath_tests.c >test/runner/test_runner.c
+	./gen_all_tests.awk test/shpath_tests.c >test/runner/all_tests.c
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(APP_FILES) $(UNITY_FILES) -o $(TEST_TARGET)
 	- ./$(TEST_TARGET)
 
