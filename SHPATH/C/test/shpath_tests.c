@@ -5,47 +5,43 @@
 
 TEST_GROUP(shpath);
 
-struct graph *g;
+struct graph *graph;
 
 TEST_SETUP(shpath) {
-    *g = create_graph();
+    graph = create_graph();
 
-    add_vertex(g, 1);
-    add_edge(g, 1, 2, 100);
-    add_edge(g, 1, 3, 300);
+    add_vertex(graph, "foo");
+    add_edge(graph, 0, 1, 100);
+    add_edge(graph, 0, 2, 300);
 
-    add_vertex(g, 2);
-    add_edge(g, 2, 1, 100);
-    add_edge(g, 2, 3, 100);
-    add_edge(g, 2, 4, 400);
+    add_vertex(graph, "bar");
+    add_edge(graph, 1, 0, 100);
+    add_edge(graph, 1, 2, 100);
+    add_edge(graph, 1, 3, 400);
 
-    add_vertex(g, 3);
-    add_edge(g, 3, 1, 3);
-    add_edge(g, 3, 2, 1);
-    add_edge(g, 3, 4, 1);
+    add_vertex(graph, "qux");
+    add_edge(graph, 2, 0, 300);
+    add_edge(graph, 2, 1, 100);
+    add_edge(graph, 2, 3, 100);
 
-    add_vertex(g, 4);
-    add_edge(g, 4, 2, 4);
-    add_edge(g, 4, 3, 1);
+    add_vertex(graph, "law");
+    add_edge(graph, 3, 1, 400);
+    add_edge(graph, 3, 2, 100);
 }
 
 TEST_TEAR_DOWN(shpath) {
-    destroy_graph(g);
+    destroy_graph(graph);
 }
 
-TEST(shpath, a_simple_graph) {
-
-  int result;
-  result = doit();
-  TEST_ASSERT_EQUAL(42, result);
+TEST(shpath, graph_size) {
+  TEST_ASSERT_EQUAL(4, graph->size);
 }
 
-TEST_GROUP(foo);
+TEST(shpath, graph_vertex_edges) {
+    TEST_ASSERT_EQUAL(2, graph->vertice[0]->size);
+    TEST_ASSERT_EQUAL(3, graph->vertice[1]->size);
+    TEST_ASSERT_EQUAL(3, graph->vertice[2]->size);
+    TEST_ASSERT_EQUAL(2, graph->vertice[3]->size);
 
-TEST_SETUP(foo) { }
-
-TEST_TEAR_DOWN(foo) { }
-
-TEST(foo,dummy_too) {
-    TEST_ASSERT_EQUAL(4, 2+2);
 }
+
