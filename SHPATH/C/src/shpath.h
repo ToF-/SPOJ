@@ -1,3 +1,9 @@
+#define MAX_VERTICE 10001
+#define MAX_BITS_INT (sizeof(int) * 8)
+#define MAX_BITSET (1 + MAX_VERTICE / MAX_BITS_INT)
+#define offset(x) (x / MAX_BITS_INT)
+#define bit(x) ( x % MAX_BITS_INT)
+
 typedef int vertex_id;
 
 struct edge {
@@ -10,17 +16,18 @@ struct vertex {
     struct edge **edges;
     int size;
     int capacity;
-    int distance;
     vertex_id prev_vertex;
-    int visited;
 };
 
 struct graph {
-    struct vertex **vertice;
+    struct vertex *vertice[MAX_VERTICE];
+    int visited[MAX_BITSET];
     int size;
-    int capacity;
 };
 struct graph *create_graph();
 struct vertex *add_vertex(struct graph *, char *);
 void add_edge(struct graph *, int, int, int);
 void destroy_graph(struct graph *);
+void init_visited(struct graph *);
+int visited(struct graph *, int);
+void visit(struct graph *, int);

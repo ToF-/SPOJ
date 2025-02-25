@@ -42,6 +42,16 @@ TEST(shpath, graph_vertex_edges) {
     TEST_ASSERT_EQUAL(3, graph->vertice[1]->size);
     TEST_ASSERT_EQUAL(3, graph->vertice[2]->size);
     TEST_ASSERT_EQUAL(2, graph->vertice[3]->size);
+    TEST_ASSERT_EQUAL(1, graph->vertice[0]->edges[0]->destination);
+    TEST_ASSERT_EQUAL(2, graph->vertice[0]->edges[1]->destination);
+    TEST_ASSERT_EQUAL(400, graph->vertice[3]->edges[0]->cost);
+}
 
+TEST(shpath, graph_visited) {
+    init_visited(graph);
+    TEST_ASSERT_EQUAL(0, visited(graph, 4807));
+    visit(graph, 4808);
+    TEST_ASSERT_EQUAL(1, visited(graph, 4808));
+    TEST_ASSERT_EQUAL(0, visited(graph, 4807));
 }
 

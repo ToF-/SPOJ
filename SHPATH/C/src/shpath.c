@@ -13,15 +13,7 @@ struct graph *create_graph() {
 struct vertex *add_vertex(struct graph *graph, char *name) {
     assert(name);
     assert(strlen(name));
-    if (graph->capacity <= graph->size) {
-        int new_capacity = graph->capacity ? graph->capacity * 2 : 1;
-        graph->vertice = realloc(graph->vertice, new_capacity * sizeof(struct vertex));
-        for(int i = graph->capacity; i < new_capacity; i++)
-            graph->vertice[i] = NULL;
-        graph->capacity = new_capacity;
-    }
     int vertex_id = graph->size;
-    assert(graph->vertice[vertex_id] == NULL);
     graph->vertice[vertex_id] = calloc(1, sizeof(struct vertex));
     struct vertex *vertex = graph->vertice[vertex_id];
     assert(vertex);
@@ -67,5 +59,24 @@ void destroy_graph(struct graph *graph) {
         }
     }
     free(graph);
+}
+
+void init_visited(struct graph *graph) {
+    for(int i = 0; i < MAX_BITSET; i++)
+        graph->visited[i] = 0;
+}
+
+int visited(struct graph *graph, int vertex_id) {
+    int offset = offset(vertex_id);
+    int bit    = bit(vertex_id);
+    int value  = graph->visited[offset];
+    int mask   = 1 << bit;
+    return (value & (1 << bit)) > 0 ;
+}
+
+void visit(struct graph *graph, int vertex_id) {
+    int offset = offset(vertex_id);
+    int bit    = bit(vertex_id);
+    graph->visited[offset] |= (1 << bit);
 }
 
