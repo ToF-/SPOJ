@@ -5,6 +5,9 @@
 #include "shpath.h"
 
 unsigned int hash_key(char *);
+void add(struct queue*, struct vertex *, int);
+void sift_up(struct queue*, int);
+void sift_down(struct queue*, int);
 
 struct graph *create_graph() {
     struct graph *graph = calloc(1, sizeof(struct graph));
@@ -119,7 +122,26 @@ void visit(struct graph *graph, int vertex_id) {
     graph->visited[offset] |= (1 << bit);
 }
 
+void add(struct queue *queue, struct vertex*, int priority) {
+
+}
+void sift_up(struct queue* queue, int priority_index) {
+}
+
+void sift_down(struct queue* queue, int prioryt_index) {
+}
+
 void update(struct queue* queue, struct vertex *vertex, int priority) {
+    int priority_index = vertex->priority_index;
+    if (!priority_index) {
+        add(queue, vertex, priority);
+    } else {
+        if (queue->records[priority_index]->priority > priority) {
+            queue->records[priority_index]->priority = priority;
+            sift_up(queue, priority_index);
+            sift_down(queue, priority_index);
+        }
+    }
 
 }
 

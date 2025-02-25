@@ -16,6 +16,7 @@ struct vertex {
     struct edge **edges;
     int size;
     int capacity;
+    int priority_index;
     vertex_id prev_vertex;
 };
 
