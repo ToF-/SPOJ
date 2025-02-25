@@ -66,3 +66,17 @@ TEST(shpath, graph_hash_table) {
     TEST_ASSERT_NULL(find_vertex(graph, "gus"));
 }
 
+TEST(shpath, graph_priority_queue) {
+    printf("graph priority queue\n");
+    update(graph->queue, find_vertex(graph, "foo"), 4807);
+    update(graph->queue, find_vertex(graph, "qux"), 2317);
+    update(graph->queue, find_vertex(graph, "foo"), 10000);
+    update(graph->queue, find_vertex(graph, "bar"), 42);
+    TEST_ASSERT_EQUAL(3, graph->queue->size);
+    struct record *record = extract_min(graph->queue);
+    TEST_ASSERT_EQUAL_STRING("bar", record->data->name);
+    TEST_ASSERT_EQUAL_INT(42, record->priority);
+
+
+}
+

@@ -9,6 +9,9 @@ unsigned int hash_key(char *);
 struct graph *create_graph() {
     struct graph *graph = calloc(1, sizeof(struct graph));
     assert(graph);
+    struct queue *queue = calloc(1, sizeof(struct queue));
+    assert(queue);
+    graph->queue = queue;
     return graph;
 }
 
@@ -93,6 +96,7 @@ void destroy_graph(struct graph *graph) {
             free(pointer);
         }
     }
+    free(graph->queue);
     free(graph);
 }
 
@@ -115,3 +119,10 @@ void visit(struct graph *graph, int vertex_id) {
     graph->visited[offset] |= (1 << bit);
 }
 
+void update(struct queue* queue, struct vertex *vertex, int priority) {
+
+}
+
+struct record *extract_min(struct queue *queue) {
+    return NULL;
+}
