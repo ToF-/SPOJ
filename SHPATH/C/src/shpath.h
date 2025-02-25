@@ -19,9 +19,15 @@ struct vertex {
     vertex_id prev_vertex;
 };
 
+struct link {
+    struct vertex *data;
+    struct link* next;
+};
+
 struct graph {
     struct vertex *vertice[MAX_VERTICE];
     int visited[MAX_BITSET];
+    struct link *hash_table[MAX_VERTICE];
     int size;
 };
 struct graph *create_graph();
@@ -31,3 +37,4 @@ void destroy_graph(struct graph *);
 void init_visited(struct graph *);
 int visited(struct graph *, int);
 void visit(struct graph *, int);
+struct vertex *find_vertex(struct graph *, char *);

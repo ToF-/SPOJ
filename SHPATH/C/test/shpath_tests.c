@@ -1,4 +1,5 @@
 #include "unity.h"
+#include "string.h"
 #include "unity_fixture.h"
 #include "unity_memory.h"
 #include "shpath.h"
@@ -34,10 +35,12 @@ TEST_TEAR_DOWN(shpath) {
 }
 
 TEST(shpath, graph_size) {
-  TEST_ASSERT_EQUAL(4, graph->size);
+    printf("graph size\n");
+    TEST_ASSERT_EQUAL(4, graph->size);
 }
 
 TEST(shpath, graph_vertex_edges) {
+    printf("graph vertex and edges\n");
     TEST_ASSERT_EQUAL(2, graph->vertice[0]->size);
     TEST_ASSERT_EQUAL(3, graph->vertice[1]->size);
     TEST_ASSERT_EQUAL(3, graph->vertice[2]->size);
@@ -48,10 +51,18 @@ TEST(shpath, graph_vertex_edges) {
 }
 
 TEST(shpath, graph_visited) {
+    printf("graph visited vertice\n");
     init_visited(graph);
     TEST_ASSERT_EQUAL(0, visited(graph, 4807));
     visit(graph, 4808);
     TEST_ASSERT_EQUAL(1, visited(graph, 4808));
     TEST_ASSERT_EQUAL(0, visited(graph, 4807));
+}
+
+TEST(shpath, graph_hash_table) {
+    printf("graph hash table\n");
+    TEST_ASSERT_EQUAL_STRING("qux", find_vertex(graph, "qux")->name);
+    TEST_ASSERT_EQUAL_STRING("foo", find_vertex(graph, "foo")->name);
+    TEST_ASSERT_NULL(find_vertex(graph, "gus"));
 }
 

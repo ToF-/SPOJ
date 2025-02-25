@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include "shpath.h"
 
+unsigned int hash_key(char *);
+
 struct graph *create_graph() {
     struct graph *graph = calloc(1, sizeof(struct graph));
     assert(graph);
@@ -19,8 +21,33 @@ struct vertex *add_vertex(struct graph *graph, char *name) {
     assert(vertex);
     vertex->name = malloc(strlen(name)+1);
     strcpy(vertex->name, name);
+    unsigned int key = hash_key(name);
+    struct link *link = (struct link *)malloc(sizeof(struct link));
+    assert(link);
+    link->data = vertex;
+    link->next = graph->hash_table[key];
+    graph->hash_table[key] = link;
     graph->size++;
     return vertex;
+}
+
+unsigned int hash_key(char *name) {
+    unsigned int result = 0;
+    for(int i=0; i < strlen(name); i++) {
+        result = result * 33 + name[i];
+    }
+    return result % MAX_VERTICE;
+}
+
+struct vertex *find_vertex(struct graph *graph, char *name) {
+    unsigned int key = hash_key(name);
+    struct link *link = graph->hash_table[key];
+    while(link) {
+        if (!strcmp(link->data->name, name))
+            return link->data;
+        link = link->next;
+    }
+    return NULL;
 }
 
 void add_edge(struct graph *graph, int start, int dest, int cost) {
@@ -56,6 +83,14 @@ void destroy_graph(struct graph *graph) {
     for(int i = 0; i < graph->size; i++) {
         if(graph->vertice[i]) {
             destroy_vertex(graph->vertice[i]);
+        }
+    }
+    for(int i = 0; i < MAX_VERTICE; i++) {
+        struct link *link = graph->hash_table[i];
+        while (link != NULL) {
+            struct link *pointer = link;
+            link = link->next;
+            free(pointer);
         }
     }
     free(graph);
