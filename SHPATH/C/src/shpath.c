@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "shpath.h"
 
 #define START_QUEUE_CAPACITY 8
@@ -12,6 +13,7 @@ int compare_record_priority(struct queue *, int, int);
 void swap(struct queue*, int, int);
 void sift_up(struct queue*, int);
 void sift_down(struct queue*, int);
+bool queue_property(struct queue*);
 
 struct graph *create_graph() {
     struct graph *graph = calloc(1, sizeof(struct graph));
@@ -166,10 +168,10 @@ void sift_down(struct queue* queue, int priority_index) {
     while( i*2 <= queue->size ) {
         int c = i * 2;
         if ( c < queue->size ) {
-            if ( compare_record_priority(queue, c, c + 1) )
+            if ( compare_record_priority(queue, c + 1, c) < 0 )
                 c = c + 1;
         }
-        if ( compare_record_priority(queue, c, i) ) {
+        if ( compare_record_priority(queue, c, i) < 0 ) {
             swap(queue, c, i);
             i = c;
         } else {
@@ -178,19 +180,31 @@ void sift_down(struct queue* queue, int priority_index) {
     }
 }
 
+bool queue_property(struct queue* queue) {
+    if (queue->size < 2)
+        return true;
+    for(int i = queue->size; i > 2; i--) {
+        if(compare_record_priority(queue, i, i/2) < 0)
+            return false;
+    }
+    return true;
+}
 void update(struct queue* queue, struct vertex *vertex, int priority) {
     if (!vertex->priority_index) {
-        if(!queue->capacity) {
-            queue->records = calloc(START_QUEUE_CAPACITY, sizeof(struct record *));
-            queue->capacity = START_QUEUE_CAPACITY;
-            for(int i = 0; i < queue->capacity; i++) {
-                queue->records[i] = calloc(1, sizeof(struct record));
-            }
-        } else if (queue->capacity < queue->size-1) {
-            int new_capacity = queue->capacity ? queue->capacity * 2 : START_QUEUE_CAPACITY;
-            queue->records = realloc(queue->records, new_capacity * sizeof(struct record));
-            for(int i = queue->capacity; i < new_capacity; i++) { 
-                queue->records[i] = calloc(1, sizeof(struct record));
+        if (queue->size >= queue->capacity-1) {
+            if(!queue->capacity) {
+                queue->records = calloc(START_QUEUE_CAPACITY, sizeof(struct record *));
+                queue->capacity = START_QUEUE_CAPACITY;
+                for(int i = 0; i < queue->capacity; i++) {
+                    queue->records[i] = calloc(1, sizeof(struct record));
+                }
+            } else {
+                int new_capacity = queue->capacity ? queue->capacity * 2 : START_QUEUE_CAPACITY;
+                queue->records = realloc(queue->records, new_capacity * sizeof(struct record));
+                for(int i = queue->capacity; i < new_capacity; i++) { 
+                    queue->records[i] = calloc(1, sizeof(struct record));
+                }
+                queue->capacity = new_capacity;
             }
         }
         queue->size++;
