@@ -1,3 +1,4 @@
+#include "assert.h"
 #include "unity.h"
 #include "string.h"
 #include "unity_fixture.h"
@@ -73,9 +74,17 @@ TEST(shpath, graph_priority_queue) {
     update(graph->queue, find_vertex(graph, "foo"), 10000);
     update(graph->queue, find_vertex(graph, "bar"), 42);
     TEST_ASSERT_EQUAL(3, graph->queue->size);
-    struct record *record = extract_min(graph->queue);
-    TEST_ASSERT_EQUAL_STRING("bar", record->data->name);
-    TEST_ASSERT_EQUAL_INT(42, record->priority);
+    int priority;
+    struct vertex *vertex;
+    extract_min(graph->queue, &vertex, &priority);
+    TEST_ASSERT_EQUAL_STRING("bar", vertex->name);
+    TEST_ASSERT_EQUAL_INT(42, priority);
+    extract_min(graph->queue, &vertex, &priority);
+    TEST_ASSERT_EQUAL_STRING("foo", vertex->name);
+    TEST_ASSERT_EQUAL_INT(4807, priority);
+    extract_min(graph->queue, &vertex, &priority);
+    TEST_ASSERT_EQUAL_STRING("qux", vertex->name);
+    TEST_ASSERT_EQUAL_INT(2317, priority);
 
 
 }

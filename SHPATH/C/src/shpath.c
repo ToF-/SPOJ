@@ -4,8 +4,12 @@
 #include <stdio.h>
 #include "shpath.h"
 
+#define START_QUEUE_CAPACITY 8
+
 unsigned int hash_key(char *);
 void add(struct queue*, struct vertex *, int);
+int compare_record_priority(struct queue *, int, int);
+void swap(struct queue*, int, int);
 void sift_up(struct queue*, int);
 void sift_down(struct queue*, int);
 
@@ -13,6 +17,8 @@ struct graph *create_graph() {
     struct graph *graph = calloc(1, sizeof(struct graph));
     assert(graph);
     struct queue *queue = calloc(1, sizeof(struct queue));
+    queue->capacity = 0;
+    queue->size = 0;
     assert(queue);
     graph->queue = queue;
     return graph;
@@ -99,6 +105,9 @@ void destroy_graph(struct graph *graph) {
             free(pointer);
         }
     }
+    for(int i = 0; i < graph->queue->capacity; i++) {
+        free(graph->queue->records[i]);
+    }
     free(graph->queue);
     free(graph);
 }
@@ -122,29 +131,91 @@ void visit(struct graph *graph, int vertex_id) {
     graph->visited[offset] |= (1 << bit);
 }
 
-void add(struct queue *queue, struct vertex*, int priority) {
-
+int compare_record_priority(struct queue *queue, int i, int j) {
+    assert(queue->records[i]);
+    assert(queue->records[j]);
+    return queue->records[i]->priority - queue->records[j]->priority;
 }
+void swap(struct queue* queue, int i, int j) {
+    struct record temp;
+    temp.data = queue->records[j]->data;
+    temp.priority = queue->records[j]->priority;
+    queue->records[j]->data = queue->records[i]->data;
+    queue->records[j]->priority = queue->records[i]->priority;
+    queue->records[j]->data->priority_index = j;
+    queue->records[i]->data = temp.data;
+    queue->records[i]->priority = temp.priority;
+    queue->records[i]->data->priority_index = i;
+}
+
 void sift_up(struct queue* queue, int priority_index) {
+    int i = priority_index;
+    while( i > 1 ) {
+        int p = i / 2;
+        if ( compare_record_priority(queue, i, p) < 0 ) {
+            swap(queue, i, p);
+            i = p;
+        } else {
+            return;
+        }
+    }
 }
 
-void sift_down(struct queue* queue, int prioryt_index) {
+void sift_down(struct queue* queue, int priority_index) {
+    int i = priority_index;
+    while( i*2 <= queue->size ) {
+        int c = i * 2;
+        if ( c < queue->size ) {
+            if ( compare_record_priority(queue, c, c + 1) )
+                c = c + 1;
+        }
+        if ( compare_record_priority(queue, c, i) ) {
+            swap(queue, c, i);
+            i = c;
+        } else {
+            return;
+        }
+    }
 }
 
 void update(struct queue* queue, struct vertex *vertex, int priority) {
-    int priority_index = vertex->priority_index;
-    if (!priority_index) {
-        add(queue, vertex, priority);
+    if (!vertex->priority_index) {
+        if(!queue->capacity) {
+            queue->records = calloc(START_QUEUE_CAPACITY, sizeof(struct record *));
+            queue->capacity = START_QUEUE_CAPACITY;
+            for(int i = 0; i < queue->capacity; i++) {
+                queue->records[i] = calloc(1, sizeof(struct record));
+            }
+        } else if (queue->capacity < queue->size-1) {
+            int new_capacity = queue->capacity ? queue->capacity * 2 : START_QUEUE_CAPACITY;
+            queue->records = realloc(queue->records, new_capacity * sizeof(struct record));
+            for(int i = queue->capacity; i < new_capacity; i++) { 
+                queue->records[i] = calloc(1, sizeof(struct record));
+            }
+        }
+        queue->size++;
+        assert(queue->records);
+        assert(queue->size <= queue->capacity);
+        assert(queue->records[queue->size]);
+        queue->records[queue->size]->priority = priority;
+        queue->records[queue->size]->data = vertex;
+        vertex->priority_index = queue->size;
+        sift_up(queue, queue->size);
     } else {
-        if (queue->records[priority_index]->priority > priority) {
-            queue->records[priority_index]->priority = priority;
-            sift_up(queue, priority_index);
-            sift_down(queue, priority_index);
+        if (queue->records[vertex->priority_index]->priority > priority) {
+            queue->records[vertex->priority_index]->priority = priority;
+            sift_up(queue, vertex->priority_index);
+            sift_down(queue, vertex->priority_index);
         }
     }
-
 }
 
-struct record *extract_min(struct queue *queue) {
-    return NULL;
+void extract_min(struct queue *queue, struct vertex **vertex, int *priority) {
+    *vertex = queue->records[1]->data;
+    *priority = queue->records[1]->priority;
+    queue->records[1]->data = queue->records[queue->size]->data;
+    queue->records[1]->priority = queue->records[queue->size]->priority;
+    queue->records[1]->data->priority_index = 1;
+    queue->size--;
+    sift_down(queue, 1);
 }

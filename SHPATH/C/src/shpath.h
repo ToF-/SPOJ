@@ -52,4 +52,4 @@ int visited(struct graph *, int);
 void visit(struct graph *, int);
 struct vertex *find_vertex(struct graph *, char *);
 void update(struct queue *, struct vertex *, int);
-struct record* extract_min(struct queue *);
+void extract_min(struct queue *, struct vertex **, int *);
