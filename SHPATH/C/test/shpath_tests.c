@@ -86,15 +86,20 @@ TEST(shpath, graph_priority_queue) {
     TEST_ASSERT_EQUAL_STRING("foo", vertex->name);
     TEST_ASSERT_EQUAL_INT(4807, priority);
     char buffer[10];
-    for (int i = 0; i < 10000; i++) {
+    for(int i = 0; i < 10000; i++) {
         sprintf(buffer, "%05d", i);
         add_vertex(graph, buffer);
         struct vertex* vertex = find_vertex(graph, buffer);
         update(graph->queue, vertex, rand() % 10000);
     }
     TEST_ASSERT_EQUAL(10004, graph->size);
+    for(int i = 0; i < 1000; i++) {
+        int r = rand() % 10000;
+        struct vertex* vertex = graph->vertice[r];
+        update(graph->queue, vertex, rand() % 10000);
+    }
     int trace = -1;
-    for (int i =0; i < 10000; i++) {
+    for(int i =0; i < 10000; i++) {
         extract_min(graph->queue, &vertex, &priority);
         TEST_ASSERT_TRUE(trace <= priority);
         trace = priority;
