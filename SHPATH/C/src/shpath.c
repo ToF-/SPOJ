@@ -8,11 +8,11 @@
 #define START_QUEUE_CAPACITY 8
 
 unsigned int hash_key(char *);
-void add(struct queue*, struct vertex *, int);
 int compare_record_priority(struct queue *, int, int);
 void swap(struct queue*, int, int);
 void sift_up(struct queue*, int);
 void sift_down(struct queue*, int);
+void init_queue(struct queue*);
 bool queue_property(struct queue*);
 
 struct graph *create_graph() {
@@ -23,6 +23,10 @@ struct graph *create_graph() {
     queue->size = 0;
     assert(queue);
     graph->queue = queue;
+    for(int i=0; i<MAX_VERTICE; i++) {
+        graph->vertice[i] = NULL;
+        graph->hash_table[i] = NULL;
+    }
     return graph;
 }
 
@@ -34,6 +38,7 @@ struct vertex *add_vertex(struct graph *graph, char *name) {
     struct vertex *vertex = graph->vertice[vertex_id];
     assert(vertex);
     vertex->name = malloc(strlen(name)+1);
+    vertex->id = vertex_id;
     strcpy(vertex->name, name);
     unsigned int key = hash_key(name);
     struct link *link = (struct link *)malloc(sizeof(struct link));
@@ -94,12 +99,7 @@ void destroy_vertex(struct vertex *vertex) {
     free(vertex);
 }
 void destroy_graph(struct graph *graph) {
-    for(int i = 0; i < graph->size; i++) {
-        if(graph->vertice[i]) {
-            destroy_vertex(graph->vertice[i]);
-        }
-    }
-    for(int i = 0; i < MAX_VERTICE; i++) {
+    for(int i = 1; i < MAX_VERTICE; i++) {
         struct link *link = graph->hash_table[i];
         while (link != NULL) {
             struct link *pointer = link;
@@ -107,30 +107,23 @@ void destroy_graph(struct graph *graph) {
             free(pointer);
         }
     }
-    for(int i = 0; i < graph->queue->capacity; i++) {
+    for(int i = 1; i < graph->size; i++) {
+        if(graph->vertice[i] != NULL) {
+            destroy_vertex(graph->vertice[i]);
+        }
+    }
+    for(int i = 1; i < graph->queue->capacity; i++) {
         free(graph->queue->records[i]);
     }
     free(graph->queue);
     free(graph);
+    printf("}destroy_graph\n");
 }
 
 void init_visited(struct graph *graph) {
-    for(int i = 0; i < MAX_BITSET; i++)
-        graph->visited[i] = 0;
-}
-
-int visited(struct graph *graph, int vertex_id) {
-    int offset = offset(vertex_id);
-    int bit    = bit(vertex_id);
-    int value  = graph->visited[offset];
-    int mask   = 1 << bit;
-    return (value & (1 << bit)) > 0 ;
-}
-
-void visit(struct graph *graph, int vertex_id) {
-    int offset = offset(vertex_id);
-    int bit    = bit(vertex_id);
-    graph->visited[offset] |= (1 << bit);
+    for(int i = 0; i < graph->size; i++) {
+        graph->vertice[i]->visited = false;
+    }
 }
 
 int compare_record_priority(struct queue *queue, int i, int j) {
@@ -232,4 +225,35 @@ void extract_min(struct queue *queue, struct vertex **vertex, int *priority) {
     queue->records[1]->data->priority_index = 1;
     queue->size--;
     sift_down(queue, 1);
+}
+
+void init_queue(struct queue* queue) {
+    queue->size = 0;
+}
+
+int path(struct graph* graph, int start, int target) {
+    init_visited(graph);
+    init_queue(graph->queue);
+    for(int i=0; i < graph->size; i++) {
+        graph->vertice[i]->priority_index = 0;
+        graph->vertice[i]->prev_vertex = 0;
+    }
+    update(graph->queue, graph->vertice[start], 0);
+    while(graph->queue->size) {
+        struct vertex *current_vertex;
+        int distance;
+        extract_min(graph->queue, &current_vertex, &distance);
+        if(current_vertex->id == target)
+            return distance;
+        current_vertex->visited = true;
+        for(int i=0; i < current_vertex->size; i++) {
+            int dest_id = current_vertex->edges[i]->destination;
+            int cost    = current_vertex->edges[i]->cost;
+            struct vertex *dest_vertex = graph->vertice[dest_id];
+            if (!dest_vertex->visited) {
+                update(graph->queue, dest_vertex, distance + cost);
+            }
+        }
+    }
+    return 0;
 }

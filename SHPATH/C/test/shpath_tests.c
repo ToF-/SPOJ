@@ -51,15 +51,6 @@ TEST(shpath, graph_vertex_edges) {
     TEST_ASSERT_EQUAL(400, graph->vertice[3]->edges[0]->cost);
 }
 
-TEST(shpath, graph_visited) {
-    printf("graph visited vertice\n");
-    init_visited(graph);
-    TEST_ASSERT_EQUAL(0, visited(graph, 4807));
-    visit(graph, 4808);
-    TEST_ASSERT_EQUAL(1, visited(graph, 4808));
-    TEST_ASSERT_EQUAL(0, visited(graph, 4807));
-}
-
 TEST(shpath, graph_hash_table) {
     printf("graph hash table\n");
     TEST_ASSERT_EQUAL_STRING("qux", find_vertex(graph, "qux")->name);
@@ -104,7 +95,11 @@ TEST(shpath, graph_priority_queue) {
         TEST_ASSERT_TRUE(trace <= priority);
         trace = priority;
     }
-
-
 }
+
+TEST(shpath, path) {
+//    TEST_ASSERT_EQUAL_INT(300, path(graph, 1, 4));
+//    TEST_ASSERT_EQUAL_INT(200, path(graph, 2, 4));
+}
+
 

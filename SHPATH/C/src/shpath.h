@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #define MAX_VERTICE 10001
 #define MAX_BITS_INT (sizeof(int) * 8)
 #define MAX_BITSET (1 + MAX_VERTICE / MAX_BITS_INT)
@@ -12,10 +13,12 @@ struct edge {
 };
 
 struct vertex {
+    int id;
     char *name;
     struct edge **edges;
     int size;
     int capacity;
+    bool visited;
     int priority_index;
     vertex_id prev_vertex;
 };
@@ -38,7 +41,6 @@ struct queue {
 
 struct graph {
     struct vertex *vertice[MAX_VERTICE];
-    int visited[MAX_BITSET];
     struct link *hash_table[MAX_VERTICE];
     struct queue *queue;
     int size;
@@ -48,8 +50,9 @@ struct vertex *add_vertex(struct graph *, char *);
 void add_edge(struct graph *, int, int, int);
 void destroy_graph(struct graph *);
 void init_visited(struct graph *);
-int visited(struct graph *, int);
-void visit(struct graph *, int);
+bool visited(struct graph *, struct vertex*);
+void visit(struct graph *, struct vertex*);
 struct vertex *find_vertex(struct graph *, char *);
 void update(struct queue *, struct vertex *, int);
 void extract_min(struct queue *, struct vertex **, int *);
+int path(struct graph *, int, int);
