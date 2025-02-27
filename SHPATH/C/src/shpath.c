@@ -31,6 +31,7 @@ struct graph *create_graph() {
 }
 
 struct vertex *add_vertex(struct graph *graph, char *name) {
+    assert(graph->size < MAX_VERTICE);
     assert(name);
     assert(strlen(name));
     int vertex_id = graph->size;
@@ -92,9 +93,10 @@ void add_edge(struct graph *graph, int start, int dest, int cost) {
 void destroy_vertex(struct vertex *vertex) {
     assert(vertex);
     assert(vertex->name);
-    for(int i = 0; i < vertex->size; i++)
+    for(int i = 0; i < vertex->size; i++) {
         free(vertex->edges[i]);
-    free(vertex->edges);
+    }
+
     free(vertex->name);
     free(vertex);
 }
@@ -117,7 +119,6 @@ void destroy_graph(struct graph *graph) {
     }
     free(graph->queue);
     free(graph);
-    printf("}destroy_graph\n");
 }
 
 void init_visited(struct graph *graph) {
