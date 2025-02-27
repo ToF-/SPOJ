@@ -9,7 +9,7 @@ TEST_GROUP(shpath);
 
 struct graph *graph;
 
-TEST_SETUP(shpath) {
+struct graph *setup_small_graph() {
     graph = create_graph();
 
     add_vertex(graph, "foo");
@@ -29,6 +29,11 @@ TEST_SETUP(shpath) {
     add_vertex(graph, "law");
     add_edge(graph, 3, 1, 400);
     add_edge(graph, 3, 2, 100);
+    return graph;
+}
+
+TEST_SETUP(shpath) {
+    graph = setup_small_graph();
 }
 
 TEST_TEAR_DOWN(shpath) {
@@ -100,8 +105,10 @@ TEST(shpath, graph_priority_queue) {
 }
 
 TEST(shpath, path) {
-//    TEST_ASSERT_EQUAL_INT(300, path(graph, 1, 4));
-//    TEST_ASSERT_EQUAL_INT(200, path(graph, 2, 4));
+    TEST_ASSERT_EQUAL_INT(4, graph->size);
+    TEST_ASSERT_EQUAL_INT(300, path(graph, 0, 3));
+    TEST_ASSERT_EQUAL_INT(200, path(graph, 1, 3));
+    TEST_ASSERT_EQUAL_INT(200, path(graph, 3, 1));
 }
 
 
