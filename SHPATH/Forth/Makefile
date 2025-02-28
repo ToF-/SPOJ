@@ -1,5 +1,9 @@
-tests:
-	gforth-itc tests.fs
+unit:
+	gforth-itc test/tests.fs
 
 spoj:
-	cat shpath.fs main.fs >spoj.fs
+	mkdir -p build
+	cat src/names.fs >build/spoj.fs
+
+clean:
+	rm build/*

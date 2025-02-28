@@ -1,20 +1,18 @@
 REQUIRE ffl/tst.fs
-REQUIRE HASH-TABLE.fs
+REQUIRE hash-table.fs
 
-." HASH-TABLE TEST" CR
+." test hash-table" CR
 
 T{
-4807 s" foo" HASH-INSERT-RECORD
-s" foo" HASH-FIND-RECORD ?TRUE 4807 ?S
-s" bar" HASH-FIND-RECORD ?FALSE
+    S" foo" ADD-NAME
+    NAMES @ 4807 INSERT-RECORD
+    S" foo" FIND-RECORD ?TRUE
+    RECORD> 4807 ?S NAME@ S" foo" ?STR
+    S" bar" FIND-RECORD ?FALSE
 
-1 s" furmeyer" HASH-INSERT-RECORD
-2 s" mennecy" HASH-INSERT-RECORD 
-3 s" salazac" HASH-INSERT-RECORD
-
-s" mennecy" HASH-FIND-RECORD ?TRUE 2 ?S
-s" salazac" HASH-FIND-RECORD ?TRUE 3 ?S
-s" furmeyer" HASH-FIND-RECORD ?TRUE 1 ?S
+    S" quux" ADD-NAME
+    NAMES @ 2317 INSERT-RECORD
+    S" quux" FIND-RECORD ?TRUE
+    DUP RECORD>NAME S" quux" ?STR
+    RECORD>VALUE 2317 ?S
 }T
-
-HEAP-MEMORY-FREE

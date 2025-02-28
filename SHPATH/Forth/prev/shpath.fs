@@ -1,313 +1,370 @@
-20000 1+ CONSTANT NODE-MAX
-65536 64 * CONSTANT /HEAP
+\ shpath.fs
 
-VARIABLE HEAP-START
-VARIABLE HEAP-NEXT
+12      CONSTANT /NAME
+2       CONSTANT /INDEX
+10000   CONSTANT MAX-NODE
+100000000 CONSTANT MAX-EDGE
+100     CONSTANT MAX-REQUEST
 
-\ allocate memory on the heap
-: HEAP-ALLOCATE
-    /HEAP ALLOCATE THROW
-    HEAP-START ! ;
+$03FFF     CONSTANT INDEX-MASK
+$03FFFF    CONSTANT COST-MASK
+$0FFFFFFFF CONSTANT EDGE-INDEX-MASK
 
-\ free memory to the heap
-: HEAP-FREE
-    HEAP-START @ FREE THROW ;
 
-\ heap-next is the address on the next available bytes
-: HEAP-INIT
-    HEAP-START @ HEAP-NEXT ! ;
 
-\ next available bytes
-: HEAP-HERE ( -- addr )
-    HEAP-NEXT @ ;
+CREATE NAMES 0 , MAX-NODE /NAME * ALLOT
+CREATE NODES 0 , MAX-NODE /INDEX * ALLOT
+CREATE EDGES 0 , MAX-EDGE CELLS ALLOCATE THROW ,
+CREATE LINKS 0 , MAX-NODE CELLS ALLOT
+CREATE PATH  0 , MAX-NODE /INDEX * ALLOT
+CREATE HASH-TABLE 0 , MAX-NODE /INDEX * ALLOT
+CREATE BITSET MAX-NODE 8 / 1+ ALLOT
+CREATE PQUEUE 0 , MAX-NODE CELLS ALLOT
+CREATE PQUEUE-INDEX MAX-NODE 1+ /INDEX * ALLOT
+CREATE REQUESTS 0 , MAX-REQUEST CELLS ALLOT
 
-\ like ALLOT, but for heap allocated memory
-: HEAP-ALLOT ( n -- ) 
-    HEAP-NEXT @ HEAP-START @ - OVER + ASSERT( /HEAP < )
-    HEAP-NEXT +! ;
+: INITIALIZE
+    NODES OFF
+    LINKS OFF
+    EDGES OFF
+    NAMES OFF
+    HASH-TABLE OFF ;
 
-\ like , but for heap allocated memory
-: HEAP,  ( n -- )
-    HEAP-HERE !
-    CELL HEAP-NEXT +! ;
+: NODE^ ( index -- addr )
+    /INDEX * CELL+ NODES + ;
 
-\ like C, but for heap allocated memory
-: HEAPC, ( c -- )
-    HEAP-HERE C!
-    1 HEAP-NEXT +! ;
-
-\ names array mapping index → addr of name
-\ name count start at 1, not 0
-CREATE NAMES NODE-MAX CELLS ALLOT
-
-VARIABLE NAME-COUNT
-
-: NAMES-INIT
-    NAME-COUNT OFF ;
+: NODE>EDGES ( index -- edge )
+    NODE^ W@ ;
 
 : NAME^ ( index -- addr )
-    CELLS NAMES + ;
+    /NAME * NAMES CELL+ + ;
 
-: COPY-NAME ( addr, count -- addrName )
-    HEAP-HERE -ROT
-    DUP HEAPC, HEAP-HERE -ROT
-    DUP HEAP-ALLOT
-    ROT SWAP CMOVE ;
+: ADD-NAME ( addr,count -- )
+    1 NAMES +!
+    NAMES @ NAME^ 2DUP
+    C! 1+ SWAP CMOVE ;
 
-: ADD-NAME ( addr, count )
-    ASSERT( NAME-COUNT @ NODE-MAX < )
-    COPY-NAME
-    NAME-COUNT @ 1+ SWAP
-    OVER NAME^ ! NAME-COUNT ! ;
+: LAST-NAME ( -- name )
+    NAMES @ ;
 
-\ a record holds :
-\   cell : a link to next record (or 0)
-\   cell : an index number
+: LAST-NODE ( -- node )
+    NODES @ ;
 
-: RECORD-LINK ( recAddr -- addr )
-    @ ;
+: LAST-EDGE ( -- edge )
+    EDGES @ ;
 
-: RECORD-INDEX ( recAddr -- n )
-    CELL+ @ ;
+: EDGE^ ( index -- addr )
+    ASSERT( DUP )
+    CELLS EDGES CELL+ @ + ;
 
-: RECORD-NAME ( recAddr -- addr )
-    RECORD-INDEX NAME^ @ ;
+: EDGE>DEST ( ecell -- index )
+    16383 AND ;
 
-: CREATE-RECORD ( index,link -- addr' )
-    HEAP-HERE >R                \ stashed, return later
-    HEAP, HEAP,                 \ write link, then index
-    R> ;                        \  record address
+: EDGE>COST ( ecell -- cost )
+    14 RSHIFT 262143 AND ;
 
-\ Hash table = 10000 slots (cells) to records in heap allocated memory
-\ each slot is accessed via the hash key
-NODE-MAX CONSTANT /HASH-TABLE
+: EDGE>NEXT ( ecell -- index )
+    32 RSHIFT EDGE-INDEX-MASK AND ;
 
-CREATE HASH-TABLE /HASH-TABLE CELLS ALLOT
+: ECELL ( link,cost,edge -- ecell) 
+    SWAP 14 LSHIFT OR
+    SWAP 32 LSHIFT OR ;
 
-: HASH-TABLE-INIT
-    HASH-TABLE /HASH-TABLE CELLS ERASE ;
+: ADD-EDGE ( link,cost,edge -- edge )
+    1 EDGES +!  ECELL
+    LAST-EDGE TUCK EDGE^ ! ;
 
-\ hash ← hash * 33 + s[i] 
-\ good proportion between 0,1 and 2 collisions for 16000 10 char alphabetical entries 
+: LAST-LINK ( -- link )
+    LINKS @ ;
+
+: LINK^ ( key -- addr )
+    CELLS LINKS CELL+ + ;
+
+: LINK>NODE ( lcell -- node )
+    INDEX-MASK AND ;
+
+: LINK>NAME ( lcell -- name )
+    16 RSHIFT INDEX-MASK AND ;
+
+: LINK>NEXT ( lcell -- link )
+    32 RSHIFT INDEX-MASK AND ;
+
+: LCELL ( link,name,node -- lcell)
+    ROT 32 LSHIFT                ( name,node,link<<32 )
+    ROT 16 LSHIFT OR OR ;        ( node|link<<32|name<<16 )
+
+: ADD-LINK ( link,name,node -- link' )
+    1 LINKS +!
+    LCELL
+    LAST-LINK TUCK LINK^ ! ;
+
+: HASH-RECORD^ ( key -- addr )
+    /INDEX * HASH-TABLE + ;
+
 : HASH-KEY ( addr,count -- key )
-    0 -ROT 0 DO
-        DUP I + C@
-        ROT 33 * + SWAP
-    LOOP DROP /HASH-TABLE MOD ;
+    0 -ROT OVER + SWAP
+    DO 33 * I C@ + LOOP
+    MAX-NODE MOD ;
 
-: HASH-CELL ( key -- addr )
-    CELLS HASH-TABLE + ;
+: NEW-NODE ( -- node )
+    1 NODES +!
+    0 LAST-NODE TUCK NODE^ W! ;
 
-\ create name, compute the key, insert record
-: INSERT-RECORD ( addr,count -- )
-    2DUP ADD-NAME HASH-KEY HASH-CELL
-    NAME-COUNT @ OVER @ CREATE-RECORD SWAP ! ;
+: INSERT-NODE ( addr,count -- )
+    2DUP ADD-NAME HASH-KEY HASH-RECORD^
+    DUP W@ LAST-NAME NEW-NODE ADD-LINK
+    SWAP W! ;
 
-: FIND-LINKED-RECORD ( addr,count,recAddr -- recAddr'|0 )
+: FIND-NODE ( addr,count -- lcell,T|F)
+    FALSE -ROT
+    2DUP HASH-KEY HASH-RECORD^ W@     ( F,addr,count,link )
     BEGIN
-        ?DUP WHILE
-        >R 2DUP
-        R@ RECORD-NAME COUNT
-        COMPARE R> SWAP IF
-            RECORD-LINK
+        DUP IF LINK^ @ THEN           ( F,addr,count,lcell )
+        DUP WHILE
+            DUP >R LINK>NAME NAME^ COUNT
+            2OVER COMPARE 0= IF
+                ROT DROP R> -ROT FALSE
+            ELSE
+                R> LINK>NEXT
+            THEN
+    REPEAT DROP 2DROP ;
+
+: PQUEUE^ ( index -- addr )
+    CELLS PQUEUE + ;
+
+: PQUEUE-INDEX^ ( index -- addr )
+    /INDEX * PQUEUE-INDEX + ;
+
+: PQUEUE-INDEX@ ( node -- index )
+    PQUEUE-INDEX^ W@ ;
+
+: PQUEUE-INDEX! ( node,index -- )
+    SWAP PQUEUE-INDEX^ W! ;
+
+: PQUEUE-INIT
+    PQUEUE OFF
+    PQUEUE-INDEX MAX-NODE 1+ /INDEX * ERASE ;
+
+: QCELL ( node,cost -- qcell )
+    32 LSHIFT OR ;
+
+: QCELL! ( qcell,index -- )
+    OVER INDEX-MASK AND OVER ( qcell,index,node,index )
+    PQUEUE-INDEX!
+    PQUEUE^ ! ;
+
+: QCELL@ ( index -- qcell )
+    PQUEUE^ @ ;
+
+: QCELL>NODE ( qcell -- node )
+    INDEX-MASK AND ;
+
+: QCELL>COST ( qcell -- cost )
+    32 RSHIFT ;
+
+: PQUEUE-COMPARE ( i,j -- n )
+    SWAP QCELL@ SWAP QCELL@ - ;
+
+: PQUEUE-SWAP ( i,j -- )
+    OVER QCELL@ OVER QCELL@ ( i,j,icell,jcell )
+    SWAP ROT QCELL! SWAP QCELL! ;
+
+: PQUEUE-SELECT-SMALLER ( i,j -- i|j )
+    2DUP PQUEUE-COMPARE 0< IF DROP ELSE NIP THEN ;
+
+: SIFT-DOWN ( index )
+    BEGIN
+        DUP 2*
+        DUP PQUEUE @ <= WHILE
+        DUP PQUEUE @ < IF
+            DUP 1+ PQUEUE-SELECT-SMALLER
+        THEN
+        2DUP PQUEUE-COMPARE 0> IF
+            2DUP PQUEUE-SWAP NIP
         ELSE
-            -ROT 0
+            2DROP PQUEUE @
         THEN
     REPEAT 2DROP ;
 
-: FIND-RECORD ( addr,count -- addr|0 )
-    2DUP HASH-KEY HASH-CELL @
-    DUP IF
-        FIND-LINKED-RECORD
-    ELSE
-        -ROT 2DROP
-    THEN ;
-
-\ bitset
-
-NODE-MAX 1+ 8 / CONSTANT /BITSET
-CREATE BITSET /BITSET ALLOT
-
-: BITSET-INIT
-    BITSET /BITSET ERASE ;
-
-: BITSET-OFFSET ( n -- addr )
-    BITSET + ;
-
-: BITSET-MASK ( u8 -- u8 )
-    1 SWAP LSHIFT ;
-
-: BITSET-INCLUDE? ( index -- f )
-    8 /MOD BITSET-OFFSET C@
-    SWAP BITSET-MASK AND ;
-
-: BITSET-MARK ( index -- )
-    8 /MOD BITSET-OFFSET DUP C@
-    ROT BITSET-MASK OR SWAP C! ;
-
-\ edge node
-\   cell: link to the following edge node or 0
-\   cell: edge dest node index
-\   cell: edge weight
-
-3 CELLS CONSTANT /EDGE
-
-: EDGE-LINK ( edgeAddr -- edgeAddr' )
-    @ ;
-
-: EDGE-INDEX ( edgeAddr -- index )
-    CELL+ @ ;
-
-: EDGE-WEIGHT ( edgeAddr -- weight )
-    CELL+ CELL+ @ ;
-
-: EDGE ( edgeAddr -- index,weight )
-    CELL+ 2@ SWAP ;
-
-NODE-MAX CELLS CONSTANT /EDGE-TABLE
-CREATE EDGE-TABLE /EDGE-TABLE ALLOT
-
-: EDGE-TABLE-INIT
-    EDGE-TABLE /EDGE-TABLE ERASE ;
-
-: EDGES ( index -- edgAddr )
-    CELLS EDGE-TABLE + ;
-
-: ADD-EDGE ( edgAddr,index,weight -- )
-    HEAP-HERE >R
-    ROT DUP EDGE-LINK HEAP,
-    ROT HEAP, SWAP HEAP, R> SWAP ! ;
-
-: IS-SPACE? ( c -- f )
-    DUP 32 = SWAP 9 = OR ;
-
-\ advance a string to the 1st non space char
-: SKIP-SPACE ( addr,count -- addr',count' )
-    BEGIN
-        DUP IF OVER C@ IS-SPACE? ELSE FALSE THEN
-        WHILE
-            1- SWAP 1+ SWAP
-    REPEAT ;
-
-\ extract a int, advancing the string to the 1st space char
-: STR>INT ( addr,count -- n,addr',count' )
-    0 -ROT
-    BEGIN
-        DUP IF OVER C@ DIGIT? ELSE FALSE THEN
-        WHILE
-            >R ROT 10 * R> + -ROT
-            1- SWAP 1+ SWAP
-    REPEAT ;
-
-\ copy a space delimited token to dest, advancing the string to the 1st space char
-: STR>NAME ( addr,count,dest -- addr',count' )
-    >R 2DUP 2>R
-    BEGIN
-        DUP IF OVER C@ IS-SPACE? 0= ELSE FALSE THEN
-        WHILE
-            1- SWAP 1+ SWAP
-    REPEAT
-    DUP 2R> ROT -                 \ addr',count',addr,count''
-    DUP R@ C! R> 1+ SWAP CMOVE ;  \ addr',count'
-
-2 CELLS CONSTANT /QUEUE-ITEM
-
-NODE-MAX /QUEUE-ITEM * CONSTANT /QUEUE
-
-CREATE QUEUE /QUEUE ALLOT
-
-VARIABLE QUEUE-COUNT
-
-: QUEUE-INIT
-    QUEUE /QUEUE ERASE
-    QUEUE-COUNT OFF ;
-
-: QUEUE-ITEM ( itemIndex -- addr )
-    /QUEUE-ITEM * QUEUE + ;
-
-: QUEUE-ITEM-WEIGHT ( i -- n )
-    @ ;
-
-: QUEUE-ITEM-INDEX ( i -- index )
-    CELL+ @ ;
-
-: QUEUE-COMPARE ( i,j -- n )
-    SWAP QUEUE-ITEM QUEUE-ITEM-WEIGHT
-    SWAP QUEUE-ITEM QUEUE-ITEM-WEIGHT - ;
-
-: QUEUE-SWAP ( i,j -- )
-    SWAP QUEUE-ITEM SWAP QUEUE-ITEM        \ addrI,addrJ
-    OVER 2@ 2>R                            \ addrI,addrJ [data-I]
-    TUCK 2@ ROT 2!                         \ addrJ
-    2R> ROT 2! ;
-
-: QUEUE-SIFT-UP ( i -- )
-    BEGIN
-        DUP 1 > WHILE
+: SIFT-UP ( index )
+    BEGIN DUP 1 > WHILE
         DUP 2/
-        2DUP QUEUE-COMPARE 0< IF
-            2DUP QUEUE-SWAP
-            NIP
-        ELSE
-            2DROP 0
+        2DUP PQUEUE-COMPARE 0< IF
+            2DUP PQUEUE-SWAP
         THEN
+        NIP
     REPEAT DROP ;
 
-: QUEUE-SIFT-DOWN ( i -- )
-    BEGIN
-        DUP 2*                               \ i,c
-        DUP QUEUE-COUNT @ <= WHILE           \ i,c   if c>n exit
-        DUP QUEUE-COUNT @ < IF           \ i,c
-            DUP 1+ 2DUP QUEUE-COMPARE
-            0< IF DROP ELSE NIP THEN
-        THEN
-        2DUP QUEUE-COMPARE 0> IF
-            2DUP QUEUE-SWAP
-            NIP
-        ELSE
-            DROP QUEUE-COUNT @
-        THEN
-    REPEAT 2DROP ;
+: (PQUEUE-INSERT) ( node,cost -- )
+    1 PQUEUE +!
+    OVER PQUEUE @ PQUEUE-INDEX!
+    QCELL PQUEUE @ QCELL!
+    PQUEUE @ SIFT-UP ;
 
-: INSERT-QUEUE-ITEM ( index,weight -- )
-    ." INSERT-QUEUE-ITEM " .S CR
-    1 QUEUE-COUNT +!
-    QUEUE-COUNT @ QUEUE-ITEM 2!
-    QUEUE-COUNT @ QUEUE-SIFT-UP ;
+: (PQUEUE-UPDATE) ( node,cost,index -- )
+    OVER >R DUP QCELL@ QCELL>COST R> > IF
+        DUP 2SWAP QCELL ROT QCELL!
+        DUP SIFT-UP SIFT-DOWN
+    ELSE
+        DROP 2DROP
+    THEN ;
 
-: EXTRACT-QUEUE-ITEM ( -- index,weight )
-    ." EXTRACT-QUEUE-ITEM "
-    ASSERT( QUEUE-COUNT @ )
-    1 QUEUE-ITEM 2@ .S CR
-    1 QUEUE-COUNT @ QUEUE-SWAP
-    -1 QUEUE-COUNT +!
-    1 QUEUE-SIFT-DOWN ;
+: PQUEUE-UPDATE ( node,cost -- )
+    OVER PQUEUE-INDEX@ ?DUP IF
+        (PQUEUE-UPDATE)
+    ELSE
+        (PQUEUE-INSERT)
+    THEN ;
+    
 
-VARIABLE CURRENT-WEIGHT
+: LAST-QUEUE-CELL ( -- cell )
+    PQUEUE @ PQUEUE^ @ ;
 
-: PATH-WEIGHT ( start,dest -- weight )
+: PQUEUE-EXTRACT-MIN ( -- node,cost )
+    1 QCELL@ DUP QCELL>NODE SWAP QCELL>COST
+    OVER 0 PQUEUE-INDEX!
+    LAST-QUEUE-CELL 1 QCELL!
+    -1 PQUEUE +!  1 SIFT-DOWN ;
+
+: BITSET-INIT
+    BITSET MAX-NODE 8 / 1+ ERASE ;
+
+: BITSET^ ( index -- mask,addr )
+    8 /MOD BITSET +
+    1 ROT LSHIFT SWAP ;
+
+: BITSET-INCLUDE? ( index -- f )
+    BITSET^ C@ AND ;
+
+: BITSET-INCLUDE! ( index -- )
+    BITSET^ TUCK C@ OR SWAP C! ;
+
+VARIABLE TARGET-NODE
+
+: FIND-PATH ( start,end -- cost )
+    TARGET-NODE !
+    PQUEUE-INIT
     BITSET-INIT
-    QUEUE-INIT
-    SWAP 0 INSERT-QUEUE-ITEM
+    0 PQUEUE-UPDATE
     BEGIN
-        QUEUE-COUNT @ WHILE
-        EXTRACT-QUEUE-ITEM
-        CURRENT-WEIGHT !           \ dest,node
-        2DUP = IF
-            2DROP QUEUE-INIT
-        ELSE                         \ weight,dest,node
-            DUP BITSET-MARK
-            EDGES @ 
-            BEGIN
-                ?DUP WHILE           \ weight,dest,node,edgeAddr
-                DUP EDGE             \ weight,dest,node,edgeAddr,index,weight
+        PQUEUE @ WHILE
+        PQUEUE-EXTRACT-MIN         \ node,cost
+        OVER BITSET-INCLUDE!
+        OVER TARGET-NODE @ <> IF   \ node,cost
+            SWAP NODE>EDGES        \ cost,edges
+            BEGIN DUP WHILE
+                EDGE^ @            \ cost,ecell
+                DUP EDGE>DEST      \ cost,ecell,dest
+                OVER EDGE>COST     \ cost,ecell,dest,cost
+                2>R OVER 2R> ROT + \ cost,ecell,dest,cost'
                 OVER BITSET-INCLUDE? 0= IF
-                    CURRENT-WEIGHT @ + INSERT-QUEUE-ITEM
+                    PQUEUE-UPDATE
                 ELSE
                     2DROP
                 THEN
-                EDGE-LINK
+                EDGE>NEXT         \ cost,edge
             REPEAT
+            2DROP
+        ELSE
+            NIP
+            PQUEUE OFF            \ cost
         THEN
-    REPEAT DROP CURRENT-WEIGHT @ ;
+    REPEAT ;                      \ cost
 
+: (STR-TOKENS) ( addr,count -- add1,c1,add2,c2,…,n )
+    0 FALSE 2SWAP
+    OVER + DUP >R SWAP
+    DO I C@ BL <> IF
+        DUP 0= IF
+            I ROT 1+
+            ROT DROP TRUE
+        THEN
+    ELSE
+        DUP IF
+            ROT I OVER -
+            2SWAP DROP FALSE
+    THEN THEN LOOP
+    R> SWAP
+    IF ROT TUCK - ROT ELSE DROP THEN ;
+
+: STR-TOKENS ( addr,count -- add1,c1,add2,c2,…,n )
+    DUP IF (STR-TOKENS) ELSE NIP THEN ;
+
+: STR>NUMBER ( addr,count -- n )
+    0 -ROT OVER + SWAP DO
+        I C@ [CHAR] 0 - 
+        SWAP 10 * +
+    LOOP ;
+
+: REQUEST^ ( index -- addr )
+    CELLS REQUESTS + ;
+
+256 CONSTANT LINE-MAX
+CREATE LINE-BUFFER LINE-MAX ALLOT
+
+VARIABLE INPUT-FILE
+
+: READ-INPUT-LINE ( -- addr,count )
+    LINE-BUFFER LINE-MAX INPUT-FILE @
+    READ-LINE THROW DROP
+    LINE-BUFFER SWAP ;
+
+: READ-NUMBER ( -- n )
+    READ-INPUT-LINE
+    STR-TOKENS ASSERT( 1 = )
+    STR>NUMBER ;
+
+: READ-EDGES ( n -- )
+    0 DO
+        READ-INPUT-LINE                  ( addr,count )
+        STR-TOKENS                       ( add1,count1,add2,count2,2 )
+        ASSERT( 2 = )
+        STR>NUMBER -ROT STR>NUMBER       ( cost,dest )
+        LAST-NODE NODE^ DUP @            ( cost,dest,nodeAddr,edges )
+        2SWAP ADD-EDGE SWAP !
+    LOOP ;
+
+: READ-NODE
+    READ-INPUT-LINE
+    STR-TOKENS ASSERT( 1 = )
+    INSERT-NODE
+    READ-NUMBER READ-EDGES ;
+
+: READ-NODES
+    READ-NUMBER 0 DO READ-NODE LOOP ;
+
+: READ-REQUEST
+    READ-INPUT-LINE
+    STR-TOKENS ASSERT( 2 = )
+    FIND-NODE LINK>NODE 32 LSHIFT -ROT
+    FIND-NODE LINK>NODE OR ;
+
+: READ-REQUESTS
+    REQUESTS OFF
+    READ-NUMBER 0 DO
+        1 REQUESTS +!
+        READ-REQUEST
+        REQUESTS @ REQUEST^ !
+    LOOP ;
+
+: READ-TEST-CASE
+    INITIALIZE READ-NODES READ-REQUESTS ;
+
+: EXEC-REQUEST ( rcell -- )
+    DUP INDEX-MASK AND SWAP 32 RSHIFT
+    FIND-PATH . CR ;
+
+: EXEC-REQUESTS
+    REQUESTS @ 1+ 1 DO
+        I REQUEST^ @ EXEC-REQUEST
+    LOOP ;
+
+: PROCESS
+    READ-NUMBER 0 DO
+        I IF READ-INPUT-LINE 2DROP THEN
+        READ-TEST-CASE
+        EXEC-REQUESTS
+    LOOP ;
+
+: FREE-EDGES
+    EDGES CELL+ @ FREE THROW ;

@@ -1,44 +1,58 @@
-REQUIRE HEAP-MEMORY.fs
 
-10000 CONSTANT /HASH-TABLE
+HEX
+FFFFFFFF CONSTANT VALUE-MASK
+DECIMAL
+16384 CONSTANT MAX-RECORDS
 
-H-CREATE HASH-TABLE
-    /HASH-TABLE CELLS H-ALLOT
+CREATE HASH-TABLE
+    MAX-RECORDS CELLS ALLOCATE THROW ,
 
 : HASH-TABLE-INIT
-    HASH-TABLE /HASH-TABLE CELLS ERASE ;
+    HASH-TABLE @ MAX-RECORDS CELLS ERASE ;
+
+: HASH-TABLE-FREE
+    HASH-TABLE @ FREE THROW ;
+
+: HASH-RECORD^ ( key -- addr )
+    CELLS HASH-TABLE @ + ;
 
 : HASH-KEY ( addr,count -- key )
-    OVER + SWAP 0 -ROT DO
-        33 * I C@ + 
-    LOOP /HASH-TABLE MOD ;
+    0 -ROT OVER + SWAP
+    DO 33 * I C@ + LOOP
+    MAX-RECORDS MOD ;
 
-: HASH-ADD-KEY ( addr,count -- keyAddr )
-    H-HERE -ROT H-STR, ;
+: >RECORD ( nameIndex,value -- record )
+    32 LSHIFT OR ;
 
-: HASH-CELL-ADDRESS ( addr,count -- cellAddr )
-    HASH-KEY CELLS HASH-TABLE + ;
+: RECORD> ( record -- nameIndex,value )
+    DUP VALUE-MASK AND
+    SWAP 32 RSHIFT ;
 
-: HASH-ADD-CELL ( value,keyAddr,link -- linkAddr )
-    H-HERE >R H-, H-, H-, R> ;
+: RECORD>NAME ( record -- addr,count )
+    RECORD> DROP NAME@ ;
 
-: HASH-INSERT-RECORD ( value,addr,count -- )
-    2DUP HASH-ADD-KEY                 \ value,addr,count,keyAddr
-    -ROT HASH-CELL-ADDRESS            \ value,keyAddr,cellAddr
-    DUP @ SWAP >R                     \ value,keyAddr,link [cellAddr]
-    HASH-ADD-CELL R> ! ;
+: RECORD>VALUE ( record -- value )
+    RECORD> NIP ;
 
-: HASH-FIND-RECORD ( addr,count -- value,1|0 )
-    2>R 2R@ HASH-CELL-ADDRESS @
-    TRUE SWAP
-    BEGIN                             \ flag,link
-        2DUP AND WHILE
-        DUP CELL+ @ COUNT 2R@ COMPARE \ flag,link,flag'
-        IF
-            @                         \ true,link'
-        ELSE 
-            NIP FALSE SWAP           \ false,link
-            DUP CELL+ CELL+ @ -ROT    \ value,false,link
+: INSERT-RECORD ( nameIndex, value -- )
+    OVER NAME@ HASH-KEY HASH-RECORD^
+    -ROT >RECORD SWAP ADD-ITEM! ;
+
+: FIND-RECORD ( addr,count -- record,T|F )
+    2DUP HASH-KEY
+    HASH-RECORD^ @
+    BEGIN
+        ITEM>NEXT WHILE
+        2OVER 2SWAP OVER
+        RECORD>NAME 2ROT
+        COMPARE 0= IF
+            DROP TRUE NIL
+        ELSE
+            NIP
         THEN
     REPEAT
-    2R> 2DROP NIP ;
+    DUP TRUE = IF
+        2SWAP 2DROP
+    ELSE
+        2DROP FALSE
+    THEN ;

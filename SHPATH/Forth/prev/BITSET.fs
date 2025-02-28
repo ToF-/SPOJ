@@ -1,15 +1,25 @@
+\ -------- bitset.fs ------------
 
-10000 8 / 1+ CONSTANT /BITSET
+16384 DUP * CONSTANT MAX-ELEMENTS
 
-H-CREATE BITSET /BITSET H-ALLOT
+CREATE BITSET
+    MAX-ELEMENTS ALLOCATE THROW ,
+    DOES> @ ;
 
 : BITSET-INIT
-    BITSET /BITSET ERASE ;
+    BITSET MAX-ELEMENTS ERASE ;
 
-: BITSET-INCLUDE? ( n -- flag )
-    8 /MOD BITSET + @
+: BITSET-FREE
+    BITSET FREE THROW ;
+
+: INCLUDE? ( n -- f )
+    8 /MOD BITSET + C@
     1 ROT LSHIFT AND ;
 
-: BITSET-INCLUDE! ( n -- )
-    8 /MOD BITSET + DUP @
-    ROT 1 SWAP LSHIFT OR SWAP C! ;
+: INCLUDE! ( n -- f )
+    8 /MOD BITSET + DUP -ROT C@
+    1 ROT LSHIFT OR SWAP C! ;
+
+\ ------------------------------
+
+
