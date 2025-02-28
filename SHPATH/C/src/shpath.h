@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #define MAX_VERTICE 10001
+#define MAX_LINE 256
 #define MAX_BITS_INT (sizeof(int) * 8)
 #define MAX_BITSET (1 + MAX_VERTICE / MAX_BITS_INT)
 #define offset(x) (x / MAX_BITS_INT)
@@ -56,3 +57,8 @@ struct vertex *find_vertex(struct graph *, char *);
 void update(struct queue *, struct vertex *, int);
 void extract_min(struct queue *, struct vertex **, int *);
 int path(struct graph *, int, int);
+int get_int(char *);
+void get_name(char *);
+void get_two_ints(char *, int *, int *);
+void get_two_strs(char *, char *, char *);
+void process();

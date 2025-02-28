@@ -31,9 +31,9 @@ unit:
 spoj: src/shpath.c src/shpath.h
 	mkdir -p build
 	mkdir -p bin
-	cat src/shpath.h         >build/SPOJ.c
-	tail -n +2 src/shpath.c >>build/SPOJ.c
-	cat src/main.c          >>build/SPOJ.c
+	cat src/shpath.h         >build/spoj.c
+	tail -n +2 src/shpath.c >>build/spoj.c
+	echo "int main(int argc, char* argv[]) { process(); }" >>build/spoj.c
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SPOJ_FILES) -o bin/spoj
 
 tests: spoj
@@ -41,5 +41,6 @@ tests: spoj
 
 
 clean:
+	rm build/
 	rm bin/*
 

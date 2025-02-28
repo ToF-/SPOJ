@@ -1,9 +1,9 @@
+#include "shpath.h" // this line to be ommitted when building SPOJ.c
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "shpath.h"
 
 #define START_QUEUE_CAPACITY 8
 
@@ -63,10 +63,11 @@ struct vertex *find_vertex(struct graph *graph, char *name) {
     unsigned int key = hash_key(name);
     struct link *link = graph->hash_table[key];
     while(link) {
-        if (!strcmp(link->data->name, name))
+        if (!strcmp(link->data->name, name)) {
             return link->data;
+        }
         link = link->next;
-    }
+    } 
     return NULL;
 }
 
@@ -258,3 +259,63 @@ int path(struct graph* graph, int start, int target) {
     }
     return 0;
 }
+
+int get_int(char *line) {
+    int result;
+    fgets(line, MAX_LINE, stdin);
+    sscanf(line, "%d", &result);
+    return result;
+}
+
+void get_name(char *line) {
+    static char buffer[MAX_LINE+1];
+    fgets(buffer, MAX_LINE, stdin);
+    sscanf(buffer, "%s", line);
+}
+
+void get_two_ints(char *line, int *a, int *b) {
+    fgets(line, MAX_LINE, stdin);
+    sscanf(line, "%d %d", a, b);
+}
+
+void get_two_strs(char *line, char *a, char *b) {
+    fgets(line, MAX_LINE, stdin);
+    sscanf(line, "%s %s", a, b);
+}
+
+void process() {
+    static char line[MAX_LINE+1];
+    int max_tests = get_int(line);
+    for(int i=0; i < max_tests; i++) {
+        struct graph *graph = create_graph();
+        int max_vertice = get_int(line);
+        for(int v=0; v < max_vertice; v++) {
+            get_name(line);
+            add_vertex(graph, line);
+            int max_edges = get_int(line);
+            for(int e=0; e < max_edges; e++) {
+               int destination, cost;
+               get_two_ints(line, &destination, &cost);
+               add_edge(graph, v, destination-1, cost);
+            }
+        }
+        int max_requests = get_int(line);
+        for(int r=0; r < max_requests; r++) {
+            static char name_start[MAX_LINE];
+            static char name_end[MAX_LINE];
+            int start_id, end_id;
+            get_two_strs(line, name_start, name_end);
+            struct vertex *vertex;
+            vertex = find_vertex(graph, name_start);
+            assert(vertex);
+            start_id = vertex->id;
+            vertex = find_vertex(graph, name_end);
+            assert(vertex);
+            end_id = vertex->id;
+            printf("%d\n", path(graph, start_id, end_id));
+        }
+        destroy_graph(graph);
+        fgets(line, MAX_LINE, stdin);
+    }
+}
+
