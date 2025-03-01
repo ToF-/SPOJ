@@ -8,22 +8,13 @@ REQUIRE linked-list.fs
 
 : CREATE-HASH-TABLE ( size <name> -- )
     CREATE
-    KEY-SIZE OVER * (CREATE-NAMES-SPACE)
-    2* CELLS        (CREATE-RECORDS-SPACE)
-    TABLE-SIZE CELLS     (CREATE-RECORDS-SPACE) ;
-
-: HT>NAMES ( htAddr -- nameAddr )
-    ;
-
-: HT>DATA ( htAddr -- recAddr )
-    2 CELLS + ;
+    KEY-SIZE OVER * OVER 2* CELLS + (CREATE-RECORDS-SPACE)
+    TABLE-SIZE CELLS ALLOT ;
 
 : HT>LISTS ( htAddr -- lsAddr )
-    4 CELLS + ;
+    CELL+ CELL+ ;
 
 : FREE-HASH-TABLE ( hashTableAddr -- )
-    DUP HT>NAMES CELL+ FREE-NAMES-SPACE
-    DUP HT>DATA  CELL+ FREE-RECORDS-SPACE
     DUP CELL+ FREE-RECORDS-SPACE ;
 
 : HASH-KEY ( str,count -- key )
@@ -40,14 +31,24 @@ REQUIRE linked-list.fs
     HT>DATA 2ADD-RECORD ;
 
 : ADD-HT-RECORD ( record,str,count,htAddr -- )
-    DUP 2OVER ROT ADD-HT-NAME         \ record,str,count,htAddr,nameAddr
-    2SWAP HASH-KEY ROT DUP HT>LISTS   \ record,nameAddr,key,htAddr,lsAddr
-    ROT CELLS + DUP @                 \ record,nameAddr,htAddr,linkAddr,link
-    2>R DUP 2SWAP ROT ADD-HT-RECORD   \ htAddr,recAddr    (linkAddr,link )
-    2R> SWAP >R ROT ADD-HT-RECORD     \ lkAddr
-    R> ! ;
+    >R 2DUP R@ ADD-NAME           \ record,str,count,nameAddr
+    -ROT HASH-KEY                 \ record,nameAddr,key
+    R@ HT>LISTS SWAP CELLS +      \ record,nameAddr,addrList
+    SWAP ROT R@ 2ADD-RECORD       \ addrList,recAddr
+    OVER @ R> ADD-LINK            \ addrList,addrList' 
+    SWAP ! ;
 
-: FIND-HT-RECORD ( record,str,hashTableAddr -- addr,T|0,F )
+
+: FIND-HT-RECORD ( str,count,hashTable -- record,T|0,F )
+    >R 2DUP HASH-KEY              \ str,count,key
+    R@ HT>LISTS SWAP CELLS +      \ str,count,addrList
+    @
+    BEGIN
+        DUP WHILE                 \ str,count,link
+        2@                        \ str,count,item,link'
+        >R 2@                     \ str,count,record,nameAddr
+
+    
     DUP 2OVER HASH-KEY CELLS ROT HT>LISTS +
     @ DUP IF
         

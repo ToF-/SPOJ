@@ -1,4 +1,4 @@
-\ -------- records. --------
+\ -------- records.fs --------
 
 : (CREATE-RECORDS-SPACE) ( size -- )
     ALLOCATE THROW DUP , , ;
