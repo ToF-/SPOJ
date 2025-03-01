@@ -13,5 +13,5 @@ T{
     COUNT S" bar qux" ?STR
     COUNT S" foo" ?STR
     MY-NAMES FREE-NAMES-SPACE
-    BYE
+    DECIMAL
 }T
