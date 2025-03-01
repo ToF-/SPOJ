@@ -1,7 +1,10 @@
 \ -------- name.fs --------
 
+: (CREATE-NAMES-SPACE) ( size -- )
+    ALLOCATE THROW DUP , , ;
+
 : CREATE-NAMES-SPACE ( size <name> -- )
-    CREATE ALLOCATE THROW DUP , , ;
+    CREATE (CREATE-NAMES-SPACE) ;
 
 : (ADD-NAME-SPACE) ( count,nameSpaceAddr -- addr' )
     DUP @ ROT 1+ ROT +! ;

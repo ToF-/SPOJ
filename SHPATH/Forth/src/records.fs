@@ -1,8 +1,10 @@
 \ -------- records. --------
 
-: CREATE-RECORDS-SPACE ( size <name> -- )
-    CREATE
+: (CREATE-RECORDS-SPACE) ( size -- )
     ALLOCATE THROW DUP , , ;
+
+: CREATE-RECORDS-SPACE ( size <name> -- )
+    CREATE (CREATE-RECORDS-SPACE) ;
 
 : ADD-RECORD ( n, recordSpaceAdd -- addr )
     DUP @ ROT OVER ! CELL ROT +! ;
