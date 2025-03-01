@@ -13,19 +13,22 @@ REQUIRE linked-list.fs
     HERE TABLE-SIZE CELLS (CREATE-RECORDS-SPACE)
     , R> , R> , ;
 
-: (HASH-TABLE-NAMES) ( hashTableAddr -- addr )
+: (HT-NAMES) ( hashTableAddr -- addr )
     CELL+ CELL+ @ ;
 
-: (HASH-TABLE-LINKS) ( hashTableAddr -- addr )
+: (HT-LINKS) ( hashTableAddr -- addr )
     CELL+ @ ;
 
-: (HASH-TABLE-RECORDS) ( hashTableAddr -- addr )
+: (HT-RECORDS) ( hashTableAddr -- addr )
     @ ;
 
 : FREE-HASH-TABLE ( hashTableAddr -- )
-    DUP (HASH-TABLE-NAMES)   FREE-NAMES-SPACE
-    DUP (HASH-TABLE-LINKS)   FREE-RECORDS-SPACE
-    DUP (HASH-TABLE-RECORDS) FREE-RECORDS-SPACE ;
+    DUP (HT-NAMES)   FREE-NAMES-SPACE
+    DUP (HT-LINKS)   FREE-RECORDS-SPACE
+    DUP (HT-RECORDS) FREE-RECORDS-SPACE ;
+
+: HASH-KEY ( str,count -- key )
+    OVER + SWAP 0 -ROT DO 33 * I C@ + LOOP ;
 
 : ADD-HASH-TABLE-RECORD ( record,str,count,hashTableAddr -- )
     2DROP 2DROP
