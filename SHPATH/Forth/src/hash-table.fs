@@ -4,29 +4,29 @@ REQUIRE names.fs
 REQUIRE linked-list.fs
 
 256   CONSTANT KEY-SIZE
-16384 CONSTANT TABLE-SIZE
 
-: CREATE-HASH-TABLE ( size <name> -- )
+: CREATE-HASH-TABLE ( slots,size <name> -- )
     CREATE
     KEY-SIZE OVER * SWAP 2* CELLS + (CREATE-RECORDS-SPACE)
-    TABLE-SIZE CELLS ALLOT ;
+    DUP , CELLS ALLOT ;
 
 : HT>LISTS ( htAddr -- lsAddr )
-    CELL+ CELL+ ;
+    3 CELLS + ;
+
+: HT>SLOTS ( htAddr -- slots )
+    2 CELLS + @ ;
 
 : FREE-HASH-TABLE ( hashTableAddr -- )
     DUP CELL+ FREE-RECORDS-SPACE ;
 
-: HASH-KEY ( str,count -- key )
-    0 -ROT
-    OVER + SWAP
-    DO
-        33 * I C@ +
-    LOOP ;
+: HASH-KEY ( str,count,ht -- key )
+    0 2SWAP OVER + SWAP
+    DO 33 * I C@ + LOOP
+    SWAP HT>SLOTS MOD ;
 
 : ADD-HT-RECORD ( record,str,count,htAddr -- )
     >R 2DUP R@ ADD-NAME           \ record,str,count,nameAddr
-    -ROT HASH-KEY                 \ record,nameAddr,key
+    -ROT R@ HASH-KEY              \ record,nameAddr,key
     R@ HT>LISTS SWAP CELLS +      \ record,nameAddr,addrList
     SWAP ROT R@ 2ADD-RECORD       \ addrList,recAddr
     OVER @ R> ADD-LINK            \ addrList,addrList' 
@@ -45,7 +45,7 @@ REQUIRE linked-list.fs
     REPEAT SWAP 2R> 2DROP ;      \ record,T|NIL,F
 
 : FIND-HT-RECORD ( str,count,ht -- record,T|NIL,F )
-    >R 2DUP HASH-KEY CELLS
+    >R 2DUP R@ HASH-KEY CELLS
     R> HT>LISTS + @
     (FIND-HT-RECORD) ;
 
