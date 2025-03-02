@@ -4,6 +4,6 @@ REQUIRE test-records.fs
 REQUIRE test-names.fs
 REQUIRE test-linked-list.fs
 REQUIRE test-hash-table.fs
-REQUIRE test-vertex.fs
+REQUIRE test-graph.fs
 
 BYE

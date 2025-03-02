@@ -5,10 +5,12 @@ REQUIRE linked-list.fs
 
 256   CONSTANT KEY-SIZE
 
-: CREATE-HASH-TABLE ( slots,size <name> -- )
-    CREATE
+: (CREATE-HASH-TABLE) ( slots,size -- )
     KEY-SIZE OVER * SWAP 2* CELLS + (CREATE-RECORDS-SPACE)
     DUP , CELLS ALLOT ;
+
+: CREATE-HASH-TABLE ( slots,size <name> -- )
+    CREATE (CREATE-HASH-TABLE) ;
 
 : HT>LISTS ( htAddr -- lsAddr )
     3 CELLS + ;
