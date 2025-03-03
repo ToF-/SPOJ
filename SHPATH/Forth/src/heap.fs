@@ -6,19 +6,21 @@ CREATE HEAP
 : HEAP-FREE
     HEAP CELL+ @ DUP IF FREE THROW ELSE DROP THEN ;
 
+: HEAP-ALLOT ( n -- addr )
+    HEAP @ SWAP HEAP +! ;
+
 : HEAP, ( n -- addr )
-    HEAP @ DUP ROT SWAP !
-    CELL HEAP +! ;
+    CELL HEAP-ALLOT TUCK ! ;
 
 : 2HEAP, ( d -- addr )
-    HEAP @ 2! HEAP @ 2 CELLS HEAP +! ;
+    2 CELLS HEAP-ALLOT
+    DUP 2SWAP ROT 2! ;
 
 : STR-HEAP, ( str,count -- addr )
-    HEAP @ -ROT
-    DUP 1+ -ROT
-    HEAP @ 2DUP C! 
-    1+ SWAP CMOVE
-    HEAP +! ;
+    DUP 1+ HEAP-ALLOT
+    2DUP C! 
+    DUP 2SWAP ROT 1+
+    SWAP CMOVE ;
 
 : HEAP-ALLOCATE ( size -- )
     HEAP @ IF HEAP-FREE THEN
