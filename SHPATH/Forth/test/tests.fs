@@ -1,6 +1,7 @@
 FPATH PATH+ src
 FPATH PATH+ test
 REQUIRE test-heap.fs
+REQUIRE test-vertex.fs
 BYE
 REQUIRE test-records.fs
 REQUIRE test-names.fs
