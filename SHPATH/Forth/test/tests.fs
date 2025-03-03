@@ -1,5 +1,7 @@
 FPATH PATH+ src
 FPATH PATH+ test
+REQUIRE test-heap.fs
+BYE
 REQUIRE test-records.fs
 REQUIRE test-names.fs
 REQUIRE test-linked-list.fs
