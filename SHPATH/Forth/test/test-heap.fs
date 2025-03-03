@@ -6,7 +6,7 @@ REQUIRE heap.fs
 T{
     1024 DUP * HEAP-ALLOCATE
 
-    4 CELLS HEAP-ALLOT
+    3 CELLS HEAP-ALLOT
     4807 HEAP,
     2317 HEAP,
     32767 255 2HEAP,
@@ -16,6 +16,6 @@ T{
     2@ 32767 255 ?D
     @ 2317 ?S
     @ 4807 ?S
-
+    8 CELLS DUMP
     HEAP-FREE
 }T
