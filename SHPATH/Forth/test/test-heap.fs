@@ -16,6 +16,6 @@ T{
     2@ 32767 255 ?D
     @ 2317 ?S
     @ 4807 ?S
-    8 CELLS DUMP
+    8 CELLS DUMP CR
     HEAP-FREE
 }T

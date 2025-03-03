@@ -1,18 +1,37 @@
 \ -------- vertex.fs --------
 
-: 14BITS-MASK ( n -- n' )
-    16383 AND ;
+HEX
 
-: VERTEX>ELEMENT ( n,b -- n' )
-    4 LSHIFT RSHIFT 14BITS-MASK ;
+0000000000003FFF CONSTANT #EDGES-MASK
+0000000000004000 CONSTANT VISITED-MASK
+000000003FFF0000 CONSTANT PQ-INDEX-MASK
+FFFFFFFF00000000 CONSTANT TOTAL-COST-MASK
 
-: VERTEX>#EDGES ( vertex -- n )
-    0 VERTEX>ELEMENT ;
+DECIMAL
 
-: VERTEX>PQ-INDEX ( vertex -- n )
-    1 VERTEX>ELEMENT ;
+: >#EDGES ( vertex -- n )
+    #EDGES-MASK AND ;
 
-: VERTEX>TOTAL-COST ( vertex -- n )
-    2 VERTEX>ELEMENT ;
+: >VISITED ( vertex -- f )
+    VISITED-MASK AND ;
 
+: >PQ-INDEX ( vertex -- n )
+    PQ-INDEX-MASK AND 16 RSHIFT ;
+
+: >TOTAL-COST ( vertex -- n )
+    TOTAL-COST-MASK AND 32 RSHIFT ;
+
+: <VISIT! ( vertex -- vertex' )
+    VISITED-MASK OR ;
+
+: <UNVISIT! ( vertex -- vertex' )
+    VISITED-MASK INVERT AND ;
+
+: <PQ-INDEX! ( n,vertex -- vertex' )
+    PQ-INDEX-MASK INVERT AND
+    SWAP 16 LSHIFT OR ;
+
+: <TOTAL-COST! ( n,vertex -- vertex' )
+    TOTAL-COST-MASK INVERT AND
+    SWAP 32 LSHIFT OR ;
 

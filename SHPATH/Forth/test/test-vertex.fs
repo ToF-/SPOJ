@@ -4,5 +4,14 @@ REQUIRE vertex.fs
 ." TEST VERTEX" CR
 
 T{
-
+    17
+    2 SWAP <PQ-INDEX!
+    4807 SWAP <TOTAL-COST!
+    <VISIT!
+    DUP >VISITED ?TRUE
+    <UNVISIT!
+    DUP >VISITED ?FALSE
+    DUP >PQ-INDEX 2 ?S
+    DUP >#EDGES 17 ?S
+    >TOTAL-COST 4807 ?S
 }T
