@@ -18,6 +18,9 @@ CREATE VERTICE
 : VERTEX^ ( n -- addr )
     CELLS VERTICE CELL+ + ;
 
+: LAST-VERTEX ( -- vertex )
+    VERTICE @ 1- VERTEX^ @ ;
+
 : #EDGES ( vertex -- n )
     #EDGES-MASK AND ;
 
