@@ -40,7 +40,7 @@ DECIMAL
     SWAP 32 LSHIFT OR ;
 
 : COST ( edge -- n )
-    COST-MASK AND 32 LSHIFT ;
+    COST-MASK AND 32 RSHIFT ;
 
 : VERTEX# ( edge -- n )
     VERTEX#-MASK AND ;
@@ -49,8 +49,8 @@ DECIMAL
     DUP 2 + CELLS HEAP-ALLOT   \ nameAddr,#edges,addr
     DUP 2SWAP ROT CELL+ ! OVER ! ;
 
-: ADD-EDGE ( edge,edge#,vertexAddr -- )
-    2 CELLS + CELLS + + ! ;
+: ADD-EDGE ( edge,edge#,verexAddr -- )
+    2 CELLS + SWAP CELLS + ! ;
 
 
 
