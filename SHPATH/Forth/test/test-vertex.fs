@@ -4,6 +4,7 @@ REQUIRE vertex.fs
 ." TEST VERTEX" CR
 
 T{
+    1024 DUP * HEAP-ALLOCATE
     17
     2 SWAP PQ-INDEX!
     4807 SWAP TOTAL-COST!
@@ -16,7 +17,7 @@ T{
     TOTAL-COST 4807 ?S
 
     VARIABLE MY-VERTEX
-    S" foo" 4 DBG NEW-VERTEX
+    S" foo-bar" 4 NEW-VERTEX
     VERTICE @ 1 ?S
     VERTICE @ 1- VERTEX^ MY-VERTEX !
     MY-VERTEX @ CELL+ @ 4 ?S
@@ -27,5 +28,6 @@ T{
     MY-VERTEX @ 2 CELLS + 3 CELLS + @
     DUP COST 100 ?S
     VERTEX# 4 ?S
-    MY-VERTEX @ @ COUNT S" foo" ?STR
+    MY-VERTEX @ @ COUNT S" foo-bar" ?STR
+    HEAP-FREE
 }T

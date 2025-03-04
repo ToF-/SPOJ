@@ -8,7 +8,8 @@ CREATE HEAP
     0 , 0 ,
 
 : HEAP-FREE
-    HEAP CELL+ @ DUP IF FREE THROW ELSE DROP THEN ;
+    HEAP CELL+ @ DUP IF FREE THROW ELSE DROP THEN
+    HEAP CELL+ OFF HEAP OFF ;
 
 \ allocate a heap zone of <size> bytes
 \ free prior to allocate if not freed yet
