@@ -10,6 +10,14 @@ FFFFFFFF00000000 CONSTANT COST-MASK
 
 DECIMAL
 
+10000 CONSTANT MAX-VERTICE
+
+CREATE VERTICE
+    0 , MAX-VERTICE CELLS ALLOT
+
+: VERTEX^ ( n -- addr )
+    CELLS VERTICE CELL+ + ;
+
 : #EDGES ( vertex -- n )
     #EDGES-MASK AND ;
 
@@ -48,6 +56,10 @@ DECIMAL
 : ADD-VERTEX ( nameAddr,#edges -- addr )
     DUP 2 + CELLS HEAP-ALLOT   \ nameAddr,#edges,addr
     DUP 2SWAP ROT CELL+ ! OVER ! ;
+
+: NEW-VERTEX ( str,count,#edges -- )
+    -ROT STR-HEAP, SWAP ADD-VERTEX
+    VERTICE @ VERTEX^ ! 1 VERTICE +! ;
 
 : ADD-EDGE ( edge,edge#,verexAddr -- )
     2 CELLS + SWAP CELLS + ! ;
