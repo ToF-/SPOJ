@@ -47,10 +47,10 @@ DECIMAL
 
 : ADD-VERTEX ( nameAddr,#edges -- addr )
     DUP 2 + CELLS HEAP-ALLOT   \ nameAddr,#edges,addr
-    DUP 2SWAP ROT CELL+ ! SWAP ! ;
+    DUP 2SWAP ROT CELL+ ! OVER ! ;
 
 : ADD-EDGE ( edge,edge#,vertexAddr -- )
-    2 CELLS + CELLS+ + ! ;
+    2 CELLS + CELLS + + ! ;
 
 
 
