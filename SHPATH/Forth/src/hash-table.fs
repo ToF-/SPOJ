@@ -3,7 +3,7 @@
 REQUIRE heap.fs
 REQUIRE vertex.fs
 
-16384 CONSTANT #RECORDS
+10000 CONSTANT #RECORDS
 
 CREATE HASH-TABLE
     #RECORDS CELLS ALLOT
@@ -16,21 +16,25 @@ CREATE HASH-TABLE
 : RECORD^ ( n -- addr )
     CELLS HASH-TABLE + ;
 
-: RECORD-VERTEX ( str,count,#edges -- )
+: INSERT-VERTEX ( str,count,#edges -- )
     >R 2DUP R> NEW-VERTEX
     HASH-KEY RECORD^ DUP
     @ LAST-VERTEX 2HEAP,
     SWAP ! ;
 
-: FIND-VERTEX ( str,count -- vertexAddr|0 )
+\ will not be called with names that weren't inserted
+\ inserted names will not be removed
+: FIND-VERTEX ( str,count -- vertexAddr )
     2DUP 2>R
-    HASH-KEY RECORD^ @ DUP IF
-        BEGIN ?DUP WHILE
-            2@ DUP
-            VERTEX->NAME 2R@ COMPARE 0= IF
-                NIP FALSE
-            ELSE
-                DROP @
-            THEN
-        REPEAT
-    THEN 2R> 2DROP ;
+    HASH-KEY RECORD^ @
+    BEGIN
+        ?DUP WHILE
+        2@ DUP VERTEX->NAME
+        2R@ COMPARE 0= IF
+            NIP FALSE
+        ELSE
+            DROP
+        THEN
+    REPEAT
+    2R> 2DROP ;
+
