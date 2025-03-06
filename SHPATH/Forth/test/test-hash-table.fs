@@ -14,6 +14,16 @@ T{
     S" bar" FIND-VERTEX
     VERTEX->NAME S" bar" ?STR
 
+   S" characterises" 3 INSERT-VERTEX
+   S" inside-out"    3 INSERT-VERTEX
+   S" narrations"    3 INSERT-VERTEX
+   S" preferential"  3 INSERT-VERTEX
+   S" shareholder"   3 INSERT-VERTEX
+   S" sinful"        3 INSERT-VERTEX
+
+   S" characterises" FIND-VERTEX
+   VERTEX->NAME S" characterises" ?STR
     HEAP-FREE
+
 }T
 

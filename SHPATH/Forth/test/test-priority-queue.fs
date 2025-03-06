@@ -1,0 +1,16 @@
+REQUIRE ffl/tst.fs
+REQUIRE priority-queue.fs
+
+." PRIORITY-QUEUE" CR
+
+T{
+    1024 DUP * HEAP-ALLOCATE
+
+    S" foo" 4 INSERT-VERTEX
+    S" bar" 2 INSERT-VERTEX
+    S" qux" 1 INSERT-VERTEX
+
+
+    S" foo" FIND-VERTEX 40 DBG UPDATE-PRIORITY
+    HEAP-FREE
+}T
