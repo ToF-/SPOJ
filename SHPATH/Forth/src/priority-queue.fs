@@ -7,7 +7,7 @@ REQUIRE vertex.fs
 CREATE QUEUE
     0 , QUEUE-MAX CELLS ALLOT
 
-: Q-CELL^ ( n -- addr )
+: ITEM^ ( n -- addr )
     CELLS QUEUE + ;
 
 : VERTEX->PRIORITY! ( n,vertex^ -- )
@@ -24,16 +24,16 @@ CREATE QUEUE
     2DUP COMPARE-ITEMS 0<
     IF DROP ELSE NIP THEN ;
 
-: TRACK-PRIORITY ( p,i -- )
-    Q-CELL^ DUP @       \ p,addr,vertex
-    ROT SWAP PRIORITY!  \ addr,vertex'
-    SWAP ! ;
+: TRACK-PRIORITY ( i -- )
+    DUP ITEM^ DUP @ ROT   \ item^,vertex^,i
+    OVER @ PRIORITY!      \ item^,vertex^,vertex'
+    SWAP ! SWAP ! ;
 
 : SWAP-ITEMS ( i,j -- )
     2DUP 2DUP 2DUP             \ i,j,i,j,i,j
     ITEM-VALUES SWAP           \ i,j,i,j,costJ,costI
-    ROT Q-CELL^ !              \ i,j,i,costJ
-    SWAP Q-CELL^ !             \ i,j
+    ROT ITEM^ !              \ i,j,i,costJ
+    SWAP ITEM^ !             \ i,j
     DUP TRACK-PRIORITY
     DUP TRACK-PRIORITY ;
 
@@ -79,9 +79,8 @@ CREATE QUEUE
     THEN ;
 
 : EXTRACT-MIN ( -- vertex^ )
-    0 1 TRACK-PRIORITY
-    1 Q-CELL^ DUP @ SWAP
-    QUEUE @ Q-CELL^ @ SWAP !
-    1 1 TRACK-PRIORITY
+    1 ITEM^ DUP @ SWAP       \ vertex^,item^
+    QUEUE @ ITEM^ @ SWAP !   \ vertex^ 
     -1 QUEUE +! ;
+    QUEUE @ IF 1 TRACK-PRIORITY THEN ;
  
