@@ -25,9 +25,7 @@ CREATE QUEUE
     IF DROP ELSE NIP THEN ;
 
 : TRACK-PRIORITY ( i -- )
-    DUP ITEM^ DUP @ ROT   \ item^,vertex^,i
-    OVER @ PRIORITY!      \ item^,vertex^,vertex'
-    SWAP ! SWAP ! ;
+    DUP ITEM^ DUP @ VERTEX->PRIORITY! ;
 
 : SWAP-ITEMS ( i,j -- )
     2DUP 2DUP 2DUP             \ i,j,i,j,i,j
@@ -64,23 +62,23 @@ CREATE QUEUE
     REPEAT 2DROP ;
 
 : UPDATE-PRIORITY ( vertex^, cost -- )
-    OVER @ DUP PRIORITY ?DUP IF        \ vertex^,n,vertex,p
-        -ROT COST                      \ vertex^,p,vertex'
-        ROT !                          \ p
-        DUP SIFT-UP SIFT-DOWN
-    ELSE                               \ vertex^,n,vertex
-        TOTAL-COST!                    \ vertex^,vertex'
-        OVER !                         \ vertex^
+    OVER VERTEX->TOTAL-COST!
+    DUP VERTEX->PRIORITY ?DUP IF
+        DUP SIFT-UP
+        SIFT-DOWN DROP
+    ELSE
         1 QUEUE +!
-        QUEUE @ SWAP 2DUP              \ n,vertex^,n,vertex^
-        VERTEX->PRIORITY!
-        OVER CELLS QUEUE + !
+        QUEUE @ ITEM^ !
+        QUEUE @ DUP
+        TRACK-PRIORITY
         SIFT-UP
     THEN ;
 
 : EXTRACT-MIN ( -- vertex^ )
-    1 ITEM^ DUP @ SWAP       \ vertex^,item^
-    QUEUE @ ITEM^ @ SWAP !   \ vertex^ 
-    -1 QUEUE +! ;
-    QUEUE @ IF 1 TRACK-PRIORITY THEN ;
- 
+    1 ITEM^ DUP @ SWAP
+    QUEUE @ ITEM^ @ SWAP !
+    -1 QUEUE +!
+    QUEUE @ IF
+        1 SIFT-DOWN
+    THEN ;
+

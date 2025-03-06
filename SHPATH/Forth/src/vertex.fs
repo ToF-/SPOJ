@@ -43,9 +43,18 @@ CREATE VERTICE
     PRIORITY-MASK INVERT AND
     SWAP 16 LSHIFT OR ;
 
+: VERTEX->PRIORITY ( vertex^ -- n )
+    @ PRIORITY ;
+
+: VERTEX->PRIORITY! ( n,vertex^ -- )
+    TUCK @ PRIORITY! SWAP ! ; 
+
 : TOTAL-COST! ( n,vertex -- vertex' )
     COST-MASK INVERT AND
     SWAP 32 LSHIFT OR ;
+
+: VERTEX->TOTAL-COST! ( n,vertex^ -- )
+    TUCK @ TOTAL-COST! SWAP ! ;
 
 : EDGE ( cost,vertex# -- edge )
     SWAP 32 LSHIFT OR ;
