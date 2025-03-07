@@ -1,7 +1,8 @@
 REQUIRE ffl/tst.fs
 REQUIRE priority-queue.fs
+REQUIRE random.fs
 
-." PRIORITY-QUEUE" CR
+." TEST PRIORITY-QUEUE" CR
 
 T{
     1024 DUP * HEAP-ALLOCATE
@@ -23,5 +24,41 @@ T{
                     VERTEX->NAME S" qux" ?STR
     EXTRACT-MIN DUP VERTEX->TOTAL-COST 20 ?S
                     VERTEX->NAME S" bar" ?STR
+
+}T
+    VARIABLE MIN-COST
+
+    : >STR ( n -- addr,count )
+        0 <# #S #> ;
+
+    : SETUP-LOOP ( n -- )
+        0 DO
+            I >STR 0 INSERT-VERTEX
+            0 I VERTEX^ VERTEX->TOTAL-COST!
+        LOOP ;
+
+    : UPDATE-LOOP
+        VERTICE @ 0 DO
+            I VERTEX^ RND 1000 MOD UPDATE-PRIORITY
+        LOOP ;
+
+    : CHECK-LOOP
+        -1 MIN-COST !
+        QUEUE @ 0 DO
+            EXTRACT-MIN VERTEX->TOTAL-COST
+            MIN-COST @ OVER <= ?TRUE
+            MIN-COST !
+        LOOP ;
+
+
+    QUEUE OFF
+    VERTICE OFF
+    10 SETUP-LOOP
+    UPDATE-LOOP
+    DBG CHECK-LOOP
+
+
+
+
     HEAP-FREE
 }T

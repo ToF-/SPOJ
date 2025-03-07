@@ -1,5 +1,6 @@
 FPATH PATH+ sr
 REQUIRE hash-table.fs
+
 : .key-name
     2DUP HASH-KEY 5 .R SPACE TYPE CR ;
 
