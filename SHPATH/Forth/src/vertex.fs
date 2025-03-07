@@ -21,32 +21,26 @@ CREATE VERTICE
 : LAST-VERTEX ( -- vertex )
     VERTICE @ 1- VERTEX^ @ ;
 
-: #EDGES ( vertex -- n )
-    %#EDGES >FIELD@ ;
+: VERTEX->#EDGES ( addr -- n )
+    @ %#EDGES >FIELD@ ;
 
-: VISITED ( vertex -- f )
-    %VISITED >FIELD@ ;
+: VERTEX->VISITED ( vertex^ -- f )
+    @ %VISITED >FIELD@ ;
 
-: PRIORITY ( vertex -- n )
-    %PRIORITY >FIELD@ ;
+: VERTEX->TOTAL-COST ( vertex' -- n )
+    @ %TOTAL-COST >FIELD@ ;
 
-: TOTAL-COST ( vertex -- n )
-    %TOTAL-COST >FIELD@ ;
+: VERTEX->VISIT! ( vertex^ -- )
+    DUP @ 1 %VISITED <FIELD! SWAP ! ;
 
-: VISIT! ( vertex -- vertex' )
-    1 %VISITED <FIELD! ;
-
-: UNVISIT! ( vertex -- vertex' )
-    0 %VISITED <FIELD! ;
-
-: PRIORITY! ( n,vertex -- vertex' )
-    SWAP %PRIORITY <FIELD! ;
+: VERTEX->UNVISIT! ( vertex^ -- )
+    DUP @ 0 %VISITED <FIELD! SWAP ! ;
 
 : VERTEX->PRIORITY ( vertex^ -- n )
-    @ PRIORITY ;
+    @ %PRIORITY >FIELD@ ;
 
 : VERTEX->PRIORITY! ( n,vertex^ -- )
-    TUCK @ PRIORITY! SWAP ! ; 
+    DUP @ ROT %PRIORITY <FIELD! SWAP ! ;
 
 : TOTAL-COST! ( n,vertex -- vertex' )
     SWAP %TOTAL-COST <FIELD! ;
@@ -79,9 +73,6 @@ CREATE VERTICE
 
 : VERTEX->NAME ( addr -- str,count )
     CELL+ @ COUNT ;
-
-: VERTEX->#EDGES ( addr -- n )
-    @ #EDGES ;
 
 : VERTEX->EDGES ( addr -- edgesAddr )
     2 CELLS + ;
