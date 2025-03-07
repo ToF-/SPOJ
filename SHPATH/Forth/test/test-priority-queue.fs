@@ -39,6 +39,7 @@ T{
 
     : UPDATE-LOOP
         VERTICE @ 0 DO
+            I VERTEX^ VERTEX->PRIORITY 0 ?S
             I VERTEX^ RND 1000 MOD UPDATE-PRIORITY
         LOOP ;
 
@@ -55,6 +56,7 @@ T{
     VERTICE OFF
     10 SETUP-LOOP
     UPDATE-LOOP
+    QUEUE @ 10 ?S
     DBG CHECK-LOOP
 
 

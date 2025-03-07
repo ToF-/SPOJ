@@ -22,31 +22,31 @@ CREATE VERTICE
     VERTICE @ 1- VERTEX^ @ ;
 
 : VERTEX->#EDGES ( addr -- n )
-    @ %#EDGES >FIELD@ ;
+    @ @ %#EDGES >FIELD@ ;
 
 : VERTEX->VISITED ( vertex^ -- f )
-    @ %VISITED >FIELD@ ;
+    @  @ %VISITED >FIELD@ ;
 
 : VERTEX->TOTAL-COST ( vertex' -- n )
-    @ %TOTAL-COST >FIELD@ ;
+    @ @ %TOTAL-COST >FIELD@ ;
 
 : VERTEX->VISIT! ( vertex^ -- )
-    DUP @ 1 %VISITED <FIELD! SWAP ! ;
+    @ DUP @ 1 %VISITED <FIELD! SWAP ! ;
 
 : VERTEX->UNVISIT! ( vertex^ -- )
-    DUP @ 0 %VISITED <FIELD! SWAP ! ;
+    @ DUP @ 0 %VISITED <FIELD! SWAP ! ;
 
 : VERTEX->PRIORITY ( vertex^ -- n )
-    @ %PRIORITY >FIELD@ ;
+    @ @ %PRIORITY >FIELD@ ;
 
 : VERTEX->PRIORITY! ( n,vertex^ -- )
-    DUP @ ROT %PRIORITY <FIELD! SWAP ! ;
+    @ DUP @ ROT %PRIORITY <FIELD! SWAP ! ;
 
 : TOTAL-COST! ( n,vertex -- vertex' )
-    SWAP %TOTAL-COST <FIELD! ;
+    @ SWAP %TOTAL-COST <FIELD! ;
 
 : VERTEX->TOTAL-COST! ( n,vertex^ -- )
-    TUCK @ TOTAL-COST! SWAP ! ;
+    @ TUCK @ TOTAL-COST! SWAP ! ;
 
 : EDGE ( cost,vertex# -- edge )
     SWAP %COST <FIELD! ;
