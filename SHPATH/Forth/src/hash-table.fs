@@ -14,27 +14,22 @@ CREATE HASH-TABLE
     DO 33 * I C@ + LOOP
     #RECORDS MOD ;
 
-: RECORD^ ( n -- addr )
-    CELLS HASH-TABLE + ;
+: KEY^ ( key -- addr )
+    HASH-KEY CELLS HASH-TABLE + ;
 
 : INSERT-VERTEX ( str,count,#edges -- )
-    >R 2DUP R> NEW-VERTEX
-    HASH-KEY RECORD^
-    LAST-VERTEX SWAP ADD-LINK ;
+    -ROT 2DUP KEY^ >R ROT
+    NEW-VERTEX LAST-VERTEX R> ADD-LINK ;
 
-\ will not be called with names that weren't inserted
-\ inserted names will not be removed
-: FIND-VERTEX ( str,count -- vertexAddr )
-    2DUP 2>R
-    HASH-KEY RECORD^ @
+: FIND-VERTEX ( str,count -- vertexAddr|0 )
+    FALSE -ROT 2DUP 2>R KEY^ @
     BEGIN
         ?DUP WHILE
         DUP LINK>ITEM VERTEX->NAME
         2R@ COMPARE 0= IF
-            LINK>ITEM FALSE
+            LINK>ITEM NIP FALSE
         ELSE
             LINK>NEXT
         THEN
-    REPEAT
-    2R> 2DROP ;
+    REPEAT 2R> 2DROP ;
 

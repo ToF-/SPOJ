@@ -10,12 +10,9 @@ CREATE QUEUE
 : ITEM^ ( n -- addr )
     CELLS QUEUE + ;
 
-: VERTEX->PRIORITY! ( n,vertex^ -- )
-    TUCK @ PRIORITY! SWAP ! ;
-
 : ITEM-VALUES ( i,j -- costI, costJ )
-    SWAP VERTEX^ @ TOTAL-COST
-    SWAP VERTEX^ @ TOTAL-COST ;
+    SWAP ITEM^ VERTEX->TOTAL-COST
+    SWAP ITEM^ VERTEX->TOTAL-COST ;
 
 : COMPARE-ITEMS ( i,j -- n )
     ITEM-VALUES - ;
@@ -25,7 +22,7 @@ CREATE QUEUE
     IF DROP ELSE NIP THEN ;
 
 : TRACK-PRIORITY ( i -- )
-    DUP ITEM^ DUP @ VERTEX->PRIORITY! ;
+    DUP ITEM^ @ VERTEX->PRIORITY! ;
 
 : SWAP-ITEMS ( i,j -- )
     2DUP 2DUP 2DUP             \ i,j,i,j,i,j
@@ -45,7 +42,7 @@ CREATE QUEUE
         ELSE
             2DROP 0
         THEN
-    REPEAT DROP ; 
+    REPEAT DROP ;
 
 : SIFT-DOWN ( n -- )
     BEGIN

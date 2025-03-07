@@ -26,6 +26,7 @@ T{
    S" preferential"  FIND-VERTEX VERTEX->#EDGES 4 ?S
    S" sinful"        FIND-VERTEX VERTEX->#EDGES 2 ?S
 
+   S" not in ther"   FIND-VERTEX ?FALSE
     HEAP-FREE
 
 }T
