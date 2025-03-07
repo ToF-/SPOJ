@@ -1,14 +1,15 @@
 \ -------- linked-list.fs --------
 
-REQUIRE records.fs
+REQUIRE heap.fs
 
-: ADD-LINK ( value,link,recordSpaceAddr -- itemAddr )
-    2ADD-RECORD ;
+: ADD-LINK ( item,listAddr -- )
+    HEAP-HERE -ROT
+    DUP @ ROT 2HEAP, ! ;
 
-: LINK>NEXT ( itemAddr -- addr' )
-    CELL+ @ ;
+: LINK>NEXT ( listAddr -- listAddr' )
+    2@ DROP ;
 
-: LINK>RECORD ( itemAddr -- record )
-    @ ;
+: LINK>ITEM ( itemAddr -- item )
+    2@ NIP ;
 
 

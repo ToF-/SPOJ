@@ -2,6 +2,7 @@
 
 REQUIRE heap.fs
 REQUIRE vertex.fs
+REQUIRE linked-list.fs
 
 10000 CONSTANT #RECORDS
 
