@@ -3,12 +3,17 @@
 : SIZE-MASK ( size -- mask )
     1 SWAP LSHIFT 1- ;
 
-: FIELD-AND-MASK ( size,offset -- mask )
-    SWAP SIZE-MASK
-    SWAP LSHIFT INVERT ;
+: FIELD-MASK ( offset,size -- mask )
+    SIZE-MASK SWAP LSHIFT INVERT ;
 
-: <FIELD! ( record,value,size,offset -- record' )
-    2DUP FIELD-AND-MASK >R
-    -ROT SIZE-MASK AND SWAP LSHIFT
-    R> ROT AND OR ;
+: FIELD-OFFSET ( value,offset,size -- value' )
+    SIZE-MASK ROT AND SWAP LSHIFT ;
 
+: <FIELD! ( record,value,offset,size -- record' )
+    2DUP FIELD-MASK >R
+    FIELD-OFFSET R>
+    ROT AND OR ;
+
+: >FIELD@ ( record,offset,size -- value )
+    SIZE-MASK OVER LSHIFT
+    ROT AND SWAP RSHIFT ;
