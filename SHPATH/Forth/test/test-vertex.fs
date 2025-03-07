@@ -18,7 +18,7 @@ T{
 
     VARIABLE MY-VERTEX
 
-    S" foo-bar" 4 NEW-VERTEX
+    S" foo-bar" 4 DBG NEW-VERTEX
 
     VERTICE @ 1 ?S
 

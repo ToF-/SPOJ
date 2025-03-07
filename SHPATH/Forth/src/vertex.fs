@@ -66,11 +66,14 @@ CREATE VERTICE
     VERTEX#-MASK AND ;
 
 : ADD-VERTEX ( nameAddr,#edges -- addr )
-    DUP 2 + CELLS HEAP-ALLOT   \ nameAddr,#edges,addr
+    HEAP-HERE -ROT
+    DUP 2 + CELLS HEAP-ALLOT
+    ROT \ nameAddr,#edges,addr
     DUP 2SWAP ROT 2! ;
 
 : NEW-VERTEX ( str,count,#edges -- )
-    -ROT STR-HEAP, SWAP ADD-VERTEX
+    -ROT HEAP-HERE -ROT STR-HEAP, 
+    SWAP ADD-VERTEX
     VERTICE @ VERTEX^ ! 1 VERTICE +! ;
 
 : VERTEX->NAME ( addr -- str,count )

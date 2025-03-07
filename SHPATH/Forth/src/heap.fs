@@ -7,40 +7,38 @@
 CREATE HEAP
     0 , 0 ,
 
+: HEAP-HERE ( -- addr )
+    HEAP @ ;
+
+: HEAP-START ( -- addr )
+    HEAP CELL+ ;
+
 : HEAP-FREE
-    HEAP CELL+ @ DUP IF FREE THROW ELSE DROP THEN
-    HEAP CELL+ OFF HEAP OFF ;
+    HEAP-START @ ?DUP IF FREE THROW THEN
+    HEAP-START OFF ;
 
 \ allocate a heap zone of <size> bytes
 \ free prior to allocate if not freed yet
 : HEAP-ALLOCATE ( size -- )
-    HEAP @ IF HEAP-FREE THEN
-    ALLOCATE THROW
-    DUP HEAP ! HEAP CELL+ ! ;
+    HEAP-FREE ALLOCATE THROW
+    DUP HEAP-START ! HEAP ! ;
 
 \ reserve n bytes of memory in the heap
-\ return address of these bytes
-: HEAP-ALLOT ( n -- addr )
-    HEAP @ SWAP HEAP +! ;
+: HEAP-ALLOT ( n -- )
+    HEAP +! ;
 
 \ store a cell value in the heap
-\ return address of this value
-: HEAP, ( n -- addr )
-    CELL HEAP-ALLOT TUCK ! ;
+: HEAP, ( n -- )
+    HEAP-HERE CELL HEAP-ALLOT ! ;
 
 \ store a double cell value in the heap
-\ return address of this double value
-: 2HEAP, ( d -- addr )
-    2 CELLS HEAP-ALLOT
-    DUP 2SWAP ROT 2! ;
+: 2HEAP, ( d -- )
+    HEAP-HERE 2 CELLS HEAP-ALLOT 2! ;
 
 \ store a string in the heap
-\ return address of the string
 : STR-HEAP, ( str,count -- addr )
-    DUP 1+ HEAP-ALLOT
-    2DUP C! 
-    DUP 2SWAP ROT 1+
-    SWAP CMOVE ;
+    HEAP-HERE OVER 1+ HEAP-ALLOT
+    2DUP C! 1+ SWAP CMOVE ;
 
 
 
