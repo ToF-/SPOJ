@@ -63,24 +63,30 @@ CREATE VERTICE
 : VERTEX# ( edge -- n )
     %VERTEX# >FIELD@ ;
 
-: ADD-VERTEX ( nameAddr,#edges -- addr )
-    HEAP-HERE -ROT
-    DUP 2 + CELLS HEAP-ALLOT
-    ROT \ nameAddr,#edges,addr
-    DUP 2SWAP ROT 2! ;
+: VERTEX-SIZE ( #edges -- n )
+    2 + CELLS ;
+
+: HEAP-VERTEX, ( nameAddr,#edges -- addr )
+    HEAP-HERE >R
+    DUP VERTEX-SIZE HEAP-ALLOT
+    R@ 2! R> ;
 
 : NEW-VERTEX ( str,count,#edges -- )
-    -ROT HEAP-HERE -ROT STR-HEAP, 
-    SWAP ADD-VERTEX
-    VERTICE @ VERTEX^ ! 1 VERTICE +! ;
+    -ROT HEAP-HERE >R STR-HEAP,
+    R> SWAP HEAP-VERTEX,
+    VERTICE @ VERTEX^ !
+    1 VERTICE +! ;
 
 : VERTEX->NAME ( addr -- str,count )
     CELL+ @ COUNT ;
 
+: VERTEX->#EDGES ( addr -- n )
+    @ #EDGES ;
+
 : VERTEX->EDGES ( addr -- edgesAddr )
     2 CELLS + ;
 
-: ADD-EDGE ( edge,edge#,verexAddr -- )
+: ADD-EDGE ( edge,edge#,vertexAddr -- )
     2 CELLS + SWAP CELLS + ! ;
 
 

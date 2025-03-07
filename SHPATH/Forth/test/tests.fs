@@ -3,8 +3,8 @@ FPATH PATH+ test
 REQUIRE test-heap.fs
 REQUIRE test-record.fs
 REQUIRE test-vertex.fs
-BYE
 REQUIRE test-hash-table.fs
+BYE
 REQUIRE test-priority-queue.fs
 REQUIRE test-linked-list.fs
 REQUIRE test-hash-table.fs

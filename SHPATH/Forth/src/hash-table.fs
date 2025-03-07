@@ -19,8 +19,8 @@ CREATE HASH-TABLE
 : INSERT-VERTEX ( str,count,#edges -- )
     >R 2DUP R> NEW-VERTEX
     HASH-KEY RECORD^ DUP
-    @ LAST-VERTEX 2HEAP,
-    SWAP ! ;
+    @ LAST-VERTEX HEAP-HERE >R 2HEAP,
+    R> SWAP ! ;
 
 \ will not be called with names that weren't inserted
 \ inserted names will not be removed
