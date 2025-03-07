@@ -89,4 +89,3 @@ CREATE VERTICE
 : ADD-EDGE ( edge,edge#,vertexAddr -- )
     2 CELLS + SWAP CELLS + ! ;
 
-
