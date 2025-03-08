@@ -5,7 +5,7 @@ REQUIRE random.fs
 ." TEST PRIORITY-QUEUE" CR
 
 T{
-    1024 DUP * HEAP-ALLOCATE
+    16384 DUP * HEAP-ALLOCATE
 
     VERTICE OFF
 
@@ -40,7 +40,7 @@ T{
     : UPDATE-LOOP
         VERTICE @ 0 DO
             I VERTEX^
-            RND 1000 MOD
+            RND 10000 MOD
             OVER VERTEX->TOTAL-COST!
             UPDATE-PRIORITY
         LOOP ;
@@ -59,7 +59,7 @@ T{
 T{
     QUEUE OFF
     VERTICE OFF
-    10 SETUP-LOOP
+    10000 SETUP-LOOP
 }T
 T{
     VERTICE-INIT
@@ -68,8 +68,7 @@ T{
     UPDATE-LOOP
 }T
 T{
-    QUEUE @ 10 ?S
-    DBG CHECK-LOOP
+    CHECK-LOOP
 }T
     HEAP-FREE
 }T

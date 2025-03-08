@@ -46,11 +46,10 @@ CREATE QUEUE
     BEGIN
         DUP 2*
         DUP QUEUE @ <= WHILE
-        DUP QUEUE @ < IF
-            DUP 1+ MIN-ITEM
-        THEN
+        DUP QUEUE @ < IF DUP 1+ MIN-ITEM THEN
         2DUP COMPARE-ITEMS 0> IF
             2DUP SWAP-ITEMS
+            NIP
         ELSE
             2DROP QUEUE @
         THEN
