@@ -11,8 +11,8 @@ CREATE QUEUE
     CELLS QUEUE + ;
 
 : ITEM-VALUES ( i,j -- costI, costJ )
-    SWAP ITEM^ VERTEX->TOTAL-COST
-    SWAP ITEM^ VERTEX->TOTAL-COST ;
+    SWAP ITEM^ @ VERTEX->TOTAL-COST
+    SWAP ITEM^ @ VERTEX->TOTAL-COST ;
 
 : COMPARE-ITEMS ( i,j -- n )
     ITEM-VALUES - ;
@@ -25,12 +25,10 @@ CREATE QUEUE
     DUP ITEM^ @ VERTEX->PRIORITY! ;
 
 : SWAP-ITEMS ( i,j -- )
-    2DUP 2DUP 2DUP             \ i,j,i,j,i,j
-    ITEM-VALUES SWAP           \ i,j,i,j,costJ,costI
-    ROT ITEM^ !              \ i,j,i,costJ
-    SWAP ITEM^ !             \ i,j
-    DUP TRACK-PRIORITY
-    DUP TRACK-PRIORITY ;
+    OVER ITEM^ OVER ITEM^            \ i,j,itemI^,itemJ^
+    OVER @ OVER @ SWAP               \ i,j,itemI^,itemJ^,vertexJ^,vertexI^
+    ROT ! SWAP !
+    TRACK-PRIORITY TRACK-PRIORITY ;
 
 : SIFT-UP ( n -- )
     BEGIN
@@ -58,18 +56,16 @@ CREATE QUEUE
         THEN
     REPEAT 2DROP ;
 
-: UPDATE-PRIORITY ( vertex^, cost -- )
-    OVER VERTEX->TOTAL-COST!
-    DUP VERTEX->PRIORITY ?DUP IF
-        DUP SIFT-UP
-        SIFT-DOWN DROP
+: UPDATE-PRIORITY ( vertex^ -- )
+    DUP VERTEX->PRIORITY ?DUP IF 
+        DUP SIFT-UP SIFT-DOWN DROP
     ELSE
         1 QUEUE +!
         QUEUE @ ITEM^ !
-        QUEUE @ DUP
-        TRACK-PRIORITY
+        QUEUE @ DUP TRACK-PRIORITY
         SIFT-UP
     THEN ;
+
 
 : EXTRACT-MIN ( -- vertex^ )
     1 ITEM^ DUP @ SWAP
