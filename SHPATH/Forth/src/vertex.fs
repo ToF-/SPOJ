@@ -15,29 +15,47 @@ REQUIRE record.fs
 CREATE VERTICE
     0 , MAX-VERTICE CELLS ALLOT
 
+: NEW-VERTEX ( str,count,#edges -- addr )
+    ASSERT( OVER 10 <= )
+    HEAP-HERE >R DUP >R
+    HEAP,
+    STR-HEAP, R> ?DUP IF
+        0 DO 0 HEAP, LOOP
+    THEN R> ;
+
+: VERTEX->NAME ( vertex^ -- addr,count )
+    CELL+ COUNT ;
+
+: VERTEX>DATA ( vertex^ -- vertex )
+    @ ;
+
+: VERTEX->#EDGES ( vertex^ -- n )
+    VERTEX>DATA %#EDGES >FIELD@ ;
+
+: VERTEX->VISITED? ( vertex^ -- f )
+    VERTEX>DATA %VISITED >FIELD@ ;
+
+: VERTEX->PRIORITY ( vertex^ -- n )
+    VERTEX>DATA %PRIORITY >FIELD@ ;
+
+: VERTEX->TOTAL-COST ( vertex' -- n )
+    VERTEX>DATA %TOTAL-COST >FIELD@ ;
+
 : VERTEX^ ( n -- addr )
     CELLS VERTICE CELL+ + ;
 
 : LAST-VERTEX ( -- vertex )
     VERTICE @ 1- VERTEX^ @ ;
 
-: VERTEX->#EDGES ( addr -- n )
-    @ %#EDGES >FIELD@ ;
-
 : VERTEX->VISITED ( vertex^ -- f )
     @ %VISITED >FIELD@ ;
 
-: VERTEX->TOTAL-COST ( vertex' -- n )
-    @ %TOTAL-COST >FIELD@ ;
 
 : VERTEX->VISIT! ( vertex^ -- )
     DUP @ 1 %VISITED <FIELD! SWAP ! ;
 
 : VERTEX->UNVISIT! ( vertex^ -- )
     DUP @ 0 %VISITED <FIELD! SWAP ! ;
-
-: VERTEX->PRIORITY ( vertex^ -- n )
-    @ %PRIORITY >FIELD@ ;
 
 : VERTEX->PRIORITY! ( n,vertex^ -- )
     DUP @ ROT %PRIORITY <FIELD! SWAP ! ;
@@ -62,14 +80,6 @@ CREATE VERTICE
     DUP VERTEX-SIZE HEAP-ALLOT
     R@ 2! R> ;
 
-: NEW-VERTEX ( str,count,#edges -- )
-    -ROT HEAP-HERE >R STR-HEAP, R> 
-    SWAP HEAP-VERTEX,
-    VERTICE @ VERTEX^ !
-    1 VERTICE +! ;
-
-: VERTEX->NAME ( addr -- str,count )
-    CELL+ @ COUNT ;
 
 : VERTEX->EDGES ( addr -- edgesAddr )
     2 CELLS + ;
