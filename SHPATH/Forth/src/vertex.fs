@@ -15,12 +15,19 @@ REQUIRE record.fs
 CREATE VERTICE
     0 , MAX-VERTICE CELLS ALLOT
 
+: VERTEX^ ( n -- addr )
+    CELLS VERTICE CELL+ + ;
+
+: ADD-VERTEX ( vertex^ -- )
+    VERTICE @ VERTEX^ !
+    1 VERTICE +! ;
+
 : NEW-VERTEX ( str,count,#edges -- addr )
     HEAP-HERE >R DUP >R
     HEAP,
     STR-HEAP, R> ?DUP IF
         0 DO 0 HEAP, LOOP
-    THEN R> ;
+    THEN R> DUP ADD-VERTEX ;
 
 : VERTEX->NAME ( vertex^ -- addr,count )
     CELL+ COUNT ;
@@ -72,9 +79,6 @@ CREATE VERTICE
 
 : EDGE->COST ( edge^ -- cost )
     @ %COST >FIELD@ ;
-
-: VERTEX^ ( n -- addr )
-    CELLS VERTICE CELL+ + ;
 
 : LAST-VERTEX ( -- vertex )
     VERTICE @ 1- VERTEX^ @ ;

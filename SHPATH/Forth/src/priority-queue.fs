@@ -68,6 +68,7 @@ CREATE QUEUE
 
 
 : EXTRACT-MIN ( -- vertex^ )
+    ASSERT( QUEUE @ )
     1 ITEM^ DUP @ SWAP
     QUEUE @ ITEM^ @ SWAP !
     -1 QUEUE +!
