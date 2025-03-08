@@ -23,6 +23,20 @@ T{
     V VERTEX->PRIORITY 17 ?S
     450 V VERTEX->TOTAL-COST!
     V VERTEX->TOTAL-COST 450 ?S
+
+    1 225 0 V SET-EDGE
+    2 312 1 V SET-EDGE
+    5 401 2 V SET-EDGE
+    7 999 3 V SET-EDGE
+
+    : CHECK-EDGES
+        EDGE-LIMITS DO
+            I EDGE->DESTINATION ?S
+            I EDGE->COST        ?S
+        8 +LOOP ;
+
+    999 7  401 5  312 2  225 1
+    V CHECK-EDGES
     BYE
 
     VARIABLE V 17 V !

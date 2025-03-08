@@ -53,33 +53,30 @@ CREATE VERTICE
 : VERTEX->TOTAL-COST! ( n,vertex^ -- )
     DUP @ ROT %TOTAL-COST <FIELD! SWAP ! ;
 
+: VERTEX->EDGES ( vertex^ -- addr )
+    VERTEX->NAME + 1+ ;
+    
+: EDGE ( vertex#,cost -- edge )
+    %COST <FIELD! ; 
+
+: SET-EDGE ( vertex#,cost,index,vertex^ -- )
+    VERTEX->EDGES SWAP CELLS +
+    -ROT EDGE SWAP ! ;
+
+: EDGE-LIMITS ( vertex^ -- addrDest,addrStart )
+    DUP VERTEX->EDGES
+    SWAP VERTEX->#EDGES CELLS
+    OVER + SWAP ;
+
+: EDGE->DESTINATION ( edge^ -- #edge )
+    @ %VERTEX# >FIELD@ ;
+
+: EDGE->COST ( edge^ -- cost )
+    @ %COST >FIELD@ ;
+
 : VERTEX^ ( n -- addr )
     CELLS VERTICE CELL+ + ;
 
 : LAST-VERTEX ( -- vertex )
     VERTICE @ 1- VERTEX^ @ ;
-
-: EDGE ( cost,vertex# -- edge )
-    SWAP %COST <FIELD! ;
-
-: COST ( edge -- n )
-    %COST >FIELD@ ;
-
-: VERTEX# ( edge -- n )
-    %VERTEX# >FIELD@ ;
-
-: VERTEX-SIZE ( #edges -- n )
-    2 + CELLS ;
-
-: HEAP-VERTEX, ( nameAddr,#edges -- addr )
-    HEAP-HERE >R
-    DUP VERTEX-SIZE HEAP-ALLOT
-    R@ 2! R> ;
-
-
-: VERTEX->EDGES ( addr -- edgesAddr )
-    2 CELLS + ;
-
-: ADD-EDGE ( edge,edge#,vertexAddr -- )
-    2 CELLS + SWAP CELLS + ! ;
 
