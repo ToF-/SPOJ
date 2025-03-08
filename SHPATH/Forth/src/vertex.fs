@@ -35,33 +35,29 @@ CREATE VERTICE
 : VERTEX->VISITED? ( vertex^ -- f )
     VERTEX>DATA %VISITED >FIELD@ ;
 
-: VERTEX->PRIORITY ( vertex^ -- n )
-    VERTEX>DATA %PRIORITY >FIELD@ ;
-
-: VERTEX->TOTAL-COST ( vertex' -- n )
-    VERTEX>DATA %TOTAL-COST >FIELD@ ;
-
-: VERTEX^ ( n -- addr )
-    CELLS VERTICE CELL+ + ;
-
-: LAST-VERTEX ( -- vertex )
-    VERTICE @ 1- VERTEX^ @ ;
-
-: VERTEX->VISITED ( vertex^ -- f )
-    @ %VISITED >FIELD@ ;
-
-
 : VERTEX->VISIT! ( vertex^ -- )
     DUP @ 1 %VISITED <FIELD! SWAP ! ;
 
 : VERTEX->UNVISIT! ( vertex^ -- )
     DUP @ 0 %VISITED <FIELD! SWAP ! ;
 
+: VERTEX->PRIORITY ( vertex^ -- n )
+    VERTEX>DATA %PRIORITY >FIELD@ ;
+
 : VERTEX->PRIORITY! ( n,vertex^ -- )
     DUP @ ROT %PRIORITY <FIELD! SWAP ! ;
 
+: VERTEX->TOTAL-COST ( vertex' -- n )
+    VERTEX>DATA %TOTAL-COST >FIELD@ ;
+
 : VERTEX->TOTAL-COST! ( n,vertex^ -- )
     DUP @ ROT %TOTAL-COST <FIELD! SWAP ! ;
+
+: VERTEX^ ( n -- addr )
+    CELLS VERTICE CELL+ + ;
+
+: LAST-VERTEX ( -- vertex )
+    VERTICE @ 1- VERTEX^ @ ;
 
 : EDGE ( cost,vertex# -- edge )
     SWAP %COST <FIELD! ;
