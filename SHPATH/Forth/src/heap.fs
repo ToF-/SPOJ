@@ -24,8 +24,9 @@ CREATE HEAP
     DUP HEAP-START ! HEAP ! ;
 
 \ reserve n bytes of memory in the heap
+\ aligning next value on 8 bytes
 : HEAP-ALLOT ( n -- )
-    HEAP +! ;
+    ALIGNED HEAP +! ;
 
 \ store a cell value in the heap
 : HEAP, ( n -- )

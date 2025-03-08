@@ -23,20 +23,22 @@ CREATE VERTICE
     1 VERTICE +! ;
 
 : NEW-VERTEX ( str,count,#edges -- addr )
-    HEAP-HERE >R DUP >R
-    HEAP,
-    STR-HEAP, R> ?DUP IF
+    HEAP-HERE >R
+    DUP HEAP,
+    ?DUP IF
         0 DO 0 HEAP, LOOP
-    THEN R> DUP ADD-VERTEX ;
-
-: VERTEX->NAME ( vertex^ -- addr,count )
-    CELL+ COUNT ;
+    THEN
+    STR-HEAP,
+    R> DUP ADD-VERTEX ;
 
 : VERTEX>DATA ( vertex^ -- vertex )
     @ ;
 
 : VERTEX->#EDGES ( vertex^ -- n )
     VERTEX>DATA %#EDGES >FIELD@ ;
+
+: VERTEX->NAME ( vertex^ -- addr,count )
+    DUP VERTEX->#EDGES CELLS + CELL+ COUNT ;
 
 : VERTEX->VISITED? ( vertex^ -- f )
     VERTEX>DATA %VISITED >FIELD@ ;
@@ -60,8 +62,8 @@ CREATE VERTICE
     DUP @ ROT %TOTAL-COST <FIELD! SWAP ! ;
 
 : VERTEX->EDGES ( vertex^ -- addr )
-    VERTEX->NAME + 1+ ;
-    
+    CELL+ ;
+
 : EDGE ( vertex#,cost -- edge )
     %COST <FIELD! ; 
 
