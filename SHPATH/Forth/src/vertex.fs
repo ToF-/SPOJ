@@ -1,5 +1,6 @@
 \ -------- vertex.fs --------
 
+REQUIRE heap.fs
 REQUIRE record.fs
 
 0  14 2CONSTANT %#EDGES
