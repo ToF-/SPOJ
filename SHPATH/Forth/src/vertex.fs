@@ -16,7 +16,6 @@ CREATE VERTICE
     0 , MAX-VERTICE CELLS ALLOT
 
 : NEW-VERTEX ( str,count,#edges -- addr )
-    ASSERT( OVER 10 <= )
     HEAP-HERE >R DUP >R
     HEAP,
     STR-HEAP, R> ?DUP IF

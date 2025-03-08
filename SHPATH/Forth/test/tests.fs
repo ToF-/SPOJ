@@ -7,7 +7,3 @@ REQUIRE test-linked-list.fs
 REQUIRE test-hash-table.fs
 BYE
 REQUIRE test-priority-queue.fs
-REQUIRE test-hash-table.fs
-REQUIRE test-graph.fs
-
-BYE

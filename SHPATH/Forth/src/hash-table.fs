@@ -19,7 +19,7 @@ CREATE HASH-TABLE
 
 : INSERT-VERTEX ( str,count,#edges -- )
     -ROT 2DUP KEY^ >R ROT
-    NEW-VERTEX LAST-VERTEX R> ADD-LINK ;
+    NEW-VERTEX R> ADD-LINK ;
 
 : FIND-VERTEX ( str,count -- vertexAddr|0 )
     FALSE -ROT 2DUP 2>R KEY^ @
