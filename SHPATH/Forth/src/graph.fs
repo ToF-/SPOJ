@@ -23,6 +23,7 @@ REQUIRE vertex.fs
     QUEUE OFF
     >R
     DUP VERTEX->VISIT!
+    0 OVER VERTEX->TOTAL-COST!
     UPDATE-PRIORITY
     BEGIN
         QUEUE-MAX WHILE
@@ -32,7 +33,6 @@ REQUIRE vertex.fs
             DUP VERTEX->TOTAL-COST                   \ vertex^,cost
             SWAP EDGE-LIMITS DO                      \ vcost
                 I EDGE->VISITED? 0= IF
-                    I EDGE->COST
                     I EDGE->COST OVER +              \ vcost,vcost+ecost
                     I EDGE->TOTAL-COST MIN           \ vcost,cost'
                     I EDGE->TOTAL-COST!

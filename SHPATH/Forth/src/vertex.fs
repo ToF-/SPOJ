@@ -3,6 +3,8 @@
 REQUIRE heap.fs
 REQUIRE record.fs
 
+HEX 0FFFFFFFF DECIMAL CONSTANT MAX-TOTAL-COST
+
 0  14 2CONSTANT %#EDGES
 15  1 2CONSTANT %VISITED
 16 14 2CONSTANT %PRIORITY
@@ -16,11 +18,14 @@ REQUIRE record.fs
 CREATE VERTICE
     0 , MAX-VERTICE CELLS ALLOT
 
-: VERTEX^ ( n -- addr )
+: VERTEX# ( n -- vertex# )
     CELLS VERTICE CELL+ + ;
 
+: VERTEX^ ( n -- vertex^ )
+    VERTEX# @ ;
+
 : ADD-VERTEX ( vertex^ -- )
-    VERTICE @ VERTEX^ !
+    VERTICE @ VERTEX# !
     1 VERTICE +! ;
 
 : NEW-VERTEX ( str,count,#edges -- addr )
@@ -91,5 +96,5 @@ CREATE VERTICE
         I VERTEX^
         DUP VERTEX->UNVISIT!
         0 OVER VERTEX->PRIORITY!
-        0 SWAP VERTEX->TOTAL-COST!
+        MAX-TOTAL-COST SWAP VERTEX->TOTAL-COST!
     LOOP THEN ;
