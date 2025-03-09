@@ -1,0 +1,13 @@
+REQUIRE ffl/tst.fs
+REQUIRE request.fs
+
+." TEST REQUEST" CR
+
+T{
+    REQUESTS OFF
+    4807 2317 ADD-REQUEST
+    12   42   ADD-REQUEST
+    REQUESTS @ 2 ?S
+    1 REQUEST# 12 42 ?D
+    0 REQUEST# 4807 2317 ?D
+}T

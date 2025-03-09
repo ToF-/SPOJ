@@ -7,4 +7,7 @@ REQUIRE test-linked-list.fs
 REQUIRE test-hash-table.fs
 REQUIRE test-priority-queue.fs
 REQUIRE test-graph.fs
+REQUIRE test-request.fs
+REQUIRE test-parse.fs
+REQUIRE test-input.fs
 BYE
