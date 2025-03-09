@@ -88,8 +88,8 @@ CREATE VERTICE
 : EDGE->COST ( edge^ -- cost )
     @ %COST >FIELD@ ;
 
-: LAST-VERTEX ( -- vertex )
-    VERTICE @ 1- VERTEX^ @ ;
+: LAST-VERTEX ( -- vertex^ )
+    VERTICE @ 1- VERTEX^ ;
 
 : VERTICE-INIT
     VERTICE @ ?DUP IF 0 DO
