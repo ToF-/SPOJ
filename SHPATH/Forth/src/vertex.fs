@@ -98,3 +98,16 @@ CREATE VERTICE
         0 OVER VERTEX->PRIORITY!
         MAX-TOTAL-COST SWAP VERTEX->TOTAL-COST!
     LOOP THEN ;
+
+: EDGE->VERTEX ( edge^ -- vertex^ )
+    EDGE->DESTINATION VERTEX^ ;
+
+: EDGE->VISITED? ( edge^ -- f )
+    EDGE->VERTEX VERTEX->VISITED? ;
+
+: EDGE->TOTAL-COST ( edge^ -- cost )
+    EDGE->VERTEX VERTEX->TOTAL-COST ;
+
+: EDGE->TOTAL-COST! ( cost,edge^ -- )
+    EDGE->VERTEX VERTEX->TOTAL-COST! ;
+

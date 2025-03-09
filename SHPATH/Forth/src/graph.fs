@@ -3,44 +3,34 @@
 REQUIRE priority-queue.fs
 REQUIRE vertex.fs
 
-: EDGE->VERTEX ( edge^ -- vertex^ )
-    EDGE->DESTINATION VERTEX^ ;
-
-: EDGE->VISITED? ( edge^ -- f )
-    EDGE->VERTEX VERTEX->VISITED? ;
-
-: EDGE->TOTAL-COST ( edge^ -- cost )
-    EDGE->VERTEX VERTEX->TOTAL-COST ;
-
-: EDGE->TOTAL-COST! ( cost,edge^ -- )
-    EDGE->VERTEX VERTEX->TOTAL-COST! ;
-
 : EDGE->UPDATE-PRIORITY ( edge^ -- )
     EDGE->VERTEX UPDATE-PRIORITY ;
 
-: PATH-COST ( vertex^, vertex^ -- n )
-    VERTICE-INIT
-    QUEUE OFF
-    >R
-    DUP VERTEX->VISIT!
+: INIT-PATH ( vertex^ -- )
+    VERTICE-INIT QUEUE OFF
     0 OVER VERTEX->TOTAL-COST!
-    UPDATE-PRIORITY
+    UPDATE-PRIORITY ;
+
+: UPDATE-EDGE ( vcost,edge^ )
+    DUP >R EDGE->COST OVER +   \ vcost,vcost+ecost
+    R@ EDGE->TOTAL-COST MIN    \ vcost,cost'
+    R@ EDGE->TOTAL-COST!
+    R> EDGE->UPDATE-PRIORITY ;
+
+: PATH-COST ( vertex^, vertex^ -- n )
+    >R INIT-PATH
     BEGIN
         QUEUE-MAX WHILE
-        EXTRACT-MIN                              \ vertex^
+        EXTRACT-MIN
         DUP R@ <> IF
             DUP VERTEX->VISIT!                       \ vertex^
             DUP VERTEX->TOTAL-COST                   \ vertex^,cost
             SWAP EDGE-LIMITS DO                      \ vcost
                 I EDGE->VISITED? 0= IF
-                    I EDGE->COST OVER +              \ vcost,vcost+ecost
-                    I EDGE->TOTAL-COST MIN           \ vcost,cost'
-                    I EDGE->TOTAL-COST!
-                    I EDGE->UPDATE-PRIORITY
+                    I UPDATE-EDGE
                 THEN
-            CELL +LOOP DROP
+            CELL +LOOP
         ELSE
-            DROP
             QUEUE OFF
-        THEN
+        THEN DROP
     REPEAT R> VERTEX->TOTAL-COST ;
