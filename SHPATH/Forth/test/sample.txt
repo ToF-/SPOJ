@@ -1,0 +1,23 @@
+1
+4
+gdansk
+2
+2 100
+3 300
+bydgoszcz
+3
+1 100
+3 100
+4 400
+torun
+3
+1 300
+2 100
+4 100
+warszawa
+2
+2 400
+3 100
+2
+gdansk warszawa
+bydgoszcz warszawa

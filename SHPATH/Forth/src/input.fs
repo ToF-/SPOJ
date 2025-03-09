@@ -1,5 +1,9 @@
 \ -------- input.fs ------------
 
+REQUIRE hash-table.fs
+REQUIRE parse.fs
+REQUIRE request.fs
+
 256 CONSTANT LINE-MAX
 
 CREATE LINE-BUFFER LINE-MAX ALLOT
@@ -47,4 +51,6 @@ VARIABLE INPUT-FILE
     READ-INPUT-LINE
     STR-TOKENS ASSERT( 1 = )
     STR>NUMBER 0 DO READ-REQUEST LOOP ;
+
+
 
