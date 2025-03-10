@@ -13,8 +13,9 @@ REQUIRE graph.fs
         READ-REQUESTS
         REQUESTS @ 0 DO
             I REQUEST#
-            PATH-COST . CR
+            PATH-COST 0 .R CR
         LOOP
+        READ-INPUT-LINE
     LOOP ;
 
 16384 DUP * HEAP-ALLOCATE
