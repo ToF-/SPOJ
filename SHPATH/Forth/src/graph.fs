@@ -11,11 +11,15 @@ REQUIRE vertex.fs
     0 OVER VERTEX->TOTAL-COST!
     UPDATE-PRIORITY ;
 
-: UPDATE-EDGE ( vcost,edge^ )
+: UPDATE-EDGE ( vcost,edge^ -- vcost )
     DUP >R EDGE->COST OVER +   \ vcost,vcost+ecost
-    R@ EDGE->TOTAL-COST MIN    \ vcost,cost'
-    R@ EDGE->TOTAL-COST!
-    R> EDGE->UPDATE-PRIORITY ;
+    R@ EDGE->TOTAL-COST OVER   \ vcost,vcost+ecost,dcost,vcost+ecost
+    > IF                       \ vcost,vcost+ecost
+        R@ EDGE->TOTAL-COST!
+        R@ EDGE->UPDATE-PRIORITY
+    ELSE
+        DROP
+    THEN R> DROP ;
 
 : PATH-COST ( vertex^, vertex^ -- n )
     >R INIT-PATH
