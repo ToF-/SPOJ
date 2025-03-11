@@ -1,8 +1,5 @@
 \ -------- vertex.fs --------
 
-REQUIRE heap.fs
-REQUIRE record.fs
-
 HEX 0FFFFFFFF DECIMAL CONSTANT MAX-TOTAL-COST
 
 0  14 2CONSTANT %#EDGES

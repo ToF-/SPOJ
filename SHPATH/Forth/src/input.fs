@@ -1,9 +1,5 @@
 \ -------- input.fs ------------
 
-REQUIRE hash-table.fs
-REQUIRE parse.fs
-REQUIRE request.fs
-
 256 CONSTANT LINE-MAX
 
 CREATE LINE-BUFFER LINE-MAX ALLOT

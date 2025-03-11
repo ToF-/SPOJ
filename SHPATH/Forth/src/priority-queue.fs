@@ -1,7 +1,5 @@
 \ -------- priority-queue --------
 
-REQUIRE vertex.fs
-
 10000 CONSTANT MAX-QUEUE-SIZE
 
 CREATE QUEUE

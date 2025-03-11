@@ -1,8 +1,5 @@
 \ -------- graph.fs --------
 
-REQUIRE priority-queue.fs
-REQUIRE vertex.fs
-
 : EDGE->UPDATE-PRIORITY ( edge^ -- )
     EDGE->VERTEX UPDATE-PRIORITY ;
 

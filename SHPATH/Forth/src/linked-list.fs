@@ -1,7 +1,5 @@
 \ -------- linked-list.fs --------
 
-REQUIRE heap.fs
-
 : ADD-LINK ( item,listAddr -- )
     HEAP-HERE -ROT
     DUP @ ROT 2HEAP, ! ;

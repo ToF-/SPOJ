@@ -1,8 +1,5 @@
 \ -------- process.fs --------
 
-REQUIRE input.fs
-REQUIRE graph.fs
-
 : PROCESS
     READ-INPUT-LINE ASSERT( )
     STR-TOKENS ASSERT( 1 = )
