@@ -1,0 +1,25 @@
+1
+4
+foo
+2
+2 100
+3 50
+bar
+2
+1 34
+4 230
+qux
+3
+1 150
+2 125
+3 176
+law
+2
+4 234
+1 60
+4
+foo bar
+qux bar
+bar law
+law qux
+
