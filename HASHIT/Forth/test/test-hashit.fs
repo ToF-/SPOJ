@@ -59,5 +59,16 @@ T{
     S" DEL:od"        OPERATION
     S" DEL:do"        OPERATION
     S" DEL:wloskiej"  OPERATION
-    .HASH-TABLE
+    HASH-TABLE-#KEYS 5 ?S
+    34 POSITION>ADDR COUNT S" Dabrowski" ?STR
+    46 POSITION>ADDR COUNT S" Polski" ?STR
+    96 POSITION>ADDR COUNT s" z" ?STR
+}T
+
+." test processing a file" CR
+T{
+    INITIALIZE
+    S" ../test/sample.txt" OPEN-INPUT-FILE
+    PROCESS
+    CLOSE-INPUT-FILE
 }T
