@@ -33,7 +33,7 @@ spoj: src/hashit.c src/hashit.h
 	mkdir -p bin
 	cat src/hashit.h         >build/spoj.c
 	tail -n +2 src/hashit.c >>build/spoj.c
-	echo "int main(int argc, char* argv[]) { process(); }" >>build/spoj.c
+	echo "int main(int argc, char* argv[]) { process(); return 0; }" >>build/spoj.c
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SPOJ_FILES) -o bin/spoj
 
 tests: spoj
