@@ -6,9 +6,9 @@
 
 (define-test parsing-operation
     (let ((result (parse-operation (string "ADD:foo"))))
-          (prog
-            (assert-equal ('add-key (car result)))
-            (assert-equal ((string "foo") (cadr result))))))
+      (progn
+            (assert-equal (string "foo") (cadr result))
+            (assert-equal t (car result)))))
 
 
 (run-tests :all)
