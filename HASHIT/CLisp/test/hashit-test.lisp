@@ -66,7 +66,9 @@
         (add-key (string "bar") h-table)
         (add-key (string "qux") h-table)
         (delete-key (string "foo") h-table)
-        (assert-equal 2 (nb-keys h-table)))))
+        (assert-equal 2 (nb-keys h-table))
+        (print-h-table h-table))))
+
 
 (define-test cannot-add-an-existing-key
     (let ((h-table (make-h-table)))

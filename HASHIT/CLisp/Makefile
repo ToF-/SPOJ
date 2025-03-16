@@ -3,3 +3,8 @@ unit:
 
 spike:
 	sbcl --load ~/.sbclrc --script src/spike.lisp
+
+spoj:
+	mkdir -p build
+	cat src/hashit.lisp >build/spoj.lisp
+	echo "(process)" >>build/spoj.lisp

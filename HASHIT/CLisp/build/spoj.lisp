@@ -86,3 +86,4 @@
     (loop for i from 1 to nb-cases do
           (process-case))))
 
+(process)
