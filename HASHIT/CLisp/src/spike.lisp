@@ -7,11 +7,6 @@
           (let ((nb-lines (read)))
             (loop for i from 1 to nb-lines do
                   (let ((line (read-line)))
-                    (format t "~A~%" line)))
-            )
-          )
-    )
-  )
-
+                    (format t "~A~%" line)))))))
 (spike)
 
