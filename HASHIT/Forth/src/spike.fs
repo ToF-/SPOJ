@@ -1,0 +1,13 @@
+REQUIRE hashit.fs
+
+: .NAME-KEYS
+    S" test/names.txt" R/O OPEN-FILE THROW INPUT-FILE !
+    BEGIN
+        READ-INPUT-LINE WHILE
+        2DUP HASH-POSITION
+        3 .R SPACE TYPE CR
+    REPEAT 2DROP
+    CLOSE-INPUT-FILE ;
+
+.NAME-KEYS BYE
+    
