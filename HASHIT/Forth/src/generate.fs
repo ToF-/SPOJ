@@ -1,0 +1,62 @@
+\ -------- generate.fs --------
+
+REQUIRE random.fs
+
+50 CONSTANT KEY-MAX
+1000 CONSTANT OPERATION-MAX
+100 CONSTANT TEST-MAX
+
+: RANDOM-INT ( n -- r )
+    RND SWAP MOD ;
+
+: RANDOM-LETTER ( -- c )
+    26 RANDOM-INT
+    1000 RANDOM-INT 500 >
+    IF [CHAR] a ELSE [CHAR] A THEN + ;
+
+: RANDOM-STR, ( -- addr )
+    HERE 16 RANDOM-INT 
+    DUP C,
+    ?DUP IF 0 DO RANDOM-LETTER C, LOOP THEN ;
+
+VARIABLE NB-KEYS
+CREATE KEYS KEY-MAX CELLS ALLOT
+
+: CREATE-RANDOM-KEYS
+    KEY-MAX 0 DO
+        RANDOM-STR,
+        KEYS I CELLS + !
+    LOOP ;
+
+
+: .KEYS
+    KEY-MAX 0 DO
+        KEYS I CELLS +
+        @ COUNT TYPE CR
+    LOOP ;
+
+: .0CR ( n -- )
+    0 .R CR ;
+
+: .TESTS
+    TEST-MAX RANDOM-INT 1+
+    DUP .0CR 
+    0 DO
+        OPERATION-MAX RANDOM-INT 1+
+        DUP .0CR
+        0 DO
+            10 RANDOM-INT
+            IF ." ADD:" ELSE ." DEL:" THEN
+            KEY-MAX RANDOM-INT
+            CELLS KEYS +
+            @ COUNT TYPE CR
+        LOOP
+    LOOP ;
+
+UTIME DROP SEED !
+CREATE-RANDOM-KEYS
+.TESTS
+BYE
+
+
+

@@ -4,10 +4,11 @@
 #include "string.h"
 #include "stdio.h"
 #define MAX_LINE 256
+#define EMPTY '~'
 
 
 bool is_empty(int position, struct hash_table *hash_table) {
-    return strlen(hash_table->items[position]) == 0;
+    return hash_table->items[position][0] == EMPTY;
 }
 
 int hash(char *key) {
@@ -32,7 +33,7 @@ int next_position(int position, struct hash_table *hash_table) {
 void initialize(struct hash_table *hash_table) {
     hash_table->nb_keys = 0;
     for(int position=0; position<SIZE; position++) {
-        hash_table->items[position][0] = '\0';
+        hash_table->items[position][0] = EMPTY;
     }
 
 }
@@ -64,13 +65,12 @@ void add_key(char *key, struct hash_table *hash_table) {
 void delete_key(char *key, struct hash_table *hash_table) {
     int position = find_key(key, hash_table);
     if (position != NOT_FOUND) {
-        hash_table->items[position][0] = '\0';
+        hash_table->items[position][0] = EMPTY;
         hash_table->nb_keys--;
     }
 }
 
 void operation(char *command, struct hash_table *hash_table) {
-    assert(strlen(command) > 4);
     if (command[0] == 'A') {
         add_key(&command[4], hash_table);
     } else {
@@ -94,7 +94,7 @@ void get_operation(char *line) {
 void print_hash_table(struct hash_table *hash_table) {
     printf("%d\n", hash_table->nb_keys);
     for(int position=0; position<SIZE; position++) {
-        if (strlen(hash_table->items[position])>0) {
+        if (!is_empty(position,hash_table)) {
             printf("%d:%s\n", position, hash_table->items[position]);
         }
     }
