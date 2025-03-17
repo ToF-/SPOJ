@@ -63,7 +63,7 @@
       (loop for pos from 0 to (1- *size*) do
             (let ((key (aref h-table pos)))
               (if key
-                (format t "~A~%" key)
+                (format t "~D:~A~%" pos key)
                 nil))))))
 
 (defun process-case ()
