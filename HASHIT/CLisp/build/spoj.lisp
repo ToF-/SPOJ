@@ -8,6 +8,9 @@
 (defun make-h-table ()
   (make-array *size* :initial-element nil))
 
+(defun set-key-pos (key pos h-table)
+      (setf (aref h-table pos) key))
+
 (defun accum (index chars)
   (if chars
     (+ (* index (char-code (car chars)))
@@ -20,15 +23,15 @@
 (defun next-pos (initial-pos index h-table)
   (let ((pos (mod (+ initial-pos (* index index) (* 23 index)) *size*)))
     (cond
+      ((= 20 index) nil)
       ((not (aref h-table pos)) pos)
       (t (next-pos initial-pos (1+ index) h-table)))))
 
 (defun find-pos (initial-pos index key h-table)
   (let ((pos (mod (+ initial-pos (* index index) (* 23 index)) *size*)))
     (cond
-      ((not (aref h-table pos)) nil)
-      ((= 20 index) nil)
       ((string-equal key (aref h-table pos)) pos)
+      ((= 20 index) nil)
       (t (find-pos initial-pos (1+ index) key h-table)))))
 
 (defun find-key (key h-table)
@@ -38,13 +41,13 @@
   (let ((pos (next-pos (hash key) 0 h-table)))
     (cond
       ((find-key key h-table) nil)
-      (pos (setf (aref h-table pos) key))
+      (pos (set-key-pos key pos h-table))
       (t nil))))
 
 (defun delete-key (key h-table)
   (let ((pos (find-key key h-table)))
     (cond
-      (pos (setf (aref h-table pos) nil))
+      (pos (set-key-pos nil pos h-table))
       (t nil))))
 
 (defun nb-keys-index (index h-table)

@@ -20,15 +20,15 @@
 (defun next-pos (initial-pos index h-table)
   (let ((pos (mod (+ initial-pos (* index index) (* 23 index)) *size*)))
     (cond
+      ((= 20 index) nil)
       ((not (aref h-table pos)) pos)
       (t (next-pos initial-pos (1+ index) h-table)))))
 
 (defun find-pos (initial-pos index key h-table)
   (let ((pos (mod (+ initial-pos (* index index) (* 23 index)) *size*)))
     (cond
-      ((not (aref h-table pos)) nil)
-      ((= 20 index) nil)
       ((string-equal key (aref h-table pos)) pos)
+      ((= 20 index) nil)
       (t (find-pos initial-pos (1+ index) key h-table)))))
 
 (defun find-key (key h-table)
