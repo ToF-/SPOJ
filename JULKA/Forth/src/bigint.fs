@@ -1,33 +1,17 @@
 \ -------- bigint.fs --------
 
 
-\ Decimal Coded Binary
-\ addition
-\   48 07
-\ + 23 17
-\ -------
-\   61 24
-\
-\ halving
-\   48 07
-\   24 …
-\   …  03
-\
-\  23 17
-\  11 … 
-\   1 17
-\     58
-\ ------
-\  11 58
-
 128 CONSTANT DIGIT-MAX
-DIGIT-MAX 2/ CONSTANT BIG-SIZE
+DIGIT-MAX 2/ CONSTANT BN-SIZE
 
 : L-NIBBLE ( b -- n )
     15 AND ;
 
 : H-NIBBLE ( b -- n )
     4 RSHIFT ;
+
+: >H-NIBBLE ( n -- n )
+    4 LSHIFT ;
 
 : NIBBLE+ ( n,m -- carry,n )
     + DUP 10 >=
@@ -43,45 +27,45 @@ DIGIT-MAX 2/ CONSTANT BIG-SIZE
     R> NIBBLE+ >R +
     R> 4 LSHIFT R> OR ;
 
-: H-NIBBLE2/ ( n -- quot,rem )
-    DUP 2/ SWAP 1 AND ;
-
-: L-NIBBLE2/ ( h,n -- rem,quot )
+: NIBBLE2/ ( h,n -- rem,quot )
     DUP 1 AND -ROT
     2/ SWAP 5 * + ; 
 
-: DCB2/ ( dcb -- rem,quot )
-    DUP L-NIBBLE SWAP H-NIBBLE
-    H-NIBBLE2/ ROT L-NIBBLE2/
-    ROT 4 LSHIFT OR ;
+: DCB2/ ( carry,dcb -- rem,quot )
+    SWAP OVER H-NIBBLE           \ dcb,carry,h
+    NIBBLE2/ SWAP                \ dcb,qh,rem
+    ROT L-NIBBLE                 \ qh,rem,n
+    NIBBLE2/                     \ qh,rem',ql
+    ROT >H-NIBBLE OR ;           \ rem,quot
 
-: >DCB ( byte -- dcbh,dcbl )
-    10 /MOD 10 /MOD -ROT 4 LSHIFT OR ;
+CREATE BN-A BN-SIZE ALLOT
+CREATE BN-X BN-SIZE ALLOT
+CREATE BN-Y BN-SIZE ALLOT
 
-: DCB> ( dcb -- byte )
-    DUP 4 RSHIFT 10 * SWAP 15 AND + ;
-
-: DCB2/MOD ( dcb -- dcbh,dcbl )
-    DCB> 2 /MOD >DCB -ROT + SWAP ;
-
-CREATE BIG-A BIG-SIZE ALLOT
-CREATE BIG-X BIG-SIZE ALLOT
-CREATE BIG-Y BIG-SIZE ALLOT
-
-: INIT-BIG ( addr -- )
-    BIG-SIZE ERASE ;
+: INIT-BN ( addr -- )
+    BN-SIZE ERASE ;
 
 : CHAR>DIGIT ( c -- n )
     [CHAR] 0 - ;
 
-: STR>BIG ( addr,count,dest -- )
-    DUP INIT-BIG
-    BIG-SIZE 1- +
+: DIGIT>CHAR ( n -- c )
+    [CHAR] 0 + ;
+
+: CHARS>DCB ( cl,ch -- dcb )
+    CHAR>DIGIT >H-NIBBLE
+    SWAP CHAR>DIGIT OR ;
+
+: DCB>CHARS ( dcb -- cl,ch )
+    DUP L-NIBBLE DIGIT>CHAR
+    SWAP H-NIBBLE DIGIT>CHAR ;
+
+: STR>BN ( addr,count,dest -- )
+    DUP INIT-BN
+    BN-SIZE 1- +
     -ROT OVER + 1- 0 -ROT DO
         I C@
         OVER IF
-            CHAR>DIGIT 4 LSHIFT
-            SWAP CHAR>DIGIT OR
+            CHARS>DCB
             OVER C! 1- 0
         ELSE
             NIP
@@ -93,14 +77,50 @@ CREATE BIG-Y BIG-SIZE ALLOT
         DROP
     THEN ;
 
+: BN>STR ( srce -- addr,count )
+    PAD DUP DIGIT-MAX ERASE
+    0 ROT BN-SIZE OVER +
+    BEGIN
+        2DUP < >R
+        OVER C@ 0= R> AND WHILE
+        SWAP 1+ SWAP
+    REPEAT
+    2DUP <> IF
+        SWAP DO
+            I C@ DCB>CHARS
+            2OVER + C!
+            >R 1+ 2DUP +
+            R> SWAP C!
+            1+
+        LOOP
+        OVER C@ [CHAR] 0 = IF
+            1- SWAP 1+ SWAP
+        THEN
+    ELSE
+        2DROP
+        OVER [CHAR] 0 SWAP C!
+        1+
+    THEN ;
 
-    
-\ : DCB+ ( dcb1,dcb2 -- dcb1',dcb2' )
-\     2DUP 15 AND SWAP 15 AND + 10 /MOD 4 LSHIFT OR
-\     -ROT 4 RSHIFT SWAP 4 RSHIFT + 10 /MOD 4 LSHIFT OR
-\     4 LSHIFT + ;
-\ 
-\ 
-\ : DCB2/MOD ( dcb -- dcb1,dcb' )
-\     DCB> 2 /MOD >DCB ;
-\ 
+: BN+ ( src1,src2,dest -- )
+    -ROT BN-SIZE + 1-
+    SWAP BN-SIZE + 1-
+    ROT  DUP BN-SIZE ERASE
+    0 SWAP
+    BN-SIZE OVER + 1- DO     \ src1,src2,carry
+        >R 2DUP C@ SWAP C@       \ src1,src2,dcb2,dcb1
+        DCB+                     \ src1,src2,carry',hs1
+        R> DCB+                  \ src1,src2,carry',carry'',sum
+        -ROT + 2SWAP             \ sum,carry,src1,src2
+        1- SWAP 1- 2SWAP         \ src2',src1',sum,carry
+        SWAP I C!                \ src1,src2,carry
+    -1 +LOOP
+    DROP 2DROP ;
+
+: BN2/ ( src,dest -- )
+    DUP BN-SIZE ERASE
+    0 SWAP
+    BN-SIZE OVER + SWAP DO   \ src,carry
+        OVER C@ DCB2/ I C!
+        SWAP 1+ SWAP
+    LOOP 2DROP ;
