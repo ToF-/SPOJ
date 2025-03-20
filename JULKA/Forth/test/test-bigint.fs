@@ -5,18 +5,22 @@ REQUIRE bigint.fs
 T{
     ." converting a byte to dcb" CR
     HEX
-    FF >DCB 0255 ?S
-    A9 >DCB 0169 ?S
-    2A >DCB 0042 ?S
+    FF >DCB 55 ?S 02 ?S
+    A9 >DCB 69 ?S 01 ?S
+    2A >DCB 42 ?S 00 ?S
     DECIMAL
 }T
 T{ 
     ." converting a dcb to byte" CR
     HEX
-    0255 DCB> FF ?S
-    0169 DCB> A9 ?S
-    017  DCB> 11 ?S
+    02 55 DCB> FF ?S
+    01 69 DCB> A9 ?S
+    00 17 DCB> 11 ?S
+    01 47 DCB> 93 ?S
+    01 28 DCB> 80 ?S
     DECIMAL
+}T
+BYE
 T{
     ." adding 2 dcb bytes" CR
     HEX
