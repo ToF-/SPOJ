@@ -3,6 +3,26 @@ REQUIRE bigint.fs
 
 ." TEST BIGINT" CR
 T{
+    ." adding 2 dcbs " CR
+    HEX
+    19 24 DCB+ 43 ?S 0 ?S
+    19 19 DCB+ 38 ?S 0 ?S
+    15 15 DCB+ 30 ?S 0 ?S
+    90 09 DCB+ 99 ?S 0 ?S
+    90 10 DCB+ 00 ?S 1 ?S
+    99 99 DCB+ 98 ?S 1 ?S
+    DECIMAL
+}T
+T{
+    ." halving a dcb " CR
+    HEX
+    24 DCB2/ 12 ?S 0 ?S
+    75 DCB2/ 37 ?S 1 ?S
+    00 DCB2/ 0  ?S 0 ?S
+    99 DCB2/ 49 ?S 1 ?S
+}T
+BYE
+T{
     ." converting a byte to dcb" CR
     HEX
     FF >DCB 55 ?S 02 ?S
@@ -31,17 +51,6 @@ T{
     DECIMAL
     S" 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" BIG-A STR>BIG
     BIG-A BIG-SIZE DUMP
-}T
-T{
-    ." adding 2 dcbs " CR
-    HEX
-    19 24 DCB+ 43 ?S 0 ?S
-    19 19 DCB+ 38 ?S 0 ?S
-    15 15 DCB+ 30 ?S 0 ?S
-    90 09 DCB+ 99 ?S 0 ?S
-    90 10 DCB+ 00 ?S 1 ?S
-    99 99 DCB+ 98 ?S 1 ?S
-    DECIMAL
 }T
 
 T{
