@@ -18,6 +18,7 @@ DIGIT-MAX 2/ CONSTANT BN-SIZE
     IF 10 - 1 ELSE 0 THEN
     SWAP ;
 
+
 : DCB+ ( dcb1,dcb2 -- carry,dcb )
     OVER L-NIBBLE
     OVER L-NIBBLE
@@ -27,6 +28,26 @@ DIGIT-MAX 2/ CONSTANT BN-SIZE
     R> NIBBLE+ >R +
     R> 4 LSHIFT R> OR ;
 
+: NIBBLE- ( n,m -- carry,n )
+    2DUP >= IF
+        - 0
+    ELSE
+        SWAP 10 + SWAP - 1
+    THEN SWAP ;
+
+: DCB- ( dcb1,dcb2 -- carry,dcb )
+    OVER L-NIBBLE
+    OVER L-NIBBLE
+    NIBBLE-            \ dcb1,dcb2,carry,l )
+    >R >R              \ dcb1,dcb2
+    SWAP H-NIBBLE      \ dcb2,h1
+    SWAP H-NIBBLE      \ h1,h2 
+    R> +               \ h1,h2'
+    NIBBLE-            \ carry,h
+    >H-NIBBLE
+    R> OR ;
+
+    
 : NIBBLE2/ ( h,n -- rem,quot )
     DUP 1 AND -ROT
     2/ SWAP 5 * + ; 
@@ -37,10 +58,6 @@ DIGIT-MAX 2/ CONSTANT BN-SIZE
     ROT L-NIBBLE                 \ qh,rem,n
     NIBBLE2/                     \ qh,rem',ql
     ROT >H-NIBBLE OR ;           \ rem,quot
-
-CREATE BN-A BN-SIZE ALLOT
-CREATE BN-X BN-SIZE ALLOT
-CREATE BN-Y BN-SIZE ALLOT
 
 : INIT-BN ( addr -- )
     BN-SIZE ERASE ;
@@ -114,6 +131,23 @@ CREATE BN-Y BN-SIZE ALLOT
         -ROT + 2SWAP             \ sum,carry,src1,src2
         1- SWAP 1- 2SWAP         \ src2',src1',sum,carry
         SWAP I C!                \ src1,src2,carry
+    -1 +LOOP
+    DROP 2DROP ;
+
+: BN- ( src1,src2,dest -- )
+    -ROT BN-SIZE + 1-
+    SWAP BN-SIZE + 1-
+    SWAP
+    ROT DUP BN-SIZE ERASE
+    0 SWAP
+    BN-SIZE OVER + 1- DO         \ src1,src2,carry
+        >R 2DUP C@ SWAP C@ SWAP  \ src1,src2,dcb1,dcb2
+        R> DCB+                  \ src1,src2,dcb1,carry,dcb2'
+        >R DCB-                  \ src1,src2,carry,dcb1',
+        R> DCB-                  \ src1,src2,carry,carry',sub
+        -ROT +                   \ src1,src2,sub,carry
+        2SWAP 1- SWAP 1- SWAP
+        2SWAP SWAP I C!          \ src1,src2
     -1 +LOOP
     DROP 2DROP ;
 
