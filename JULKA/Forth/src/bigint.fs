@@ -4,60 +4,70 @@
 128 CONSTANT DIGIT-MAX
 DIGIT-MAX 2/ CONSTANT BN-SIZE
 
-: L-NIBBLE ( b -- n )
+: BN-INIT ( addr -- )
+    BN-SIZE ERASE ;
+
+: L-DIGIT ( b -- n )
     15 AND ;
 
-: H-NIBBLE ( b -- n )
+: H-DIGIT ( b -- n )
     4 RSHIFT ;
 
-: >H-NIBBLE ( n -- n )
+: >H-DIGIT ( n -- n )
     4 LSHIFT ;
 
-: NIBBLE+ ( n,m -- carry,n )
-    + DUP 10 >=
-    IF 10 - 1 ELSE 0 THEN
-    SWAP ;
+: DCB>VALUE ( dbc,carry -- n )
+    100 * SWAP
+    DUP H-DIGIT 10 *
+    SWAP L-DIGIT + + ;
 
+: VALUE>DCB ( n -- dbc )
+    10 /MOD >H-DIGIT OR ;
 
-: DCB+ ( dcb1,dcb2 -- carry,dcb )
-    OVER L-NIBBLE
-    OVER L-NIBBLE
-    NIBBLE+ >R >R
-    H-NIBBLE SWAP
-    H-NIBBLE NIBBLE+
-    R> NIBBLE+ >R +
-    R> 4 LSHIFT R> OR ;
+: DIGIT+C ( n,m,carry -- sum,carry )
+    + + 10 /MOD ;
 
-: NIBBLE- ( n,m -- carry,n )
-    2DUP >= IF
+: DIGIT-C ( n,m,carry -- sub,carry )
+    + 2DUP >= IF
         - 0
     ELSE
         SWAP 10 + SWAP - 1
-    THEN SWAP ;
+    THEN ;
 
-: DCB- ( dcb1,dcb2 -- carry,dcb )
-    OVER L-NIBBLE
-    OVER L-NIBBLE
-    NIBBLE-            \ dcb1,dcb2,carry,l )
-    >R >R              \ dcb1,dcb2
-    SWAP H-NIBBLE      \ dcb2,h1
-    SWAP H-NIBBLE      \ h1,h2 
-    R> +               \ h1,h2'
-    NIBBLE-            \ carry,h
-    >H-NIBBLE
-    R> OR ;
+: DCB+C ( a,b,carry -- sum,carry )
+    >R OVER L-DIGIT
+       OVER L-DIGIT R> 
+    DIGIT+C 2SWAP        \ ls,carry,a,b
+    SWAP H-DIGIT         \ ls,carry,b,ah
+    SWAP H-DIGIT         \ ls,carry,ah,bh
+    ROT DIGIT+C          \ ls,hs,carry
+    -ROT >H-DIGIT OR     \ carry,sum
+    SWAP ;               \ sum,carry
 
-    
-: NIBBLE2/ ( h,n -- rem,quot )
-    DUP 1 AND -ROT
-    2/ SWAP 5 * + ; 
+: DCB-C ( n,m,carry -- sub,carry )
+    >R OVER L-DIGIT
+       OVER L-DIGIT R>
+    DIGIT-C 2SWAP        \ ls,carry,a,b
+    SWAP H-DIGIT
+    SWAP H-DIGIT         \ ls,carry,ah,bh
+    ROT DIGIT-C          \ ls,hs,carry
+    -ROT >H-DIGIT OR     \ carry,sub
+    SWAP ;               \ sub,carry
+
+: DIGIT2/ ( h,n -- rem,quot )
+    DUP 1 AND -ROT            \ rem,h,n
+    2/ SWAP 5 * + ;           \ rem,h*5+n/2
+
+: DCB2/C ( dcb,rem -- quot,rem )
+    DCB>VALUE 2 /MOD
+    VALUE>DCB SWAP ;
 
 : DCB2/ ( carry,dcb -- rem,quot )
-    SWAP OVER H-NIBBLE           \ dcb,carry,h
-    NIBBLE2/ SWAP                \ dcb,qh,rem
-    ROT L-NIBBLE                 \ qh,rem,n
-    NIBBLE2/                     \ qh,rem',ql
-    ROT >H-NIBBLE OR ;           \ rem,quot
+    SWAP OVER H-DIGIT           \ dcb,carry,h
+    DIGIT2/ SWAP                \ dcb,qh,rem
+    ROT L-DIGIT                 \ qh,rem,n
+    DIGIT2/                     \ qh,rem',ql
+    ROT >H-DIGIT OR ;           \ rem,quot
 
 : INIT-BN ( addr -- )
     BN-SIZE ERASE ;
@@ -69,12 +79,12 @@ DIGIT-MAX 2/ CONSTANT BN-SIZE
     [CHAR] 0 + ;
 
 : CHARS>DCB ( cl,ch -- dcb )
-    CHAR>DIGIT >H-NIBBLE
+    CHAR>DIGIT >H-DIGIT
     SWAP CHAR>DIGIT OR ;
 
 : DCB>CHARS ( dcb -- cl,ch )
-    DUP L-NIBBLE DIGIT>CHAR
-    SWAP H-NIBBLE DIGIT>CHAR ;
+    DUP L-DIGIT DIGIT>CHAR
+    SWAP H-DIGIT DIGIT>CHAR ;
 
 : STR>BN ( addr,count,dest -- )
     DUP INIT-BN
@@ -119,42 +129,37 @@ DIGIT-MAX 2/ CONSTANT BN-SIZE
         1+
     THEN ;
 
-: BN+ ( src1,src2,dest -- )
-    -ROT BN-SIZE + 1-
-    SWAP BN-SIZE + 1-
-    ROT  DUP BN-SIZE ERASE
-    0 SWAP
-    BN-SIZE OVER + 1- DO     \ src1,src2,carry
-        >R 2DUP C@ SWAP C@       \ src1,src2,dcb2,dcb1
-        DCB+                     \ src1,src2,carry',hs1
-        R> DCB+                  \ src1,src2,carry',carry'',sum
-        -ROT + 2SWAP             \ sum,carry,src1,src2
-        1- SWAP 1- 2SWAP         \ src2',src1',sum,carry
-        SWAP I C!                \ src1,src2,carry
-    -1 +LOOP
-    DROP 2DROP ;
+: LAST-DCB^ ( addr -- addr^ )
+    BN-SIZE + 1- ;
 
-: BN- ( src1,src2,dest -- )
-    -ROT BN-SIZE + 1-
-    SWAP BN-SIZE + 1-
-    SWAP
-    ROT DUP BN-SIZE ERASE
+: BN+ ( a^,b^,dest -- )
+    -ROT
+    SWAP LAST-DCB^
+    SWAP LAST-DCB^
+    ROT DUP BN-INIT
     0 SWAP
-    BN-SIZE OVER + 1- DO         \ src1,src2,carry
-        >R 2DUP C@ SWAP C@ SWAP  \ src1,src2,dcb1,dcb2
-        R> DCB+                  \ src1,src2,dcb1,carry,dcb2'
-        >R DCB-                  \ src1,src2,carry,dcb1',
-        R> DCB-                  \ src1,src2,carry,carry',sub
-        -ROT +                   \ src1,src2,sub,carry
-        2SWAP 1- SWAP 1- SWAP
-        2SWAP SWAP I C!          \ src1,src2
-    -1 +LOOP
-    DROP 2DROP ;
+    DUP LAST-DCB^ DO          \ a^,b^,carry
+        >R OVER C@ OVER C@ R> \ a^,b^,a,b,carry
+        DCB+C SWAP I C!       \ a^,b^,carry
+        >R SWAP 1- SWAP 1- R> \ a^,b^,carry
+    -1 +LOOP DROP 2DROP ;
 
-: BN2/ ( src,dest -- )
+: BN- ( a^,b^,dest -- )
+    -ROT
+    SWAP LAST-DCB^
+    SWAP LAST-DCB^
+    ROT DUP BN-INIT
+    0 SWAP
+    DUP LAST-DCB^ DO           \ a^,b^,carry
+        >R OVER C@ OVER C@ R>  \ a^,b^,a,b,carry
+        DCB-C SWAP I C!        \ a^,b^,carry
+        >R SWAP 1- SWAP 1- R>
+    -1 +LOOP DROP 2DROP ;
+
+: BN2/ ( dbc^,dest -- )
     DUP BN-SIZE ERASE
     0 SWAP
-    BN-SIZE OVER + SWAP DO   \ src,carry
-        OVER C@ DCB2/ I C!
+    BN-SIZE OVER + SWAP DO   \ dbc^,carry
+        OVER C@ SWAP DCB2/C SWAP I C!
         SWAP 1+ SWAP
     LOOP 2DROP ;

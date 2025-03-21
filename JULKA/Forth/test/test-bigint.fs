@@ -8,32 +8,37 @@ CREATE BN-Y BN-SIZE ALLOT
 ." TEST BIGINT" CR
 HEX
 T{
-    ." adding 2 dcbs " CR
-    19 24 DCB+ 43 ?S 0 ?S
-    19 19 DCB+ 38 ?S 0 ?S
-    15 15 DCB+ 30 ?S 0 ?S
-    90 09 DCB+ 99 ?S 0 ?S
-    90 10 DCB+ 00 ?S 1 ?S
-    99 99 DCB+ 98 ?S 1 ?S
+    ." adding 2 dcbs + carry" CR
+    01 01 0 DCB+C 0 ?S 02 ?S
+    01 01 1 DCB+C 0 ?S 03 ?S
+    01 09 0 DCB+C 0 ?S 10 ?S
+    01 09 1 DCB+C 0 ?S 11 ?S
+    09 09 0 DCB+C 0 ?S 18 ?S
+    00 99 1 DCB+C 1 ?S 00 ?S
+    99 99 0 DCB+C 1 ?S 98 ?S
+    99 99 1 DCB+C 1 ?S 99 ?S
 }T
 T{
     ." subtracting 2 dcbs" CR
-    24 19 DCB- 5 ?S 0 ?S
-    19 24 DCB- 95 ?S 1 ?S
-    00 99 DCB-  1 ?S 1 ?S
-    99 00 DCB- 99 ?S 0 ?S 
-    00 98 DCB-  2 ?S 1 ?S
-    10 95 DCB- 15 ?S 1 ?S
-    00 50 DCB- 50 ?S 1 ?S
+    24 19 0 DCB-C  0 ?S  5 ?S
+    19 24 0 DCB-C  1 ?S 95 ?S
+    00 99 0 DCB-C  1 ?S  1 ?S
+    99 00 0 DCB-C  0 ?S 99 ?S
+    00 98 0 DCB-C  1 ?S  2 ?S
+    10 95 0 DCB-C  1 ?S 15 ?S
+    00 50 0 DCB-C  1 ?S 50 ?S
+    00 50 1 DCB-C  1 ?S 49 ?S
+    99 99 0 DCB-C  0 ?S 00 ?S
+    00 99 1 DCB-C  1 ?S 00 ?S
+    99 99 1 DCB-C  1 ?S 99 ?S
 }T
 T{
     ." halving a dcb " CR
-    0 24 DCB2/ 12 ?S 0 ?S
-    0 75 DCB2/ 37 ?S 1 ?S
-    0 00 DCB2/ 0  ?S 0 ?S
-    0 99 DCB2/ 49 ?S 1 ?S
-    1 00 DCB2/ 50 ?S 0 ?S
-    1 99 DCB2/ 99 ?S 1 ?S
+    24 0 DCB2/C  0 ?S 12 ?S
+    24 1 DCB2/C  0 ?S 62 ?S
+    25 1 DCB2/C  1 ?S 62 ?S
+    25 0 DCB2/C  1 ?S 12 ?S 
+    00 1 DCB2/C  0 ?S 50 ?S
 }T
 
 T{
@@ -89,10 +94,15 @@ T{
     S" 7" BN-Y STR>BN
     BN-X BN-Y BN-A BN-
     BN-A BN>STR
-    S" 1" ?STR
+    S" 99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999998" ?STR
 }T
 T{
     ." halving a dcb number" CR
+    S" 4807" BN-X STR>BN
+    BN-X BN-Y BN2/
+    BN-Y BN>STR S" 2403" ?STR
+    BYE
+
     S" 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" BN-X STR>BN
     BN-X BN-Y BN2/
     BN-Y BN>STR
