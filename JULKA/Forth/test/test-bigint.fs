@@ -8,41 +8,7 @@ CREATE BN-Y BN-SIZE ALLOT
 ." TEST BIGINT" CR
 HEX
 T{
-    ." adding 2 dcbs + carry" CR
-    01 01 0 DCB+C 0 ?S 02 ?S
-    01 01 1 DCB+C 0 ?S 03 ?S
-    01 09 0 DCB+C 0 ?S 10 ?S
-    01 09 1 DCB+C 0 ?S 11 ?S
-    09 09 0 DCB+C 0 ?S 18 ?S
-    00 99 1 DCB+C 1 ?S 00 ?S
-    99 99 0 DCB+C 1 ?S 98 ?S
-    99 99 1 DCB+C 1 ?S 99 ?S
-}T
-T{
-    ." subtracting 2 dcbs" CR
-    24 19 0 DCB-C  0 ?S  5 ?S
-    19 24 0 DCB-C  1 ?S 95 ?S
-    00 99 0 DCB-C  1 ?S  1 ?S
-    99 00 0 DCB-C  0 ?S 99 ?S
-    00 98 0 DCB-C  1 ?S  2 ?S
-    10 95 0 DCB-C  1 ?S 15 ?S
-    00 50 0 DCB-C  1 ?S 50 ?S
-    00 50 1 DCB-C  1 ?S 49 ?S
-    99 99 0 DCB-C  0 ?S 00 ?S
-    00 99 1 DCB-C  1 ?S 00 ?S
-    99 99 1 DCB-C  1 ?S 99 ?S
-}T
-T{
-    ." halving a dcb " CR
-    24 0 DCB2/C  0 ?S 12 ?S
-    24 1 DCB2/C  0 ?S 62 ?S
-    25 1 DCB2/C  1 ?S 62 ?S
-    25 0 DCB2/C  1 ?S 12 ?S 
-    00 1 DCB2/C  0 ?S 50 ?S
-}T
-
-T{
-    ." converting a string to dcb number and back" CR
+    ." converting a string to big number and back" CR
     S" 4807" BN-A STR>BN
     BN-A BN>STR S" 4807" ?STR
     S" 0" BN-A STR>BN
@@ -53,7 +19,6 @@ T{
     BN-A BN>STR
     S" 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890" ?STR
 }T
-
 T{
     ." adding 2 dcb numbers" CR
     S" 4807" BN-X STR>BN
@@ -107,3 +72,4 @@ T{
     BN-Y BN>STR
     S" 617283945061728394506172839450617283945061728394506172839450617283945061728394506172839450617283945" ?STR
 }T
+DECIMAL

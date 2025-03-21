@@ -2,135 +2,66 @@
 
 
 128 CONSTANT DIGIT-MAX
-DIGIT-MAX 2/ CONSTANT BN-SIZE
+DIGIT-MAX CONSTANT BN-SIZE
 
 : BN-INIT ( addr -- )
     BN-SIZE ERASE ;
 
-: L-DIGIT ( b -- n )
-    15 AND ;
-
-: H-DIGIT ( b -- n )
-    4 RSHIFT ;
-
-: >H-DIGIT ( n -- n )
-    4 LSHIFT ;
-
-: DCB>VALUE ( dbc,carry -- n )
-    100 * SWAP
-    DUP H-DIGIT 10 *
-    SWAP L-DIGIT + + ;
-
-: VALUE>DCB ( n -- dbc )
-    10 /MOD >H-DIGIT OR ;
-
-: DIGIT+C ( n,m,carry -- sum,carry )
+: DIGIT+ ( a,b,carry -- sum,carry )
     + + 10 /MOD ;
 
-: DIGIT-C ( n,m,carry -- sub,carry )
+: DIGIT- ( a,b,carry -- sub,carry )
     + 2DUP >= IF
         - 0
     ELSE
-        SWAP 10 + SWAP - 1
+        SWAP 10 + SWAP
+        - 1
     THEN ;
 
-: DCB+C ( a,b,carry -- sum,carry )
-    >R OVER L-DIGIT
-       OVER L-DIGIT R> 
-    DIGIT+C 2SWAP        \ ls,carry,a,b
-    SWAP H-DIGIT         \ ls,carry,b,ah
-    SWAP H-DIGIT         \ ls,carry,ah,bh
-    ROT DIGIT+C          \ ls,hs,carry
-    -ROT >H-DIGIT OR     \ carry,sum
-    SWAP ;               \ sum,carry
-
-: DCB-C ( n,m,carry -- sub,carry )
-    >R OVER L-DIGIT
-       OVER L-DIGIT R>
-    DIGIT-C 2SWAP        \ ls,carry,a,b
-    SWAP H-DIGIT
-    SWAP H-DIGIT         \ ls,carry,ah,bh
-    ROT DIGIT-C          \ ls,hs,carry
-    -ROT >H-DIGIT OR     \ carry,sub
-    SWAP ;               \ sub,carry
-
-: DIGIT2/ ( h,n -- rem,quot )
-    DUP 1 AND -ROT            \ rem,h,n
-    2/ SWAP 5 * + ;           \ rem,h*5+n/2
-
-: DCB2/C ( dcb,rem -- quot,rem )
-    DCB>VALUE 2 /MOD
-    VALUE>DCB SWAP ;
-
-: DCB2/ ( carry,dcb -- rem,quot )
-    SWAP OVER H-DIGIT           \ dcb,carry,h
-    DIGIT2/ SWAP                \ dcb,qh,rem
-    ROT L-DIGIT                 \ qh,rem,n
-    DIGIT2/                     \ qh,rem',ql
-    ROT >H-DIGIT OR ;           \ rem,quot
+: DIGIT2/ ( a,carry -- q,carry )
+    10 * +
+    2 /MOD SWAP ;
 
 : INIT-BN ( addr -- )
     BN-SIZE ERASE ;
 
-: CHAR>DIGIT ( c -- n )
-    [CHAR] 0 - ;
-
-: DIGIT>CHAR ( n -- c )
-    [CHAR] 0 + ;
-
-: CHARS>DCB ( cl,ch -- dcb )
-    CHAR>DIGIT >H-DIGIT
-    SWAP CHAR>DIGIT OR ;
-
-: DCB>CHARS ( dcb -- cl,ch )
-    DUP L-DIGIT DIGIT>CHAR
-    SWAP H-DIGIT DIGIT>CHAR ;
-
-: STR>BN ( addr,count,dest -- )
-    DUP INIT-BN
-    BN-SIZE 1- +
-    -ROT OVER + 1- 0 -ROT DO
-        I C@
-        OVER IF
-            CHARS>DCB
-            OVER C! 1- 0
-        ELSE
-            NIP
-        THEN
-    -1 +LOOP
-    ?DUP IF
-        CHAR>DIGIT SWAP C!
-    ELSE
-        DROP
-    THEN ;
-
-: BN>STR ( srce -- addr,count )
-    PAD DUP DIGIT-MAX ERASE
-    0 ROT BN-SIZE OVER +
-    BEGIN
-        2DUP < >R
-        OVER C@ 0= R> AND WHILE
-        SWAP 1+ SWAP
-    REPEAT
-    2DUP <> IF
-        SWAP DO
-            I C@ DCB>CHARS
-            2OVER + C!
-            >R 1+ 2DUP +
-            R> SWAP C!
-            1+
-        LOOP
-        OVER C@ [CHAR] 0 = IF
-            1- SWAP 1+ SWAP
-        THEN
-    ELSE
-        2DROP
-        OVER [CHAR] 0 SWAP C!
-        1+
-    THEN ;
-
 : LAST-DCB^ ( addr -- addr^ )
     BN-SIZE + 1- ;
+
+: LAST-DIGIT^ ( addr -- addr )
+    BN-SIZE + 1- ;
+
+: STR>BN ( addr,count,dest -- )
+    DUP INIT-BN LAST-DIGIT^
+    -ROT OVER + 1- DO
+        I C@ [CHAR] 0 -
+        OVER C! 1-
+    -1 +LOOP DROP ;
+
+: SEARCH-FIRST-NON-ZERO ( end,start -- end,start' )
+    BEGIN
+        2DUP > >R
+        DUP C@ 0= R>
+        AND WHILE
+        1+
+    REPEAT ;
+
+: BN>STR ( srce -- str,count )
+    PAD BN-SIZE ERASE
+    0 SWAP
+    DUP BN-SIZE + SWAP
+    SEARCH-FIRST-NON-ZERO
+    2DUP <> IF
+        DO
+            PAD OVER +
+            I C@ [CHAR] 0 +
+            SWAP C!
+            1+
+        LOOP
+    ELSE
+        2DROP
+        PAD [CHAR] 0 SWAP C! 1+
+    THEN PAD SWAP ;
 
 : BN+ ( a^,b^,dest -- )
     -ROT
@@ -140,7 +71,7 @@ DIGIT-MAX 2/ CONSTANT BN-SIZE
     0 SWAP
     DUP LAST-DCB^ DO          \ a^,b^,carry
         >R OVER C@ OVER C@ R> \ a^,b^,a,b,carry
-        DCB+C SWAP I C!       \ a^,b^,carry
+        DIGIT+ SWAP I C!       \ a^,b^,carry
         >R SWAP 1- SWAP 1- R> \ a^,b^,carry
     -1 +LOOP DROP 2DROP ;
 
@@ -152,7 +83,7 @@ DIGIT-MAX 2/ CONSTANT BN-SIZE
     0 SWAP
     DUP LAST-DCB^ DO           \ a^,b^,carry
         >R OVER C@ OVER C@ R>  \ a^,b^,a,b,carry
-        DCB-C SWAP I C!        \ a^,b^,carry
+        DIGIT- SWAP I C!        \ a^,b^,carry
         >R SWAP 1- SWAP 1- R>
     -1 +LOOP DROP 2DROP ;
 
@@ -160,7 +91,7 @@ DIGIT-MAX 2/ CONSTANT BN-SIZE
     DUP BN-SIZE ERASE
     0 SWAP
     BN-SIZE OVER + SWAP DO   \ dbc^,carry
-        OVER C@ SWAP DCB2/C SWAP I C!
+        OVER C@ SWAP DIGIT2/ SWAP I C!
         SWAP 1+ SWAP
     LOOP 2DROP ;
 \ -------- input.fs ---------
