@@ -11,3 +11,6 @@ T{
     READ-TEST-CASES
     CLOSE-INPUT-FILE
 }T
+T{ ." finding the start coord" 
+    START-COORD 2 ?S 1 ?S
+}T

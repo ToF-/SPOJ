@@ -5,6 +5,7 @@ VARIABLE ROW-MAX
 VARIABLE COL-MAX
 
 2VARIABLE DIMENSIONS
+2VARIABLE START
 
 : INIT-LABYRINTH
     LABYRINTH SIZE-MAX DUP * ERASE ;
@@ -12,6 +13,26 @@ VARIABLE COL-MAX
 : LABYRINTH-LINE! ( str,count,row -- )
     SIZE-MAX * LABYRINTH +
     SWAP CMOVE ;
+
+: START-COORD ( -- row,col )
+    DIMENSIONS 2@
+    FALSE -ROT
+    0 SWAP OVER DO
+        2DUP DO
+        J SIZE-MAX * I +
+        LABYRINTH + C@
+        [CHAR] . = IF
+            J I START 2!
+            DROP TRUE
+            LEAVE
+        THEN
+        LOOP
+        DUP IF
+            LEAVE
+        THEN
+    LOOP DROP 2DROP
+    START 2@ ;
+
 
 1024 CONSTANT LINE-MAX
 
