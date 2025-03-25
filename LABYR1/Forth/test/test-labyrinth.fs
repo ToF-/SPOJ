@@ -1,0 +1,13 @@
+
+REQUIRE ffl/tst.fs
+REQUIRE labyrinth.fs
+
+." LABYRINTH TESTS" CR
+T{
+    ." reading test cases"
+    S" ../test/sample.txt" OPEN-INPUT-FILE
+    ' .LABYRINTH IS PROCESS-TEST-CASE
+    CR
+    READ-TEST-CASES
+    CLOSE-INPUT-FILE
+}T
