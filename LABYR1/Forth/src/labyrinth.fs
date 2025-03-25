@@ -28,9 +28,7 @@ VARIABLE COL-MAX
     FALSE -ROT
     0 SWAP OVER DO
         2DUP DO
-        I J LABYRINTH^
-        C@
-        [CHAR] . = IF
+        I J LABYRINTH-FREE? IF
             J I START 2!
             DROP TRUE
             LEAVE
@@ -68,23 +66,64 @@ VARIABLE COL-MAX
     2R@ SOUTH ADJACENT-SPACE?
     2R> WEST ADJACENT-SPACE? ;
 
+: ROPE>CELL ( coords,length -- n )
+    16 LSHIFT OR 16 LSHIFT OR ;
+
+: CELL>ROPE ( n -- coords,length )
+    DUP 65535 AND SWAP 16 RSHIFT 
+    DUP 65535 AND SWAP 16 RSHIFT ;
+
+CREATE ROPE-CELLS SIZE-MAX DUP * CELLS ALLOCATE THROW ,
+
+: FREE-ROPE-CELLS
+    ROPE-CELLS @ FREE THROW ;
+
+VARIABLE ROPE-START
+VARIABLE ROPE-END
+
+: INIT-ROPE-CELLS
+    ROPE-CELLS @ ROPE-START !
+    ROPE-CELLS @ ROPE-END ! ;
+
+: .LABYRINTH
+    DIMENSIONS 2@
+    0 SWAP OVER
+    DO 2DUP DO
+        I J LABYRINTH^ C@ EMIT
+    LOOP CR LOOP 2DROP ;
+
+: MORE-TO-VISIT? ( -- f )
+    ROPE-START @ ROPE-END @ < ;
+
+: PUSH-ROPE-CELL ( coords,length -- )
+    >R 2DUP R> -ROT LABYRINTH-BLOCK!
+    ROPE>CELL ROPE-END @ !
+    CELL ROPE-END +!  ;
+
+: POP-ROPE-CELL ( -- coords, length )
+    ROPE-START @ @
+    CELL ROPE-START +!
+    CELL>ROPE ;
+
+VARIABLE LENGTH
+
+: UPDATE-LENGTH ( n -- )
+    LENGTH @ MAX LENGTH ! ;
+
 : ROPE-LENGTH ( coords -- n )
-    0 -ROT
-    2DUP LABYRINTH-BLOCK!
-    ADJACENT-SPACES
-    BEGIN                             \ l,coord,…,n
-        ?DUP WHILE
-        DUP 1 = IF
-            DROP ROT 1+ -ROT          \ l1,coord
-            2DUP LABYRINTH-BLOCK!
-            ADJACENT-SPACES           \ l1,coord,…,n
-        ELSE
-            0 SWAP 0 DO               \ l,coord1,coord2,…,0
-                -ROT RECURSE MAX      \ l,coord1,l'
-            LOOP                      \ l,l'
-            + 1+ 0                    \ l,0
-        THEN
-    REPEAT ;
+    LENGTH OFF
+    INIT-ROPE-CELLS
+    START-COORD 0 PUSH-ROPE-CELL
+    BEGIN
+        MORE-TO-VISIT? WHILE
+        POP-ROPE-CELL 
+        DUP UPDATE-LENGTH 1+ >R
+        2DUP LABYRINTH-BLOCK!
+        ADJACENT-SPACES 0 ?DO
+            J PUSH-ROPE-CELL
+        LOOP R> DROP
+    REPEAT
+    LENGTH @ ;
     
 1024 CONSTANT LINE-MAX
 
@@ -138,13 +177,6 @@ VARIABLE INPUT-FILE
 
 DEFER PROCESS-TEST-CASE
 
-: .LABYRINTH
-    DIMENSIONS 2@
-    0 SWAP OVER
-    DO 2DUP DO
-        I J LABYRINTH^ C@ EMIT
-    LOOP CR LOOP 2DROP ;
-
 : READ-TEST-CASES
     READ-INPUT-LINE ASSERT( )
     STR-TOKENS ASSERT( 1 = )
@@ -161,7 +193,8 @@ DEFER PROCESS-TEST-CASE
 ' COMPUTE-ROPE-LENGTH IS PROCESS-TEST-CASE
 
 : PROCESS
-    READ-TEST-CASES ;
+    READ-TEST-CASES
+    FREE-ROPE-CELLS ;
 
 
 
