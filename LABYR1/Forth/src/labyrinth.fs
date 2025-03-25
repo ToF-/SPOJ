@@ -10,17 +10,26 @@ VARIABLE COL-MAX
 : INIT-LABYRINTH
     LABYRINTH SIZE-MAX DUP * ERASE ;
 
+: LABYRINTH^ ( coords -- addr )
+    SIZE-MAX * + LABYRINTH + ;
+
 : LABYRINTH-LINE! ( str,count,row -- )
     SIZE-MAX * LABYRINTH +
     SWAP CMOVE ;
+
+: LABYRINTH-BLOCK! ( coord -- )
+    LABYRINTH^ [CHAR] # SWAP C! ;
+
+: LABYRINTH-FREE? ( coord -- f )
+    LABYRINTH^ C@ [CHAR] . = ;
 
 : START-COORD ( -- row,col )
     DIMENSIONS 2@
     FALSE -ROT
     0 SWAP OVER DO
         2DUP DO
-        J SIZE-MAX * I +
-        LABYRINTH + C@
+        I J LABYRINTH^
+        C@
         [CHAR] . = IF
             J I START 2!
             DROP TRUE
@@ -33,11 +42,35 @@ VARIABLE COL-MAX
     LOOP DROP 2DROP
     START 2@ ;
 
+: ADJACENT-SPACE? ( n,coords -- n|coords,n+1 )
+    2DUP LABYRINTH-FREE? IF
+        ROT 1+
+    ELSE
+        2DROP
+    THEN ;
+
+: NORTH ( coords -- coords' )
+    1+ ;
+
+: SOUTH ( coords -- coords' )
+    1- ;
+
+: WEST ( coords -- coords' )
+    SWAP 1+ SWAP ;
+
+: EAST ( coords -- coords' )
+    SWAP 1- SWAP ;
+
+: ADJACENT-SPACES ( coords -- coords1,…,n )
+    2>R 0
+    2R@ NORTH ADJACENT-SPACE?
+    2R@ EAST ADJACENT-SPACE?
+    2R@ SOUTH ADJACENT-SPACE?
+    2R> WEST ADJACENT-SPACE? ;
 
 1024 CONSTANT LINE-MAX
 
 CREATE LINE-BUFFER LINE-MAX ALLOT
-
 
 VARIABLE INPUT-FILE
 
@@ -75,7 +108,6 @@ VARIABLE INPUT-FILE
         SWAP 10 * +
     LOOP ;
 
-
 : READ-LABYRINTH
     READ-INPUT-LINE ASSERT( )
     STR-TOKENS ASSERT( 2 = )
@@ -92,11 +124,9 @@ DEFER PROCESS-TEST-CASE
     DIMENSIONS 2@
     0 SWAP OVER
     DO 2DUP DO
-        J SIZE-MAX * I +
-        LABYRINTH + C@ EMIT
+        I J LABYRINTH^ C@ EMIT
     LOOP CR LOOP 2DROP ;
 
-    
 : READ-TEST-CASES
     READ-INPUT-LINE ASSERT( )
     STR-TOKENS ASSERT( 1 = )
@@ -105,7 +135,7 @@ DEFER PROCESS-TEST-CASE
         READ-LABYRINTH
         PROCESS-TEST-CASE
     LOOP ;
-        
+
 
 
 

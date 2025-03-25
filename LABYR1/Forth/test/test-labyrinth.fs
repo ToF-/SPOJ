@@ -11,6 +11,12 @@ T{
     READ-TEST-CASES
     CLOSE-INPUT-FILE
 }T
-T{ ." finding the start coord" 
+T{ ." finding the start coord"
     START-COORD 2 ?S 1 ?S
+}T
+T{
+    ." finding adjacent spaces"
+    1 1 ADJACENT-SPACES 2 ?S
+    1 ?S 2 ?S 2 ?S 1 ?S
+    CR
 }T
