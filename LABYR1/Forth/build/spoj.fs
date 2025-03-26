@@ -1,3 +1,45 @@
+\ -------- input.fs --------
+
+1024 CONSTANT LINE-MAX
+
+CREATE LINE-BUFFER LINE-MAX ALLOT
+
+VARIABLE INPUT-FILE
+
+: OPEN-INPUT-FILE ( addr,count -- )
+    R/O OPEN-FILE THROW INPUT-FILE ! ;
+
+: CLOSE-INPUT-FILE
+    INPUT-FILE @ CLOSE-FILE THROW ;
+
+: READ-INPUT-LINE ( -- addr,count,flag )
+    LINE-BUFFER DUP LINE-MAX
+    INPUT-FILE @ READ-LINE THROW ;
+
+: (STR-TOKENS) ( addr,count -- add1,c1,add2,c2,…,n )
+    0 FALSE 2SWAP
+    OVER + DUP >R SWAP
+    DO I C@ BL <> IF
+        DUP 0= IF
+            I ROT 1+
+            ROT DROP TRUE
+        THEN
+    ELSE DUP IF
+            ROT I OVER -
+            2SWAP DROP FALSE
+    THEN THEN LOOP
+    R> SWAP
+    IF ROT TUCK - ROT ELSE DROP THEN ;
+
+: STR-TOKENS ( addr,count -- add1,c1,add2,c2,…,n )
+    DUP IF (STR-TOKENS) ELSE NIP THEN ;
+
+: STR>NUMBER ( addr,count -- n )
+    0 -ROT OVER + SWAP DO
+        I C@ [CHAR] 0 - 
+        SWAP 10 * +
+    LOOP ;
+
 1000 CONSTANT SIZE-MAX
 
 CREATE LABYRINTH SIZE-MAX DUP * ALLOT
@@ -95,8 +137,13 @@ VARIABLE ROPE-END
 : MORE-TO-VISIT? ( -- f )
     ROPE-START @ ROPE-END @ < ;
 
+: .TO-VISIT
+    ROPE-END @ ROPE-START @ - CELL / .
+    ." -- "
+    ROPE-START @ @ CELL>ROPE -ROT SWAP . . . CR 
+    KEY DROP ;
+
 : PUSH-ROPE-CELL ( coords,length -- )
-    >R 2DUP R> -ROT LABYRINTH-BLOCK!
     ROPE>CELL ROPE-END @ !
     CELL ROPE-END +!  ;
 
@@ -115,6 +162,7 @@ VARIABLE LENGTH
     INIT-ROPE-CELLS
     START-COORD 0 PUSH-ROPE-CELL
     BEGIN
+        .TO-VISIT
         MORE-TO-VISIT? WHILE
         POP-ROPE-CELL 
         DUP UPDATE-LENGTH 1+ >R
@@ -125,48 +173,9 @@ VARIABLE LENGTH
     REPEAT
     LENGTH @ ;
     
-1024 CONSTANT LINE-MAX
-
-CREATE LINE-BUFFER LINE-MAX ALLOT
-
-VARIABLE INPUT-FILE
-
-: OPEN-INPUT-FILE ( addr,count -- )
-    R/O OPEN-FILE THROW INPUT-FILE ! ;
-
-: CLOSE-INPUT-FILE
-    INPUT-FILE @ CLOSE-FILE THROW ;
-
-: READ-INPUT-LINE ( -- addr,count,flag )
-    LINE-BUFFER DUP LINE-MAX
-    INPUT-FILE @ READ-LINE THROW ;
-
-: (STR-TOKENS) ( addr,count -- add1,c1,add2,c2,…,n )
-    0 FALSE 2SWAP
-    OVER + DUP >R SWAP
-    DO I C@ BL <> IF
-        DUP 0= IF
-            I ROT 1+
-            ROT DROP TRUE
-        THEN
-    ELSE DUP IF
-            ROT I OVER -
-            2SWAP DROP FALSE
-    THEN THEN LOOP
-    R> SWAP
-    IF ROT TUCK - ROT ELSE DROP THEN ;
-
-: STR-TOKENS ( addr,count -- add1,c1,add2,c2,…,n )
-    DUP IF (STR-TOKENS) ELSE NIP THEN ;
-
-: STR>NUMBER ( addr,count -- n )
-    0 -ROT OVER + SWAP DO
-        I C@ [CHAR] 0 - 
-        SWAP 10 * +
-    LOOP ;
-
 : READ-LABYRINTH
     READ-INPUT-LINE ASSERT( )
+    2DUP TYPE CR
     STR-TOKENS ASSERT( 2 = )
     STR>NUMBER -ROT STR>NUMBER SWAP
     2DUP DIMENSIONS 2!
@@ -188,7 +197,9 @@ DEFER PROCESS-TEST-CASE
 
 : COMPUTE-ROPE-LENGTH
     START-COORD
-    ROPE-LENGTH . CR ;
+    ROPE-LENGTH
+    ." Maximum rope length is "
+    0 .R [CHAR] . EMIT CR ;
 
 ' COMPUTE-ROPE-LENGTH IS PROCESS-TEST-CASE
 

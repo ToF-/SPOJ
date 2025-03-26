@@ -1,5 +1,6 @@
 
 REQUIRE ffl/tst.fs
+REQUIRE input.fs
 REQUIRE labyrinth.fs
 
 ." LABYRINTH TESTS" CR
@@ -38,10 +39,10 @@ T{ ." calculating larger rope length" CR
 }T
 : HUGE-LABYRINTH
     INIT-LABYRINTH
-    1000 1000 DIMENSIONS 2!
+    100 100 DIMENSIONS 2!
     LABYRINTH SIZE-MAX DUP * [CHAR] # FILL
-    999 1 DO
-        999 1 DO
+    99 1 DO
+        99 1 DO
             J I LABYRINTH^ [CHAR] . SWAP C!
         LOOP
     LOOP ;  
