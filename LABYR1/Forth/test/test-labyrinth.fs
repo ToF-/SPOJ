@@ -53,6 +53,7 @@ T{ ." finding the start coord" CR
     S" ##########" 3 LABYRINTH-LINE!
     START-COORD 5 ?S 2 ?S
 }T
+
 T{
     LABYRINTH BITSET-INIT
     S" #####" 0 LABYRINTH-LINE!
@@ -66,6 +67,13 @@ T{
     3 3 ?D 1 3 ?D
 }T
 T{ ." calculating rope length" CR
+    LABYRINTH BITSET-INIT
+    S" ###" 0 LABYRINTH-LINE!
+    S" #.#" 1 LABYRINTH-LINE!
+    S" ###" 2 LABYRINTH-LINE!
+    3 3 DIMENSIONS 2!
+    ROPE-LENGTH 0 ?S
+
     LABYRINTH BITSET-INIT
     S" ######" 0 LABYRINTH-LINE!
     S" #....#" 1 LABYRINTH-LINE!
