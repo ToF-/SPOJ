@@ -10,6 +10,21 @@ T{
     CELL>ROPE 234 ?S 2317 ?S 4807 ?S
 }T
 T{
+    ." COORD-SET access" CR
+    INIT-COORD-SET
+    48 07 COORD-INCLUDED? ?FALSE
+    48 07 COORD-INCLUDE!
+    48 07 COORD-INCLUDED? ?TRUE
+}T
+T{
+    ." PUSH-ROPE-CELL" CR
+    INIT-ROPE-CELLS
+    10 12 17 PUSH-ROPE-CELL
+    ROPE-END @ ROPE-START @ - 8 / 1 ?S
+    10 12 17 PUSH-ROPE-CELL
+    ROPE-END @ ROPE-START @ - 8 / 1 ?S
+}T
+T{
     ." reading test cases" CR
     S" ../test/sample.txt" OPEN-INPUT-FILE
     ' .LABYRINTH IS PROCESS-TEST-CASE
@@ -39,10 +54,10 @@ T{ ." calculating larger rope length" CR
 }T
 : HUGE-LABYRINTH
     INIT-LABYRINTH
-    100 100 DIMENSIONS 2!
+    1000 1000 DIMENSIONS 2!
     LABYRINTH SIZE-MAX DUP * [CHAR] # FILL
-    99 1 DO
-        99 1 DO
+    999 1 DO
+        999 1 DO
             J I LABYRINTH^ [CHAR] . SWAP C!
         LOOP
     LOOP ;  
