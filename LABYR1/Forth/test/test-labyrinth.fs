@@ -46,17 +46,64 @@ T{
     CLOSE-INPUT-FILE
 }T
 T{ ." finding the start coord" CR
-    START-COORD 1 ?S 1 ?S
+    LABYRINTH BITSET-INIT
+    S" ##########" 0 LABYRINTH-LINE!
+    S" ##########" 1 LABYRINTH-LINE!
+    S" #####....#" 2 LABYRINTH-LINE!
+    S" ##########" 3 LABYRINTH-LINE!
+    START-COORD 5 ?S 2 ?S
 }T
 T{
+    LABYRINTH BITSET-INIT
+    S" #####" 0 LABYRINTH-LINE!
+    S" #...#" 1 LABYRINTH-LINE!
+    S" ###.#" 2 LABYRINTH-LINE!
+    S" #...#" 3 LABYRINTH-LINE!
+    S" #####" 4 LABYRINTH-LINE!
+    5 5 DIMENSIONS 2!
     ." finding adjacent spaces" CR
-    3 4 ADJACENT-SPACES 3 ?S
-    4 4 ?D 3 3 ?D 2 4 ?D
+    2 3 ADJACENT-SPACES 2 ?S
+    3 3 ?D 1 3 ?D
 }T
 T{ ." calculating rope length" CR
-    .LABYRINTH
-    ROPE-LENGTH
-    8 ?S
+    LABYRINTH BITSET-INIT
+    S" ######" 0 LABYRINTH-LINE!
+    S" #....#" 1 LABYRINTH-LINE!
+    S" ####.#" 2 LABYRINTH-LINE!
+    S" #....#" 3 LABYRINTH-LINE!
+    S" ######" 4 LABYRINTH-LINE!
+    6 5 DIMENSIONS 2!
+    ROPE-LENGTH 8 ?S
+    LABYRINTH BITSET-INIT
+    S" ######" 0 LABYRINTH-LINE!
+    S" #..#.#" 1 LABYRINTH-LINE!
+    S" ##.#.#" 2 LABYRINTH-LINE!
+    S" #....#" 3 LABYRINTH-LINE!
+    S" ######" 4 LABYRINTH-LINE!
+    6 5 DIMENSIONS 2!
+    ROPE-LENGTH 7 ?S
+    LABYRINTH BITSET-INIT
+    S" #######" 0 LABYRINTH-LINE!
+    S" #.#...#" 1 LABYRINTH-LINE!
+    S" #.#.#.#" 2 LABYRINTH-LINE!
+    S" #...#.#" 3 LABYRINTH-LINE!
+    S" #######" 4 LABYRINTH-LINE!
+    7 5 DIMENSIONS 2!
+    ROPE-LENGTH 10 ?S
+    LABYRINTH BITSET-INIT
+    S" #######" 0 LABYRINTH-LINE!
+    S" #.#...#" 1 LABYRINTH-LINE!
+    S" #.#.#.#" 2 LABYRINTH-LINE!
+    S" #...#.#" 3 LABYRINTH-LINE!
+    S" #.###.#" 4 LABYRINTH-LINE!
+    S" #.#.#.#" 5 LABYRINTH-LINE!
+    S" #.#.#.#" 6 LABYRINTH-LINE!
+    S" #.#.#.#" 7 LABYRINTH-LINE!
+    S" #...#.#" 8 LABYRINTH-LINE!
+    S" #######" 9 LABYRINTH-LINE!
+    7 10 DIMENSIONS 2!
+    ROPE-LENGTH 23 ?S
+    BYE
 }T
 : LARGE-LABYRINTH
     INIT-LABYRINTH
