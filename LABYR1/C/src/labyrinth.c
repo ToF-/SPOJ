@@ -81,7 +81,6 @@ void depth_first_search(struct labyrinth *labyrinth, int start_x, int start_y) {
         int rope_length = stack[--sp];
         int y = stack[--sp];
         int x = stack[--sp];
-        printf("%d %d  (%d) \n", x, y, rope_length);
         include(visited, y * N + x);
         if(rope_length > labyrinth->rope_length) {
             labyrinth->rope_length = rope_length;

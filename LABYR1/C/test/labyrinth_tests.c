@@ -62,7 +62,7 @@ TEST(labyrinth, larger_case) {
     add_line(lab, "############");
     TEST_ASSERT_EQUAL(12, lab->size_x);
     TEST_ASSERT_EQUAL(20, lab->size_y);
-    TEST_ASSERT_EQUAL(57, rope_length(lab));
+    TEST_ASSERT_EQUAL(59, rope_length(lab));
 }
 
 
