@@ -111,7 +111,6 @@ T{ ." calculating rope length" CR
     S" #######" 9 LABYRINTH-LINE!
     7 10 DIMENSIONS 2!
     ROPE-LENGTH 23 ?S
-    BYE
 }T
 : LARGE-LABYRINTH
     INIT-LABYRINTH
@@ -125,8 +124,15 @@ T{ ." calculating rope length" CR
             
 T{ ." calculating large rope length" CR
     LARGE-LABYRINTH
-    ROPE-LENGTH
-    194 ?S
+    ROPE-LENGTH 194 ?S
+}T
+T{
+    ." 201x201"
+    S" ../test/201x201.txt" OPEN-INPUT-FILE
+    ' COMPUTE-ROPE-LENGTH IS PROCESS-TEST-CASE
+    READ-TEST-CASES
+    CLOSE-INPUT-FILE
+    .S
 }T
 FREE-ROPE-CELLS BYE
 
