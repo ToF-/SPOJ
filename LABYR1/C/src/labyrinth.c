@@ -144,8 +144,9 @@ int rope_length(struct labyrinth *labyrinth) {
     int start_x;
     int start_y;
     find_first_free_cell(labyrinth, &start_x, &start_y);
-    assert(start_x > 0 && start_x < labyrinth->size_x-1);
-    assert(start_y > 0 && start_y < labyrinth->size_y-1);
+    if(start_x < 1 || start_x >=labyrinth->size_x-1 || start_y < 1 || start_y >= labyrinth->size_y-1) {
+        return 0;
+    }
     depth_first_search(labyrinth, start_x, start_y);
     depth_first_search(labyrinth, labyrinth->end_x, labyrinth->end_y);
     return labyrinth->rope_length;
@@ -156,13 +157,11 @@ int process_test_case(FILE *file) {
     char sep[2];
     int cols,rows;
     fscanf(file, "%d%1[ \t]%d", &cols, sep, &rows);
-    assert(cols>0 && rows>0);
-    printf("%d %d\n", cols, rows);
+
     struct labyrinth *labyrinth = new_labyrinth();
     init_labyrinth(labyrinth);
     for(int i=0; i<rows; i++) {
         fscanf(file, "%s", line);
-        printf("%s\n", line);
         add_line(labyrinth, line);
     }
     int result = rope_length(labyrinth);
