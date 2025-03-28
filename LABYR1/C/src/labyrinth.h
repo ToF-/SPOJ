@@ -21,6 +21,7 @@ struct bitset *new_bitset();
 void free_bitset(struct bitset *);
 void init_biset(struct bitset *);
 void include(struct bitset *, unsigned long);
+void exclude(struct bitset *, unsigned long);
 bool included(struct bitset *, unsigned long);
 struct labyrinth *new_labyrinth();
 void init_labyrinth(struct labyrinth *);

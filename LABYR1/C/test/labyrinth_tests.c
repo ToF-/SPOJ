@@ -65,11 +65,11 @@ TEST(labyrinth, larger_case) {
     TEST_ASSERT_EQUAL(59, rope_length(lab));
 }
 TEST(labyrinth, process_test_case) {
-    FILE *file = fopen("../test/unique.txt","r");
+    FILE *file = fopen("../test/201x201.txt","r");
     char buffer[N];
     fgets(buffer, N, file);
     int result = process_test_case(file);
-    TEST_ASSERT_EQUAL(8, result);
+    TEST_ASSERT_EQUAL(9592, result);
     fclose(file);
 }
 

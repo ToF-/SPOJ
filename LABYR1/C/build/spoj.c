@@ -21,6 +21,7 @@ struct bitset *new_bitset();
 void free_bitset(struct bitset *);
 void init_biset(struct bitset *);
 void include(struct bitset *, unsigned long);
+void exclude(struct bitset *, unsigned long);
 bool included(struct bitset *, unsigned long);
 struct labyrinth *new_labyrinth();
 void init_labyrinth(struct labyrinth *);
@@ -56,6 +57,13 @@ void include(struct bitset *bitset, unsigned long n) {
     bitset->bits[pos] |= mask;
 }
 
+void exclude(struct bitset *bitset, unsigned long n) {
+    int pos = n / sizeof(unsigned long);
+    unsigned long mask = 1 << n % sizeof(unsigned long);
+    mask ^= -1;
+    bitset->bits[pos] &= mask;
+}
+
 bool included(struct bitset *bitset, unsigned long n) {
     int pos = n / sizeof(unsigned long);
     unsigned long mask = 1 << n % sizeof(unsigned long);
@@ -84,7 +92,7 @@ void add_line(struct labyrinth *labyrinth, char *line) {
     char *s = line;
     char c;
     for(col = 0; (c = *line++); col++) {
-        if(c == '.') {
+        if(c != '#') {
             include(labyrinth->cells, row * N + col);
         }
     }
@@ -100,42 +108,24 @@ bool free_cell(struct labyrinth *labyrinth, int row, int col) {
         && included(labyrinth->cells, row * N + col);
 }
 
-#define PUSH(a,b,c) stack[sp++] = a; stack[sp++] = b; stack[sp++] = c;
-
-void depth_first_search(struct labyrinth *labyrinth, int start_x, int start_y) {
-    struct bitset *visited = new_bitset();
-    int *stack = (int *)malloc((N/2)*(N/2)*sizeof(int));
-    labyrinth->rope_length = 0;
-    int sp = 0;
-    init_bitset(visited);
-    stack[sp++] = start_x;
-    stack[sp++] = start_y;
-    stack[sp++] = 0;
-    while(sp) {
-        int rope_length = stack[--sp];
-        int y = stack[--sp];
-        int x = stack[--sp];
-        include(visited, y * N + x);
-        if(rope_length > labyrinth->rope_length) {
-            labyrinth->rope_length = rope_length;
-            labyrinth->end_x = x;
-            labyrinth->end_y = y;
-        }
-        if(free_cell(labyrinth, y-1, x) && !included(visited,(y-1)*N+x)) {
-            PUSH(x, y-1, rope_length+1);
-        }
-        if(free_cell(labyrinth, y+1, x) && !included(visited,(y+1)*N+x)) {
-            PUSH(x, y+1, rope_length+1);
-        }
-        if(free_cell(labyrinth, y, x-1) && !included(visited,(y)*N+x-1)) {
-            PUSH(x-1, y, rope_length+1);
-        }
-        if(free_cell(labyrinth, y, x+1) && !included(visited,(y)*N+x+1)) {
-            PUSH(x+1, y, rope_length+1);
-        }
+void depth_first_search(struct labyrinth *labyrinth, struct bitset *visited, int x, int y, int length) {
+    int next_x, next_y;
+    int dir_x[] = {-1, 1, 0, 0}, dir_y[] = {0, 0, -1, 1}; 
+    include(visited, y*N+x);
+    if(length > labyrinth->rope_length) {
+        labyrinth->rope_length = length;
+        labyrinth->end_x = x;
+        labyrinth->end_y = y;
     }
-    free(stack);
-    free(visited);
+    for(int d = 0; d < 4; d++) {
+        next_x = x + dir_x[d];
+        next_y = y + dir_y[d];
+        if(! free_cell(labyrinth, next_x, next_y) || included(visited, next_y*N+next_x))
+                continue;
+        depth_first_search(labyrinth, visited, next_x, next_y, length+1);
+    }
+    exclude(visited, y*N+x);
+    assert(!included(visited, y*N+x));
 }
 
 void find_first_free_cell(struct labyrinth *labyrinth, int *x, int *y) {
@@ -168,8 +158,14 @@ int rope_length(struct labyrinth *labyrinth) {
     int start_x;
     int start_y;
     find_first_free_cell(labyrinth, &start_x, &start_y);
-    depth_first_search(labyrinth, start_x, start_y);
-    depth_first_search(labyrinth, labyrinth->end_x, labyrinth->end_y);
+    struct bitset *visited = new_bitset();
+    labyrinth->rope_length = 0;
+    init_bitset(visited);
+    depth_first_search(labyrinth, visited, start_x, start_y, 0);
+    init_bitset(visited);
+    labyrinth->rope_length = 0;
+    depth_first_search(labyrinth, visited, labyrinth->end_x, labyrinth->end_y, 0);
+    free(visited);
     return labyrinth->rope_length;
 }
 
@@ -182,7 +178,7 @@ int process_test_case(FILE *file) {
     struct labyrinth *labyrinth = new_labyrinth();
     init_labyrinth(labyrinth);
     for(int i=0; i<rows; i++) {
-        fscanf(file, "%s", line);
+        fscanf(file, "%s\n", line);
         add_line(labyrinth, line);
     }
     int result = rope_length(labyrinth);
