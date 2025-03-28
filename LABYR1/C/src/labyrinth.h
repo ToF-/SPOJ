@@ -1,8 +1,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #define N 1024
-#define BITS_PER_UNSIGNED_LONG (8*sizeof(unsigned long))
-#define BITSET_SIZE ((N*N)/BITS_PER_UNSIGNED_LONG)
+#define BITS_PER_UNSIGNED_LONG (sizeof(unsigned long))
+#define BITSET_SIZE (N*N)
 
 struct bitset {
     unsigned long *bits;

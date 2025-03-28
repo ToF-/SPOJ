@@ -1,8 +1,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 #define N 1024
-#define BITS_PER_UNSIGNED_LONG (8*sizeof(unsigned long))
-#define BITSET_SIZE ((N*N)/BITS_PER_UNSIGNED_LONG)
+#define BITS_PER_UNSIGNED_LONG (sizeof(unsigned long))
+#define BITSET_SIZE (N*N)
 
 struct bitset {
     unsigned long *bits;
@@ -99,10 +99,12 @@ bool free_cell(struct labyrinth *labyrinth, int row, int col) {
         && row >= 0 && row < labyrinth->size_y
         && included(labyrinth->cells, row * N + col);
 }
+
+#define PUSH(a,b,c) stack[sp++] = a; stack[sp++] = b; stack[sp++] = c;
+
 void depth_first_search(struct labyrinth *labyrinth, int start_x, int start_y) {
     struct bitset *visited = new_bitset();
     int *stack = (int *)malloc((N/2)*(N/2)*sizeof(int));
-    assert(stack);
     labyrinth->rope_length = 0;
     int sp = 0;
     init_bitset(visited);
@@ -120,24 +122,16 @@ void depth_first_search(struct labyrinth *labyrinth, int start_x, int start_y) {
             labyrinth->end_y = y;
         }
         if(free_cell(labyrinth, y-1, x) && !included(visited,(y-1)*N+x)) {
-            stack[sp++] = x;
-            stack[sp++] = y-1;
-            stack[sp++] = rope_length+1;
+            PUSH(x, y-1, rope_length+1);
         }
         if(free_cell(labyrinth, y+1, x) && !included(visited,(y+1)*N+x)) {
-            stack[sp++] = x;
-            stack[sp++] = y+1;
-            stack[sp++] = rope_length+1;
+            PUSH(x, y+1, rope_length+1);
         }
         if(free_cell(labyrinth, y, x-1) && !included(visited,(y)*N+x-1)) {
-            stack[sp++] = x-1;
-            stack[sp++] = y;
-            stack[sp++] = rope_length+1;
+            PUSH(x-1, y, rope_length+1);
         }
         if(free_cell(labyrinth, y, x+1) && !included(visited,(y)*N+x+1)) {
-            stack[sp++] = x+1;
-            stack[sp++] = y;
-            stack[sp++] = rope_length+1;
+            PUSH(x+1, y, rope_length+1);
         }
     }
     free(stack);
@@ -174,9 +168,6 @@ int rope_length(struct labyrinth *labyrinth) {
     int start_x;
     int start_y;
     find_first_free_cell(labyrinth, &start_x, &start_y);
-    if(start_x < 1 || start_x >=labyrinth->size_x-1 || start_y < 1 || start_y >= labyrinth->size_y-1) {
-        return 0;
-    }
     depth_first_search(labyrinth, start_x, start_y);
     depth_first_search(labyrinth, labyrinth->end_x, labyrinth->end_y);
     return labyrinth->rope_length;
