@@ -1,6 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
-#define N 1024
+#define N 1000
 #define BITS_PER_UNSIGNED_LONG (sizeof(unsigned long))
 #define BITSET_SIZE (N*N)
 
@@ -191,7 +191,7 @@ void process() {
     fscanf(stdin, "%d", &cases);
     for(int i=0; i<cases; i++) {
         int result = process_test_case(stdin);
-        printf("%d\n", result);
+        printf("Maximum rope length is %d.\n", result);
     }
 }
 

@@ -160,7 +160,7 @@ void process() {
     fscanf(stdin, "%d", &cases);
     for(int i=0; i<cases; i++) {
         int result = process_test_case(stdin);
-        printf("%d\n", result);
+        printf("Maximum rope length is %d.\n", result);
     }
 }
 

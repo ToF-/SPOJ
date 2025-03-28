@@ -1,6 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
-#define N 1024
+#define N 1000
 #define BITS_PER_UNSIGNED_LONG (sizeof(unsigned long))
 #define BITSET_SIZE (N*N)
 
