@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 #define N 1024
 #define BITS_PER_UNSIGNED_LONG (8*sizeof(unsigned long))
 #define BITSET_SIZE ((N*N)/BITS_PER_UNSIGNED_LONG)
@@ -26,3 +27,5 @@ void init_labyrinth(struct labyrinth *);
 void free_labyrinth(struct labyrinth *);
 void add_line(struct labyrinth *, char *);
 int rope_length(struct labyrinth *);
+int process_test_case(FILE *);
+void process_test_cases(FILE *);

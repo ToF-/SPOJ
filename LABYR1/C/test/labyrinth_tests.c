@@ -64,5 +64,13 @@ TEST(labyrinth, larger_case) {
     TEST_ASSERT_EQUAL(20, lab->size_y);
     TEST_ASSERT_EQUAL(59, rope_length(lab));
 }
+TEST(labyrinth, process_test_case) {
+    FILE *file = fopen("../test/unique.txt","r");
+    char buffer[N];
+    fgets(buffer, N, file);
+    int result = process_test_case(file);
+    TEST_ASSERT_EQUAL(8, result);
+    fclose(file);
+}
 
 
