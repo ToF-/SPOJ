@@ -37,7 +37,12 @@ T{
     WALL-COLS @ 7 ?S
     WALL-ROWS @ 6 ?S
     .WALLS
-};
+}T
+T{
+    ." finding the first free cell" CR
+    FIND-FIRST-NON-WALL
+    1 ?S 1 ?S
+}T
 
 
 BYE

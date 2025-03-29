@@ -57,7 +57,6 @@ VARIABLE WALL-ROWS
     READ-INPUT-LINE ASSERT( )
     STR-TOKENS ASSERT( 2 = )
     STR>NUMBER -ROT STR>NUMBER SWAP
-    DUP WALL-ROWS !
     0 DO
         READ-INPUT-LINE ASSERT( )
         ADD-WALLS
@@ -66,10 +65,21 @@ VARIABLE WALL-ROWS
 
 : .WALLS
     CR
-    WALL-COLS @ 0 DO
-        WALL-ROWS @ 0 DO
-            J I WALL? IF [CHAR] # ELSE [CHAR] .  THEN
+    WALL-ROWS @ 0 DO
+        WALL-COLS @ 0 DO
+            I J WALL? IF [CHAR] # ELSE [CHAR] .  THEN
             EMIT
         LOOP
         CR
+    LOOP ;
+
+: FIND-FIRST-NON-WALL ( -- col,row )
+    -1 -1
+    WALL-ROWS @ 0 DO
+        DUP -1 <> IF LEAVE THEN
+        WALL-COLS @ 0 DO
+            I J WALL? 0= IF
+                2DROP I J LEAVE
+            THEN
+        LOOP
     LOOP ;
