@@ -45,6 +45,11 @@ T{
     1 ?S 1 ?S
 }T
 T{
+    ." storing 4 values into a stack frame" CR
+    42 4807 23 17 >FRAME
+    FRAME> 17 ?S 23 ?S 4807 ?S 42 ?S
+}T
+T{
     ." finding the more distant point" CR
     1 1 FIND-MORE-DISTANT 8 ?S
 }T
@@ -56,7 +61,7 @@ T{
     READ-WALLS
     CLOSE-INPUT-FILE
     FIND-FIRST-NON-WALL
-    DBG FIND-MORE-DISTANT
+    FIND-MORE-DISTANT
     0 ?S
 }T
 BYE

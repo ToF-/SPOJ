@@ -93,29 +93,74 @@ CREATE DIRECTIONS
     ROT + -ROT + SWAP ;
 
 2VARIABLE DISTANT
+VARIABLE DISTANCE
     
+: >FRAME ( a,b,c,d -- frame )
+    16 LSHIFT OR 16 LSHIFT OR 16 LSHIFT OR ;
+
+65535 CONSTANT 16-BITS-MASK
+
+: FRAME> ( frame -- dist,col,row )
+    DUP 16-BITS-MASK AND
+    SWAP 16 RSHIFT
+    DUP 16-BITS-MASK AND
+    SWAP 16 RSHIFT
+    DUP 16-BITS-MASK AND
+    SWAP 16 RSHIFT ;
+
+500 CONSTANT MAX-FRAMES
+
+CREATE FRAME-STACK MAX-FRAMES CELLS ALLOT
+VARIABLE FRAME-SP
+
+: FRAME-STACK-SIZE ( -- n )
+    FRAME-SP @ FRAME-STACK - CELL / ;
+
+: INIT-FRAME-STACK
+    FRAME-STACK FRAME-SP ! ;
+
+: PUSH-FRAME ( max,dist,col,row -- )
+    >FRAME FRAME-SP @ !
+    CELL FRAME-SP +! ;
+
+: POP-FRAME ( -- max,dist,col,row ) 
+    CELL NEGATE FRAME-SP +!
+    FRAME-SP @ @ FRAME> ;
+
 : DEPTH-FIRST-SEARCH ( max,dist,col,row -- dist )
-    2>R
-    2DUP < IF 2R@ DISTANT 2! NIP DUP THEN
-    2R@ VISIT!
-    2R@ 0 DIRECTION+ 2DUP WALL? >R 2DUP VISITED? R> OR 0= IF
-        ROT 1+ -ROT RECURSE 1-
-    ELSE 2DROP THEN
-    2R@ 1 DIRECTION+ 2DUP WALL? >R 2DUP VISITED? R> OR 0= IF
-        ROT 1+ -ROT RECURSE 1-
-    ELSE 2DROP THEN
-    2R@ 2 DIRECTION+ 2DUP WALL? >R 2DUP VISITED? R> OR 0= IF
-        ROT 1+ -ROT RECURSE 1-
-    ELSE 2DROP THEN
-    2R@ 3 DIRECTION+ 2DUP WALL? >R 2DUP VISITED? R> OR 0= IF
-        ROT 1+ -ROT RECURSE 1-
-    ELSE 2DROP THEN
-    2R> UNVISIT! ;
+    INIT-FRAME-STACK
+    PUSH-FRAME
+    BEGIN
+        FRAME-STACK-SIZE WHILE
+        POP-FRAME
+        2DUP ." visiting " swap . . CR
+        2DUP VISIT!
+        2>R DUP DISTANCE @ > IF
+            DUP DISTANCE !
+            2R@ DISTANT 2!
+        THEN 2R>
+        4 0 DO
+            2DUP I DIRECTION+
+            2DUP WALL?
+            >R 2DUP VISITED?
+            R> OR 0= IF
+                2>R 2OVER 1+ 2R>
+                PUSH-FRAME
+            ELSE
+                2DROP
+            THEN
+        LOOP
+        2DROP 2DROP
+    REPEAT ;
 
 : FIND-MORE-DISTANT ( col,row -- dist )
     INIT-VISITED
+    DISTANCE OFF
     0 0 DISTANT 2!
-    0 0 2SWAP DEPTH-FIRST-SEARCH 2DROP
-    DISTANT 2@
+    0 0 2SWAP DEPTH-FIRST-SEARCH
+    DISTANT 2@ 
+    INIT-VISITED
+    DISTANCE OFF
     0 0 DISTANT 2!
-    0 0 2SWAP DEPTH-FIRST-SEARCH DROP ;
+    0 0 2SWAP DEPTH-FIRST-SEARCH
+    DISTANCE @ ;
