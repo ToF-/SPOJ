@@ -108,7 +108,7 @@ VARIABLE DISTANCE
     DUP 16-BITS-MASK AND
     SWAP 16 RSHIFT ;
 
-500 CONSTANT MAX-FRAMES
+N 10 *  CONSTANT MAX-FRAMES
 
 CREATE FRAME-STACK MAX-FRAMES CELLS ALLOT
 VARIABLE FRAME-SP
@@ -127,30 +127,42 @@ VARIABLE FRAME-SP
     CELL NEGATE FRAME-SP +!
     FRAME-SP @ @ FRAME> ;
 
+: TO-VISIT? ( col,row -- f )
+    2DUP 0 N WITHIN SWAP 0 N WITHIN AND 0= IF
+        2DROP FALSE
+    ELSE
+        2DUP WALL? -ROT VISITED? OR 0=
+    THEN ;
+
 : DEPTH-FIRST-SEARCH ( max,dist,col,row -- dist )
     INIT-FRAME-STACK
-    PUSH-FRAME
     BEGIN
-        FRAME-STACK-SIZE WHILE
-        POP-FRAME
-        2DUP ." visiting " swap . . CR
+        FRAME-STACK-SIZE >R
         2DUP VISIT!
         2>R DUP DISTANCE @ > IF
             DUP DISTANCE !
             2R@ DISTANT 2!
         THEN 2R>
         4 0 DO
-            2DUP I DIRECTION+
-            2DUP WALL?
-            >R 2DUP VISITED?
-            R> OR 0= IF
-                2>R 2OVER 1+ 2R>
-                PUSH-FRAME
+            2DUP I DIRECTION+ 2DUP TO-VISIT? IF
+                2>R 2OVER 1+ 2>R PUSH-FRAME
+                2R> 2R> LEAVE
             ELSE
                 2DROP
             THEN
         LOOP
-        2DROP 2DROP
+        FRAME-STACK-SIZE R> = IF
+            2DROP 2DROP
+            FRAME-STACK-SIZE IF
+                POP-FRAME
+                TRUE
+            ELSE
+                FALSE
+            THEN
+        ELSE
+            TRUE
+        THEN
+        WHILE
     REPEAT ;
 
 : FIND-MORE-DISTANT ( col,row -- dist )
