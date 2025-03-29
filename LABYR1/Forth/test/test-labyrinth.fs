@@ -1,21 +1,46 @@
 
 REQUIRE ffl/tst.fs
-REQUIRE bitset.fs
 REQUIRE input.fs
 REQUIRE labyrinth.fs
 
 ." LABYRINTH TESTS" CR
 T{
-    ." BITSET access" CR
-    CREATE FOO BITSET-SIZE ALLOT
-
-    42 FOO BITSET@ ?FALSE
-    42 FOO BITSET! 
-    42 FOO BITSET@ ?TRUE
-    41 FOO BITSET@ ?FALSE
-    43 FOO BITSET@ ?FALSE
+    ." visited set" CR
+    INIT-VISITED
+    23 17 VISITED? ?FALSE
+    23 17 VISIT!
+    23 17 VISITED? ?TRUE
+    23 17 UNVISIT!
+    23 17 VISITED? ?FALSE
 }T
+T{
+    ." walls set" CR
+    INIT-WALLS
+    0 0 WALL? ?FALSE
+    S" ####" ADD-WALLS
+    S" #..#" ADD-WALLS
+    S" ####" ADD-WALLS
+    0 0 WALL? ?TRUE
+    1 0 WALL? ?TRUE
+    2 0 WALL? ?TRUE
+    1 1 WALL? ?FALSE
+    2 1 WALL? ?FALSE
+    WALL-COLS @ 4 ?S
+    WALL-ROWS @ 3 ?S
+}T
+T{
+    ." reading a test case" CR
+    S" ../test/unique.txt" OPEN-INPUT-FILE
+    READ-INPUT-LINE ?TRUE
+    STR>NUMBER 1 ?S
+    READ-WALLS
+    WALL-COLS @ 7 ?S
+    WALL-ROWS @ 6 ?S
+    .WALLS
+};
 
+
+BYE
 
 T{
     ." ROPE>CELL and vice versa" CR
