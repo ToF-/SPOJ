@@ -34,6 +34,7 @@ T{
     READ-INPUT-LINE ?TRUE
     STR>NUMBER 1 ?S
     READ-WALLS
+    CLOSE-INPUT-FILE
     WALL-COLS @ 7 ?S
     WALL-ROWS @ 6 ?S
     .WALLS
@@ -43,8 +44,21 @@ T{
     FIND-FIRST-NON-WALL
     1 ?S 1 ?S
 }T
-
-
+T{
+    ." finding the more distant point" CR
+    1 1 FIND-MORE-DISTANT 8 ?S
+}T
+T{
+    ." large test case" CR
+    S" ../test/201x201.txt" OPEN-INPUT-FILE
+    READ-INPUT-LINE ?TRUE
+    STR>NUMBER 1 ?S
+    READ-WALLS
+    CLOSE-INPUT-FILE
+    FIND-FIRST-NON-WALL
+    DBG FIND-MORE-DISTANT
+    0 ?S
+}T
 BYE
 
 T{
