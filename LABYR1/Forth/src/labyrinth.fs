@@ -86,7 +86,7 @@ VARIABLE WALL-ROWS
     LOOP ;
 
 CREATE DIRECTIONS
-    0 , 1 , 0 , -1 , 1 , 0 , -1 , 0 ,
+    -1 , 0 , 1 , 0 , 0 , -1 , 0 , 1 ,
 
 : DIRECTION+ ( col,row,d -- col',row' )
     2 * CELLS DIRECTIONS + 2@               \ col,row,dirx,diry
@@ -148,21 +148,23 @@ DEFER TRACE
 : DEPTH-FIRST-SEARCH ( max,dist,col,row -- dist )
     INIT-FRAME-STACK
     BEGIN
-        FRAME-STACK-SIZE >R
-        2DUP VISIT!
-        2>R DUP DISTANCE @ > IF
-            DUP DISTANCE !
-            2R@ DISTANT 2!
-            TRACE
-        THEN 2R>
-        4 0 DO
-            2DUP I DIRECTION+ 2DUP TO-VISIT? IF
-                2>R 2OVER 1+ 2>R PUSH-FRAME
-                2R> 2R> LEAVE
-            ELSE
-                2DROP
-            THEN
-        LOOP
+        2DUP TO-VISIT? IF 
+            .S CR
+            FRAME-STACK-SIZE >R
+            2DUP VISIT!
+            2>R DUP DISTANCE @ > IF
+                DUP DISTANCE !
+                2R@ DISTANT 2!
+            THEN 2R>
+            4 0 DO
+                2DUP I DIRECTION+ 2DUP TO-VISIT? IF
+                    2>R 2OVER 1+ 2>R PUSH-FRAME
+                    2R> 2R> LEAVE
+                ELSE
+                    2DROP
+                THEN
+            LOOP
+        THEN
         FRAME-STACK-SIZE R> = IF
             2DROP 2DROP
             FRAME-STACK-SIZE IF
@@ -180,7 +182,6 @@ DEFER TRACE
 : FIND-MORE-DISTANT ( col,row -- dist )
     INIT-VISITED
     DISTANCE OFF
-    0 0 DISTANT 2!
     0 0 2SWAP DEPTH-FIRST-SEARCH
     DISTANT 2@ 
     INIT-VISITED
@@ -188,3 +189,25 @@ DEFER TRACE
     0 0 DISTANT 2!
     0 0 2SWAP DEPTH-FIRST-SEARCH
     DISTANCE @ ;
+
+: PROCESS-TEST-CASE
+    READ-INPUT-LINE ASSERT( )
+    STR-TOKENS ASSERT( 2 = )
+    STR>NUMBER -ROT STR>NUMBER SWAP
+    INIT-WALLS
+    NIP 0 DO
+        READ-INPUT-LINE ASSERT( )
+        ADD-WALLS
+    LOOP
+    FIND-FIRST-NON-WALL
+    DISTANT 2!
+    DISTANT 2@
+    FIND-MORE-DISTANT
+    ." Maximum rope length is " 0 .R CR ;
+
+: PROCESS
+    READ-INPUT-LINE ASSERT( )
+    STR-TOKENS ASSERT( 1 = )
+    STR>NUMBER 0 DO
+        PROCESS-TEST-CASE
+    LOOP ;

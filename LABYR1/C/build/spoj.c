@@ -109,6 +109,7 @@ bool free_cell(struct labyrinth *labyrinth, int row, int col) {
 }
 
 void depth_first_search(struct labyrinth *labyrinth, struct bitset *visited, int x, int y, int length) {
+    printf("%d %d \n", x, y);
     int next_x, next_y;
     int dir_x[] = {-1, 1, 0, 0}, dir_y[] = {0, 0, -1, 1}; 
     include(visited, y*N+x);
@@ -155,13 +156,11 @@ void print_labyrinth(struct labyrinth *labyrinth) {
 }
 
 int rope_length(struct labyrinth *labyrinth) {
-    int start_x;
-    int start_y;
-    find_first_free_cell(labyrinth, &start_x, &start_y);
+    find_first_free_cell(labyrinth, &labyrinth->end_x, &labyrinth->end_y);
     struct bitset *visited = new_bitset();
     labyrinth->rope_length = 0;
     init_bitset(visited);
-    depth_first_search(labyrinth, visited, start_x, start_y, 0);
+    depth_first_search(labyrinth, visited, labyrinth->end_x, labyrinth->end_y, 0);
     init_bitset(visited);
     labyrinth->rope_length = 0;
     depth_first_search(labyrinth, visited, labyrinth->end_x, labyrinth->end_y, 0);
