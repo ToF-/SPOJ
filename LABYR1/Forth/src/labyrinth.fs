@@ -134,6 +134,17 @@ VARIABLE FRAME-SP
         2DUP WALL? -ROT VISITED? OR 0=
     THEN ;
 
+DEFER TRACE
+
+: DO-NOTHING ;
+
+
+: .VARIABLES
+    DISTANCE @ . 9 EMIT DISTANT 2@ SWAP . . CR ;
+
+' DO-NOTHING IS TRACE 
+
+
 : DEPTH-FIRST-SEARCH ( max,dist,col,row -- dist )
     INIT-FRAME-STACK
     BEGIN
@@ -142,6 +153,7 @@ VARIABLE FRAME-SP
         2>R DUP DISTANCE @ > IF
             DUP DISTANCE !
             2R@ DISTANT 2!
+            TRACE
         THEN 2R>
         4 0 DO
             2DUP I DIRECTION+ 2DUP TO-VISIT? IF
