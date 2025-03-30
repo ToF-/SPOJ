@@ -95,14 +95,12 @@ CREATE DIRECTIONS
 2VARIABLE DISTANT
 VARIABLE DISTANCE
     
-: >FRAME ( a,b,c,d -- frame )
-    16 LSHIFT OR 16 LSHIFT OR 16 LSHIFT OR ;
+: >FRAME ( a,b,c -- frame )
+    16 LSHIFT OR 16 LSHIFT OR ;  \ (((c<<16)|b)<<16)|c
 
 65535 CONSTANT 16-BITS-MASK
 
 : FRAME> ( frame -- dist,col,row )
-    DUP 16-BITS-MASK AND
-    SWAP 16 RSHIFT
     DUP 16-BITS-MASK AND
     SWAP 16 RSHIFT
     DUP 16-BITS-MASK AND
@@ -119,75 +117,60 @@ VARIABLE FRAME-SP
 : INIT-FRAME-STACK
     FRAME-STACK FRAME-SP ! ;
 
-: PUSH-FRAME ( max,dist,col,row -- )
+: PUSH-FRAME ( a,b,c -- )
     >FRAME FRAME-SP @ !
     CELL FRAME-SP +! ;
 
-: POP-FRAME ( -- max,dist,col,row ) 
+: POP-FRAME ( -- a,b,c ) 
     CELL NEGATE FRAME-SP +!
     FRAME-SP @ @ FRAME> ;
 
+: WITHIN-LIMITS ( col,row -- f )
+    0 N WITHIN SWAP
+    0 N WITHIN AND ;
+
 : TO-VISIT? ( col,row -- f )
-    2DUP 0 N WITHIN SWAP 0 N WITHIN AND 0= IF
-        2DROP FALSE
+    2DUP WITHIN-LIMITS -ROT
+    2DUP WALL? 0= -ROT
+    VISITED? 0= AND AND ;
+
+: UPDATE-DISTANCE ( col,row,dist -- )
+    DUP DISTANCE @ > IF
+        DISTANCE !
+        DISTANT 2!
     ELSE
-        2DUP WALL? -ROT VISITED? OR 0=
+        DROP 2DROP
     THEN ;
 
-DEFER TRACE
-
-: DO-NOTHING ;
-
-
-: .VARIABLES
-    DISTANCE @ . 9 EMIT DISTANT 2@ SWAP . . CR ;
-
-' DO-NOTHING IS TRACE 
-
-
-: DEPTH-FIRST-SEARCH ( max,dist,col,row -- dist )
+: DEPTH-FIRST-SEARCH ( dist,col,row -- )
     INIT-FRAME-STACK
+    PUSH-FRAME
     BEGIN
-        2DUP TO-VISIT? IF 
-            .S CR
-            FRAME-STACK-SIZE >R
-            2DUP VISIT!
-            2>R DUP DISTANCE @ > IF
-                DUP DISTANCE !
-                2R@ DISTANT 2!
-            THEN 2R>
-            4 0 DO
-                2DUP I DIRECTION+ 2DUP TO-VISIT? IF
-                    2>R 2OVER 1+ 2>R PUSH-FRAME
-                    2R> 2R> LEAVE
-                ELSE
-                    2DROP
-                THEN
-            LOOP
-        THEN
-        FRAME-STACK-SIZE R> = IF
-            2DROP 2DROP
-            FRAME-STACK-SIZE IF
-                POP-FRAME
-                TRUE
+        FRAME-STACK-SIZE WHILE
+        POP-FRAME
+        ROT >R 2DUP R@              \ col,row,col,row,dist
+        UPDATE-DISTANCE R> -ROT     \ dist,col,row
+        2DUP VISIT!
+        4 0 DO
+            2DUP I DIRECTION+ 2DUP TO-VISIT? IF
+                2>R ROT DUP 1+ 2R> PUSH-FRAME
+                -ROT
             ELSE
-                FALSE
+                2DROP
             THEN
-        ELSE
-            TRUE
-        THEN
-        WHILE
+        LOOP
+        2DROP DROP
     REPEAT ;
 
 : FIND-MORE-DISTANT ( col,row -- dist )
     INIT-VISITED
     DISTANCE OFF
-    0 0 2SWAP DEPTH-FIRST-SEARCH
+    0 -ROT DEPTH-FIRST-SEARCH
     DISTANT 2@ 
     INIT-VISITED
     DISTANCE OFF
     0 0 DISTANT 2!
-    0 0 2SWAP DEPTH-FIRST-SEARCH
+    0 -ROT DEPTH-FIRST-SEARCH
     DISTANCE @ ;
 
 : PROCESS-TEST-CASE
