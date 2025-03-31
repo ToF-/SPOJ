@@ -58,22 +58,23 @@ T{
 }T
 T{
     ." finding the most distant point" CR
-    1001 FIND-DISTANT 8 ?S
+    1001 DBG FIND-DISTANT 8 ?S
 }T
+BYE
 T{
     ." simple cases" CR
     INIT-WALLS
     S" ####" ADD-WALLS
     S" #..#" ADD-WALLS
     S" ####" ADD-WALLS
-    FIND-FIRST-NON-WALL FIND-DISTANT
+    FIND-FIRST-NON-WALL FIND-MORE-DISTANT
     1 ?S
     INIT-WALLS
     S" ####" ADD-WALLS
     S" #..#" ADD-WALLS
     S" ##.#" ADD-WALLS
     S" ####" ADD-WALLS
-    FIND-FIRST-NON-WALL FIND-DISTANT
+    FIND-FIRST-NON-WALL FIND-MORE-DISTANT
     2 ?S
     INIT-WALLS
     S" ####" ADD-WALLS
@@ -81,7 +82,7 @@ T{
     S" #..#" ADD-WALLS
     S" ##.#" ADD-WALLS
     S" ####" ADD-WALLS
-    FIND-FIRST-NON-WALL FIND-DISTANT
+    FIND-FIRST-NON-WALL FIND-MORE-DISTANT
     2 ?S
     INIT-WALLS
     S" ######" ADD-WALLS
@@ -89,18 +90,18 @@ T{
     S" #....#" ADD-WALLS
     S" ##.###" ADD-WALLS
     S" ######" ADD-WALLS
-    FIND-FIRST-NON-WALL FIND-DISTANT
+    FIND-FIRST-NON-WALL FIND-MORE-DISTANT
     4 ?S
 }T
 T{
-    ." spcecial cases " 
+    ." spcecial cases" 
     INIT-WALLS
     S" ######" ADD-WALLS
     S" #....#" ADD-WALLS
     S" #.####" ADD-WALLS
     S" #....#" ADD-WALLS
     S" ######" ADD-WALLS
-    FIND-FIRST-NON-WALL FIND-DISTANT
+    FIND-FIRST-NON-WALL FIND-MORE-DISTANT
     8 ?S
 }T
 T{
@@ -110,7 +111,7 @@ T{
     STR>NUMBER 1 ?S
     READ-WALLS
     CLOSE-INPUT-FILE
-    FIND-FIRST-NON-WALL CR FIND-DISTANT
+    FIND-FIRST-NON-WALL CR FIND-MORE-DISTANT
     9592 ?S
 }T
 BYE

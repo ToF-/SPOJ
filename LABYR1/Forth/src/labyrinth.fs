@@ -1,11 +1,28 @@
 
 1000 CONSTANT N
-N N 8 / * CONSTANT SET-SIZE
+N N * CONSTANT MAX-SIZE
+MAX-SIZE 8 / CONSTANT SET-SIZE
+
+VARIABLE DISTANT
+VARIABLE DISTANCE
+    
+N N *  CONSTANT MAX-FRAMES
+
+CREATE FRAME-STACK MAX-FRAMES CELLS 2* ALLOCATE THROW ,
+VARIABLE FRAME-SP
+
+
+
+: >COORD ( col,row -- )
+    N * + ;
+
+: COORD> ( coord -- col,row )
+    N /MOD SWAP ;
 
 CREATE VISITED SET-SIZE ALLOT
 
-: BITSET^ ( col,row,set -- bit,addr )
-    -ROT N * SWAP 8 /MOD ROT + ROT + ;
+: BITSET^ ( coord,set -- bit,addr )
+    SWAP 8 /MOD ROT + ;
 
 : BIT@ ( bit,addr -- )
     C@ 1 ROT LSHIFT AND ;
@@ -19,13 +36,13 @@ CREATE VISITED SET-SIZE ALLOT
 : INIT-VISITED
     VISITED SET-SIZE ERASE ;
 
-: VISITED? ( col,row -- f )
+: VISITED? ( coord -- f )
     VISITED BITSET^ BIT@ ;
 
-: VISIT! ( col,row -- )
+: VISIT! ( coord -- )
    VISITED BITSET^ BIT-SET! ;
 
-: UNVISIT! ( col,row -- )
+: UNVISIT! ( coord -- )
     VISITED BITSET^ BIT-UNSET! ;
 
 CREATE WALLS SET-SIZE ALLOT
@@ -34,21 +51,24 @@ VARIABLE WALL-COLS
 VARIABLE WALL-ROWS
 
 : INIT-WALLS
-    WALLS SET-SIZE ERASE
+    WALLS SET-SIZE 255 FILL
     WALL-COLS OFF
     WALL-ROWS OFF ;
 
-: WALL? ( col,row -- f )
+: WALL? ( coord -- f )
     WALLS BITSET^ BIT@ ;
 
-: WALL! ( col,row -- )
+: WALL! ( coord -- )
     WALLS BITSET^ BIT-SET! ;
+
+: UNWALL! ( coord -- )
+    WALLS BITSET^ BIT-UNSET! ;
 
 : ADD-WALLS ( addr,count -- )
     DUP WALL-COLS @ MAX WALL-COLS !
     0 DO
-        DUP I + C@ [CHAR] # = IF
-            I WALL-ROWS @ WALL!
+        DUP I + C@ [CHAR] # <> IF
+            I WALL-ROWS @ >COORD UNWALL!
         THEN
     LOOP DROP
     1 WALL-ROWS +! ;
@@ -68,109 +88,85 @@ VARIABLE WALL-ROWS
     CR
     WALL-ROWS @ 0 DO
         WALL-COLS @ 0 DO
-            I J WALL? IF [CHAR] # ELSE [CHAR] .  THEN
+            I J >COORD WALL?
+            IF [CHAR] # ELSE [CHAR] .  THEN
             EMIT
         LOOP
         CR
     LOOP ;
 
-: FIND-FIRST-NON-WALL ( -- col,row )
-    -1 -1
-    WALL-ROWS @ 0 DO
-        DUP -1 <> IF LEAVE THEN
-        WALL-COLS @ 0 DO
-            I J WALL? 0= IF
-                2DROP I J LEAVE
-            THEN
-        LOOP
-    LOOP ;
-
-CREATE DIRECTIONS
-    -1 , 0 , 1 , 0 , 0 , -1 , 0 , 1 ,
-
-: DIRECTION+ ( col,row,d -- col',row' )
-    2 * CELLS DIRECTIONS + 2@               \ col,row,dirx,diry
-    ROT + -ROT + SWAP ;
-
-2VARIABLE DISTANT
-VARIABLE DISTANCE
-    
-: >FRAME ( a,b,c -- frame )
-    16 LSHIFT OR 16 LSHIFT OR ;  \ (((c<<16)|b)<<16)|c
-
 65535 CONSTANT 16-BITS-MASK
 
-: FRAME> ( frame -- dist,col,row )
-    DUP 16-BITS-MASK AND
-    SWAP 16 RSHIFT
-    DUP 16-BITS-MASK AND
-    SWAP 16 RSHIFT ;
-
-N 10 *  CONSTANT MAX-FRAMES
-
-CREATE FRAME-STACK MAX-FRAMES CELLS ALLOT
-VARIABLE FRAME-SP
+: FIND-FIRST-NON-WALL ( -- co:ord) 
+    MAX-SIZE 0 DO
+        I WALL? 0= IF
+            I LEAVE
+        THEN
+    LOOP ;
 
 : FRAME-STACK-SIZE ( -- n )
-    FRAME-SP @ FRAME-STACK - CELL / ;
+    FRAME-SP @ FRAME-STACK @ - CELL 2* / ;
 
 : INIT-FRAME-STACK
-    FRAME-STACK FRAME-SP ! ;
+    FRAME-STACK @ FRAME-SP ! ;
 
-: PUSH-FRAME ( a,b,c -- )
-    >FRAME FRAME-SP @ !
-    CELL FRAME-SP +! ;
+: FREE-FRAME-STACK
+    FRAME-STACK @ FREE THROW ; 
 
-: POP-FRAME ( -- a,b,c ) 
-    CELL NEGATE FRAME-SP +!
-    FRAME-SP @ @ FRAME> ;
+: PUSH-FRAME ( dist,coord -- )
+    FRAME-SP @ 2!
+    2 CELLS FRAME-SP +! ;
 
-: WITHIN-LIMITS ( col,row -- f )
-    0 N WITHIN SWAP
-    0 N WITHIN AND ;
+: POP-FRAME ( -- dist,coord )
+    -2 CELLS FRAME-SP +!
+    FRAME-SP @ 2@ ;
 
-: TO-VISIT? ( col,row -- f )
-    2DUP WITHIN-LIMITS -ROT
-    2DUP WALL? 0= -ROT
-    VISITED? 0= AND AND ;
 
-: UPDATE-DISTANCE ( col,row,dist -- )
-    DUP DISTANCE @ > IF
+: TO-VISIT? ( coord -- f )
+    DUP 0 MAX-SIZE WITHIN
+    OVER WALL? 0= AND
+    SWAP VISITED? 0= AND ;
+
+: UPDATE-DISTANCE ( dist,coord -- )
+    OVER DISTANCE @ > IF
+        DISTANT !
         DISTANCE !
-        DISTANT 2!
     ELSE
-        DROP 2DROP
+        2DROP
     THEN ;
 
-: DEPTH-FIRST-SEARCH ( dist,col,row -- )
+: DEPTH-FIRST-SEARCH ( coord -- )
     INIT-FRAME-STACK
-    PUSH-FRAME
+    INIT-VISITED
+    DISTANCE OFF
+    0 SWAP
     BEGIN
-        FRAME-STACK-SIZE WHILE
-        POP-FRAME
-        ROT >R 2DUP R@              \ col,row,col,row,dist
-        UPDATE-DISTANCE R> -ROT     \ dist,col,row
-        2DUP VISIT!
-        4 0 DO
-            2DUP I DIRECTION+ 2DUP TO-VISIT? IF
-                2>R ROT DUP 1+ 2R> PUSH-FRAME
-                -ROT
+        2>R
+        2R@ UPDATE-DISTANCE
+        R@ VISIT!
+                  R@ -1000 + DUP TO-VISIT? IF
+            2R> OVER 1+ >R PUSH-FRAME R> SWAP
+        ELSE DROP R@  0001 + DUP TO-VISIT? IF
+            2R> OVER 1+ >R PUSH-FRAME R> SWAP
+        ELSE DROP R@  1000 + DUP TO-VISIT? IF
+            2R> OVER 1+ >R PUSH-FRAME R> SWAP
+        ELSE DROP R@ -0001 + DUP TO-VISIT? IF
+            2R> OVER 1+ >R PUSH-FRAME R> SWAP
+        ELSE
+            DROP 2R> 2DROP FALSE
+        THEN THEN THEN THEN
+        ?DUP 0 = IF
+            FRAME-STACK-SIZE 0= IF
+                EXIT
             ELSE
-                2DROP
+                POP-FRAME
             THEN
-        LOOP
-        2DROP DROP
-    REPEAT ;
+        THEN
+    AGAIN ;
 
-: FIND-MORE-DISTANT ( col,row -- dist )
-    INIT-VISITED
-    DISTANCE OFF
-    0 -ROT DEPTH-FIRST-SEARCH
-    DISTANT 2@ 
-    INIT-VISITED
-    DISTANCE OFF
-    0 0 DISTANT 2!
-    0 -ROT DEPTH-FIRST-SEARCH
+: FIND-DISTANT ( coord -- n )
+    DEPTH-FIRST-SEARCH
+    DISTANT @ DEPTH-FIRST-SEARCH
     DISTANCE @ ;
 
 : PROCESS-TEST-CASE
@@ -183,14 +179,12 @@ VARIABLE FRAME-SP
         ADD-WALLS
     LOOP
     FIND-FIRST-NON-WALL
-    DISTANT 2!
-    DISTANT 2@
-    FIND-MORE-DISTANT
-    ." Maximum rope length is " 0 .R CR ;
+    FIND-DISTANT
+    ." Maximum rope length is " 0 .R [CHAR] . EMIT CR ;
 
 : PROCESS
     READ-INPUT-LINE ASSERT( )
     STR-TOKENS ASSERT( 1 = )
     STR>NUMBER 0 DO
         PROCESS-TEST-CASE
-    LOOP ;
+    LOOP FREE-FRAME-STACK ;
