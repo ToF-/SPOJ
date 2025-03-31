@@ -22,22 +22,22 @@ T{
 T{
     ." walls set" CR
     INIT-WALLS
-    0 WALL? ?FALSE
+    0 0 >COORD WALL? ?FALSE
     S" ####" ADD-WALLS
     S" #..#" ADD-WALLS
     S" ####" ADD-WALLS
-    0000 WALL? ?TRUE
-    0001 WALL? ?TRUE
-    0002 WALL? ?TRUE
-    0003 WALL? ?TRUE
-    1000 WALL? ?TRUE
-    1001 WALL? ?FALSE
-    1002 WALL? ?FALSE
-    1003 WALL? ?TRUE
-    2000 WALL? ?TRUE
-    2001 WALL? ?TRUE
-    2002 WALL? ?TRUE
-    2003 WALL? ?TRUE
+    0 0 >COORD WALL? ?TRUE
+    0 1 >COORD WALL? ?TRUE
+    0 2 >COORD WALL? ?TRUE
+    0 3 >COORD WALL? ?TRUE
+    1 0 >COORD WALL? ?TRUE
+    1 1 >COORD WALL? ?FALSE
+    1 2 >COORD WALL? ?FALSE
+    1 3 >COORD WALL? ?TRUE
+    2 0 >COORD WALL? ?TRUE
+    2 1 >COORD WALL? ?TRUE
+    2 2 >COORD WALL? ?TRUE
+    2 3 >COORD WALL? ?TRUE
     WALL-COLS @ 4 ?S
     WALL-ROWS @ 3 ?S
 }T
@@ -54,11 +54,11 @@ T{
 }T
 T{
     ." finding the first free cell" CR
-    FIND-FIRST-NON-WALL 1001 ?S
+    FIND-FIRST-NON-WALL COORD> 1 ?S 1 ?S
 }T
 T{
     ." finding the most distant point" CR
-    1001 FIND-DISTANT 8 ?S
+    1 1 >COORD FIND-DISTANT 8 ?S
 }T
 T{
     ." simple cases" CR

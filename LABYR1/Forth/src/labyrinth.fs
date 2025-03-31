@@ -1,5 +1,10 @@
 
-1000 CONSTANT N
+1024 CONSTANT N
+N NEGATE CONSTANT UP-DIR
+N        CONSTANT DOWN-DIR
+1 NEGATE CONSTANT LEFT-DIR
+1        CONSTANT RIGHT-DIR
+
 N N * CONSTANT MAX-SIZE
 MAX-SIZE 8 / CONSTANT SET-SIZE
 
@@ -127,10 +132,10 @@ VARIABLE WALL-ROWS
     OVER WALL? 0= AND
     SWAP VISITED? 0= AND ;
 
-: UPDATE-DISTANCE ( dist,coord -- )
-    OVER DISTANCE @ > IF
-        DISTANT !
+: UPDATE-DISTANCE ( coord,dist -- )
+    DUP DISTANCE @ > IF
         DISTANCE !
+        DISTANT !
     ELSE
         2DROP
     THEN ;
@@ -139,21 +144,19 @@ VARIABLE WALL-ROWS
     INIT-FRAME-STACK
     INIT-VISITED
     DISTANCE OFF
-    0 SWAP
-    BEGIN
-        2>R
-        2R@ UPDATE-DISTANCE
-        R@ VISIT!
-                  R@ -1000 + DUP TO-VISIT? IF
-            2R> OVER 1+ >R PUSH-FRAME R> SWAP
-        ELSE DROP R@  0001 + DUP TO-VISIT? IF
-            2R> OVER 1+ >R PUSH-FRAME R> SWAP
-        ELSE DROP R@  1000 + DUP TO-VISIT? IF
-            2R> OVER 1+ >R PUSH-FRAME R> SWAP
-        ELSE DROP R@ -0001 + DUP TO-VISIT? IF
-            2R> OVER 1+ >R PUSH-FRAME R> SWAP
+    0
+    BEGIN                                                \ coord,dist
+        2DUP UPDATE-DISTANCE OVER VISIT!
+                   OVER UP-DIR  + DUP TO-VISIT? IF            \ coord,dist,coord'
+            OVER 1+ 2SWAP PUSH-FRAME                     \ coord',dist'
+        ELSE DROP  OVER RIGHT-DIR + DUP TO-VISIT? IF 
+            OVER 1+ 2SWAP PUSH-FRAME
+        ELSE DROP  OVER DOWN-DIR + DUP TO-VISIT? IF 
+            OVER 1+ 2SWAP PUSH-FRAME
+        ELSE DROP  OVER LEFT-DIR + DUP TO-VISIT? IF 
+            OVER 1+ 2SWAP PUSH-FRAME
         ELSE
-            DROP 2R> 2DROP FALSE
+            DROP 2DROP FALSE
         THEN THEN THEN THEN
         ?DUP 0 = IF
             FRAME-STACK-SIZE 0= IF
@@ -170,12 +173,12 @@ VARIABLE WALL-ROWS
     DISTANCE @ ;
 
 : PROCESS-TEST-CASE
-    READ-INPUT-LINE ASSERT( )
-    STR-TOKENS ASSERT( 2 = )
+    READ-INPUT-LINE DROP
+    STR-TOKENS DROP
     STR>NUMBER -ROT STR>NUMBER SWAP
     INIT-WALLS
     NIP 0 DO
-        READ-INPUT-LINE ASSERT( )
+        READ-INPUT-LINE DROP
         ADD-WALLS
     LOOP
     FIND-FIRST-NON-WALL
@@ -183,8 +186,8 @@ VARIABLE WALL-ROWS
     ." Maximum rope length is " 0 .R [CHAR] . EMIT CR ;
 
 : PROCESS
-    READ-INPUT-LINE ASSERT( )
-    STR-TOKENS ASSERT( 1 = )
+    READ-INPUT-LINE DROP
+    STR-TOKENS DROP
     STR>NUMBER 0 DO
         PROCESS-TEST-CASE
     LOOP FREE-FRAME-STACK ;
