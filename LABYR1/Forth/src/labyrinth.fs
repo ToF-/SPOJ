@@ -10,11 +10,27 @@ MAX-SIZE 8 / CONSTANT SET-SIZE
 
 VARIABLE DISTANT
 VARIABLE DISTANCE
-    
-N N *  CONSTANT MAX-FRAMES
 
+N N *  CONSTANT MAX-FRAMES
 CREATE FRAME-STACK MAX-FRAMES CELLS 2* ALLOCATE THROW ,
 VARIABLE FRAME-SP
+
+: STACK-SIZE ( -- n )
+    FRAME-SP @ FRAME-STACK @ - CELL 2* / ;
+
+: INIT-FRAME-STACK
+    FRAME-STACK @ FRAME-SP ! ;
+
+: FREE-FRAME-STACK
+    FRAME-STACK @ FREE THROW ; 
+
+: PUSH ( dist,coord -- )
+    FRAME-SP @ 2!
+    2 CELLS FRAME-SP +! ;
+
+: POP ( -- dist,coord )
+    -2 CELLS FRAME-SP +!
+    FRAME-SP @ 2@ ;
 
 
 
@@ -109,24 +125,6 @@ VARIABLE WALL-ROWS
         THEN
     LOOP ;
 
-: FRAME-STACK-SIZE ( -- n )
-    FRAME-SP @ FRAME-STACK @ - CELL 2* / ;
-
-: INIT-FRAME-STACK
-    FRAME-STACK @ FRAME-SP ! ;
-
-: FREE-FRAME-STACK
-    FRAME-STACK @ FREE THROW ; 
-
-: PUSH-FRAME ( dist,coord -- )
-    FRAME-SP @ 2!
-    2 CELLS FRAME-SP +! ;
-
-: POP-FRAME ( -- dist,coord )
-    -2 CELLS FRAME-SP +!
-    FRAME-SP @ 2@ ;
-
-
 : TO-VISIT? ( coord -- f )
     DUP 0 MAX-SIZE WITHIN
     OVER WALL? 0= AND
@@ -140,6 +138,14 @@ VARIABLE WALL-ROWS
         2DROP
     THEN ;
 
+    
+: NEXT-VISIT? ( coord,dist,dir  -- coord',dist',T|F )
+    >R OVER R> + DUP TO-VISIT? IF      \ coord,dist,coord'
+        OVER 1+ 2SWAP PUSH TRUE
+    ELSE
+        DROP FALSE
+    THEN ;
+        
 : DEPTH-FIRST-SEARCH ( coord -- )
     INIT-FRAME-STACK
     INIT-VISITED
@@ -147,25 +153,14 @@ VARIABLE WALL-ROWS
     0
     BEGIN                                                \ coord,dist
         2DUP UPDATE-DISTANCE OVER VISIT!
-                   OVER UP-DIR  + DUP TO-VISIT? IF            \ coord,dist,coord'
-            OVER 1+ 2SWAP PUSH-FRAME                     \ coord',dist'
-        ELSE DROP  OVER RIGHT-DIR + DUP TO-VISIT? IF 
-            OVER 1+ 2SWAP PUSH-FRAME
-        ELSE DROP  OVER DOWN-DIR + DUP TO-VISIT? IF 
-            OVER 1+ 2SWAP PUSH-FRAME
-        ELSE DROP  OVER LEFT-DIR + DUP TO-VISIT? IF 
-            OVER 1+ 2SWAP PUSH-FRAME
-        ELSE
-            DROP 2DROP FALSE
+        UP-DIR    NEXT-VISIT? IF TRUE ELSE
+        RIGHT-DIR NEXT-VISIT? IF TRUE ELSE
+        DOWN-DIR  NEXT-VISIT? IF TRUE ELSE
+        LEFT-DIR  NEXT-VISIT? IF TRUE ELSE
+        2DROP STACK-SIZE IF POP TRUE ELSE FALSE THEN
         THEN THEN THEN THEN
-        ?DUP 0 = IF
-            FRAME-STACK-SIZE 0= IF
-                EXIT
-            ELSE
-                POP-FRAME
-            THEN
-        THEN
-    AGAIN ;
+        WHILE
+    REPEAT ;
 
 : FIND-DISTANT ( coord -- n )
     DEPTH-FIRST-SEARCH
