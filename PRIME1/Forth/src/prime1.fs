@@ -1,31 +1,28 @@
 : SQ ( n -- n^2 ) DUP * ;
-: W, ( w -- ) 256 /MOD SWAP C, C, ;
+: W, ( w -- ) HERE W! 2 ALLOT ;
 
-: BYTE-POS ( set,bit# -- addr )
+: BYTE-POS ( set,bit# -- bit,addr )
     8 /MOD ROT + ;
 
 : ∈? ( set,bit# -- flag )
-    BYTE-POS C@ SWAP 
-    1 SWAP LSHIFT AND ;
+    BYTE-POS C@ 1 ROT LSHIFT AND ;
 
 : ¬∈! ( set,bit# -- )
-    BYTE-POS DUP C@ ROT 
-    1 SWAP LSHIFT 255 XOR AND SWAP C! ; 
+    BYTE-POS DUP >R C@ 1 ROT LSHIFT 255 XOR AND R> C! ;
 
-: ∈! ( set,bit# -- )
-    BYTE-POS DUP C@ ROT
-    1 SWAP LSHIFT OR SWAP C! ;
-
-: IS-PRIME? ( n -- flag )
-    DUP 2 < IF DROP FALSE ELSE
+\ trial division from 2 to √n (n > 1)
+: IS-PRIME? ( n -- flag)
     2 BEGIN
-        2DUP SQ > >R 2DUP MOD 0> R> AND 
-        WHILE 1+ 
-    REPEAT SQ < THEN ;
+        2DUP SQ > >R 2DUP MOD 0> R> AND
+        WHILE
+        1+
+    REPEAT
+    SQ < ;
 
 184  CONSTANT δ       δ 8 / CONSTANT δSET%
 δ SQ CONSTANT Δ       Δ 8 / CONSTANT ΔSET%
 
+\ stores 42 small primes from 2 to 181
 : δPRIMES, 
     δ 2 BEGIN
         2DUP > WHILE
@@ -41,6 +38,7 @@ HERE δPRIMES - CONSTANT δPRIMES%
 CREATE δSET δSET% ALLOT δSET δSET% 255 FILL
 CREATE ΔSET ΔSET% ALLOT ΔSET ΔSET% 255 FILL
 
+
 : Q ( start,prime -- offset )
     SWAP NEGATE SWAP MOD ;
 
@@ -50,6 +48,7 @@ CREATE ΔSET ΔSET% ALLOT ΔSET ΔSET% 255 FILL
 : WITHIN-RANGE ( limit,offset,start -- flag )
     + > ;
 
+\ excludes s+p,s+2p,s+3p,…, from s to l in the bitset
 : SIEVE! ( set,limit,start,prime -- )
     ASSERT( OVER 1 AND 0= )
     2>R 2R@ CALC-OFFSET              
@@ -57,6 +56,7 @@ CREATE ΔSET ΔSET% ALLOT ΔSET ΔSET% 255 FILL
         2 PICK OVER ¬∈! R@ + 
     REPEAT 2R> DROP 2DROP 2DROP ;
 
+\ exludes all prime factors from start to limit in the bitset
 : SIEVE-ITER! ( set,limit,start,prime -- set,limit,start )
     2OVER 2OVER SIEVE! DROP ;
 
@@ -68,10 +68,12 @@ DECIMAL
 : SET-INITIAL-BITS ( set,start )
     0= IF INITIAL-BITS SWAP C! ELSE DROP THEN ;
 
+\ all multiple of 2 are excluded from the sieve as well as 0 and 1
 : INIT-SET ( start,set,size -- )
     OVER SWAP ODD-BITS FILL
     SWAP SET-INITIAL-BITS ;
 
+\ exclude all primes factors from primes from start to limit
 : δ-SIEVES! ( limit,start -- )
     DUP δSET δSET% INIT-SET
     δSET -ROT 
@@ -115,7 +117,7 @@ HERE ΔPRIMES - 2/ CONSTANT ΔPRIMES%
 : .PRIMES-WITHIN ( max,min,start,bit# -- max,min,start )
     2OVER 2OVER 
     WITHIN-LIMITS? IF
-        OVER + . CR
+        OVER + 0 .R CR
     ELSE
         DROP
     THEN ;
@@ -133,25 +135,12 @@ HERE ΔPRIMES - 2/ CONSTANT ΔPRIMES%
         Δ I SETSTART .ΔSET-PRIMES-WITHIN 
     LOOP 2DROP ;
 
-: TO-DIGIT ( char -- n )
-    [CHAR] 0 - ;
-
-: IS-DIGIT? ( char -- flag )
-    TO-DIGIT DUP 0 >= SWAP 9 <= AND ;     
-
-: SKIP-NON-DIGIT ( -- char )
-    BEGIN KEY DUP IS-DIGIT? 0= WHILE DROP REPEAT ;
-
-: GET-NUMBER ( -- n )
-    SKIP-NON-DIGIT  
-    0 SWAP          \ accumulator
-    BEGIN
-        TO-DIGIT SWAP 10 * + 
-        KEY DUP IS-DIGIT? 
-    0= UNTIL DROP ;
-
-: MAIN
-    GET-NUMBER 0 DO
-        GET-NUMBER GET-NUMBER
+: PROCESS
+    READ-INPUT-LINE DROP
+    STR-TOKENS DROP
+    STR>NUMBER 0 DO
+        READ-INPUT-LINE DROP
+        STR-TOKENS DROP
+        STR>NUMBER -ROT STR>NUMBER SWAP
         SWAP .PRIMES CR
     LOOP ;

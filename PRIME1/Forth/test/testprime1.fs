@@ -1,3 +1,5 @@
+FPATH PATH+ src
+require input.fs
 require prime1.fs
 require ffl/tst.fs
 
@@ -132,4 +134,8 @@ t{ ." WITHIN-LIMITS? says if a bit# added to start is within the limits " CR
 t{ ." .PRIMES outputs primes within limits " CR
     1000 900 .PRIMES
 }t
+t{ ." PROCESS reads tests cases " CR
+    S" test/sample.txt" OPEN-INPUT-FILE
+    PROCESS
+}T
 bye
