@@ -26,3 +26,10 @@ Positions of pairs in a byte
 01101100: 2,5
 011
 
+
+with pattern matching
+
+    E 0:1:1:xs → E 1:0:0:xs
+    E 1:1:0:xs → E 0:0:1:xs
+    E a:b:c:xs → a: E b:c:xs
+
