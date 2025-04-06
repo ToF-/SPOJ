@@ -33,3 +33,5 @@ with pattern matching
     E 1:1:0:xs → E 0:0:1:xs
     E a:b:c:xs → a: E b:c:xs
 
+if 2 pawns are separated by 3 spaces or more, result is No.
+if there is only 1 pawn on the board, result is Yes.
