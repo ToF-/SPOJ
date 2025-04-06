@@ -1,6 +1,20 @@
 module Loner
     where
 
+import Data.Maybe
+
+capture :: String -> Maybe String
+capture "110" = Just "001"
+capture "011" = Just "100"
+capture s = Nothing
+
+
+
+captures :: String -> [String]
+captures (a:b:c:xs) = catMaybes (((++ xs) <$> capture [a,b,c]) : (captures (b:c:xs)))
+captures s = catMaybes [capture s]
+
+
 containsSinglePawn :: String -> Bool
 containsSinglePawn ['1'] = True
 containsSinglePawn ['0'] = False
