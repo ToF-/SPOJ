@@ -20,7 +20,7 @@ spec = do
             captures "011" `shouldBe` ["100"]
             captures "01"  `shouldBe` []
             captures "0110" `shouldBe` ["1000","0001"]
-            captures "01110" `shouldBe` ["10010"]
+            captures "01110" `shouldBe` ["10010","01001"]
 
     describe "Loner" $ do
         it "wins if the board has only one pawn" $ do

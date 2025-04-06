@@ -10,10 +10,12 @@ capture s = Nothing
 
 
 
-captures :: String -> [String]
-captures (a:b:c:xs) = catMaybes (((++ xs) <$> capture [a,b,c]) : (captures (b:c:xs)))
-captures s = catMaybes [capture s]
+captures' :: String -> [Maybe String]
+captures' (a:b:c:xs) = fmap (++ xs) (capture [a,b,c]) : fmap (fmap ( a:)) (captures' (b:c:xs))
+captures' _ = []
 
+captures :: String -> [String]
+captures = catMaybes . captures'
 
 containsSinglePawn :: String -> Bool
 containsSinglePawn ['1'] = True
