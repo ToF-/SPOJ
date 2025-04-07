@@ -22,6 +22,10 @@ spec = do
             captures "0110" `shouldBe` ["1000","0001"]
             captures "01110" `shouldBe` ["10010","01001"]
 
+    describe "moves" $ do
+        it "yields all possible captures that are not a fail" $ do
+            moves "0110" `shouldBe` ["1000","0001"]
+
     describe "Loner" $ do
         it "wins if the board has only one pawn" $ do
             loner "001" `shouldBe` True

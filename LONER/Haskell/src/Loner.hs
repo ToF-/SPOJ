@@ -14,6 +14,18 @@ captures' :: String -> [Maybe String]
 captures' (a:b:c:xs) = fmap (++ xs) (capture [a,b,c]) : fmap (fmap ( a:)) (captures' (b:c:xs))
 captures' _ = []
 
+viable :: Maybe String -> Bool
+viable Nothing = False
+viable (Just s) = null $ filter (> 2) $ zipWith (-) (tail ps) ps
+    where ps = map fst $ filter (\(_,x) -> x == '1') $ zip [0..] s
+
+moves' :: String -> [Maybe String]
+moves' (a:b:c:xs) = filter viable $ fmap (++ xs) (capture [a,b,c]) : fmap (fmap (a:)) (moves' (b:c:xs))
+moves' _ = []
+
+moves :: String -> [String]
+moves = catMaybes . moves'
+
 captures :: String -> [String]
 captures = catMaybes . captures'
 
