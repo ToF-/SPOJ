@@ -26,6 +26,11 @@ spec = do
         it "yields all possible captures that are not a fail" $ do
             moves "0110" `shouldBe` ["1000","0001"]
 
+    describe "evaluate" $ do
+        it "finds out if a board can be won" $ do
+            evaluate ["0110011"] `shouldBe` True
+            evaluate ["111001"] `shouldBe` False
+
     describe "Loner" $ do
         it "wins if the board has only one pawn" $ do
             loner "001" `shouldBe` True

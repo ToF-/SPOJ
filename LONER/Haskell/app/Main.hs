@@ -1,6 +1,5 @@
 module Main (main) where
 
-import Lib
+import Loner
 
-main :: IO ()
-main = someFunc
+main = process

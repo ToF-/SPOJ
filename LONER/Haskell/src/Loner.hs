@@ -1,5 +1,4 @@
-module Loner
-    where
+module Loner where
 
 import Data.Maybe
 
@@ -26,6 +25,12 @@ moves' _ = []
 moves :: String -> [String]
 moves = catMaybes . moves'
 
+evaluate :: [String] -> Bool
+evaluate [] = False
+evaluate bs | or $ map containsSinglePawn bs = True
+evaluate bs = if ms == bs then True else evaluate ms
+    where ms = bs >>= moves
+
 captures :: String -> [String]
 captures = catMaybes . captures'
 
@@ -45,4 +50,20 @@ transform ('1':xs) = '1':transform xs
 loner :: String -> Bool
 loner s | containsSinglePawn (transform s) = True
 loner s = False
+
+readInt :: IO Int
+readInt = readLn 
+
+processTestCase :: Int -> IO ()
+processTestCase 0 = return ()
+processTestCase n = do
+    l <- readInt
+    s <- getLine
+    putStrLn $ if evaluate [take l s] then "yes" else "no"
+    processTestCase (pred n)
+
+process :: IO ()
+process = do
+    t <- readInt
+    processTestCase t
 
