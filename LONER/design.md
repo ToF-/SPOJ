@@ -36,16 +36,28 @@ with pattern matching
 if 2 pawns are separated by 3 spaces or more, result is No.
 if there is only 1 pawn on the board, result is Yes.
 
-zeroes ∅    = false
+zeroes ∅    = true
 zeroes 0    = true
 zeroes 1xs  = false
 zeroes 0xs  = zeroes xs
 
-loner 1xs   = zeroes xs | start 10 xs
-loner 110xs = loner 1xs | empty xs
-loner 011xs = loner 100xs | loner 11xs
-loner 100xs = empty xs
+loner 0xs   = loner xs | (start 11 xs & zeroes (tail2 xs))
+loner 1xs   = zeroes xs | (start 10 xs & loner 1 (tail3 xs))
+loner 10xs  = zeroes xs | (start 11 xs & zeroes (tail3 xs))
+loner 11xs  = start 0 xs & loner 1xs
 loner 000xs = loner 0xs
-loner 00xs  = loner 0xs
-loner 01xs  = zeroes xs | take 2
+loner 001xs = zeroes xs | (start 1 xs & zeroes (tail1 xs)) | (start 10 xs & loner 1tail2xs)
+loner 010xs = zeroes xs | (start 11 xs & zeroes (tail2 xs))
+loner 011xs = zeroes xs | (start 0 xs & loner 1xs)
+loner 100xs = zeroes xs
+loner 101xs = start 1 xs & loner 1xs
+loner 110xs = loner 1xs
+loner 111xs = false
 
+   loner 0110011
+=  loner 110011 | (start 11 110011 & zeroes 0011)
+=  loner 110011
+=  zeroes 10011 | (start 10 10011 & loner 111)
+
+6
+111001
