@@ -41,23 +41,20 @@ zeroes 0    = true
 zeroes 1xs  = false
 zeroes 0xs  = zeroes xs
 
-loner 0xs   = loner xs | (start 11 xs & zeroes (tail2 xs))
-loner 1xs   = zeroes xs | (start 10 xs & loner 1 (tail3 xs))
-loner 10xs  = zeroes xs | (start 11 xs & zeroes (tail3 xs))
-loner 11xs  = start 0 xs & loner 1xs
-loner 000xs = loner 0xs
-loner 001xs = zeroes xs | (start 1 xs & zeroes (tail1 xs)) | (start 10 xs & loner 1tail2xs)
-loner 010xs = zeroes xs | (start 11 xs & zeroes (tail2 xs))
-loner 011xs = zeroes xs | (start 0 xs & loner 1xs)
-loner 100xs = zeroes xs
-loner 101xs = start 1 xs & loner 1xs
-loner 110xs = loner 1xs
-loner 111xs = false
+loner 0000xs = loner 0xs
+loner 0001xs = loner 01xs
+loner 0010xs = loner 010xs
+loner 0011xs = loner 011xs
+loner 0100xs = zeroes xs
+loner 0101xs = ?
+loner 0110xs = zeroes xs | loner 110xs
+loner 0111xs = loner 111xs
+loner 1000xs = zeroes xs
+loner 1001xs = false
+loner 1010xs = start 11 xs & zeroes tail2 xs
+loner 1011xs = zeroes xs
+loner 1100xs = loner 10xs
+loner 1101xs = loner 11xs
+loner 1110xs = false
+loner 1111xs = false
 
-   loner 0110011
-=  loner 110011 | (start 11 110011 & zeroes 0011)
-=  loner 110011
-=  zeroes 10011 | (start 10 10011 & loner 111)
-
-6
-111001
