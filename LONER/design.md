@@ -58,3 +58,28 @@ loner 1101xs = loner 11xs
 loner 1110xs = false
 loner 1111xs = false
 
+regular expressions :
+
+    0*p0*
+
+where p can be 
+    
+    1
+    110
+    11(01)*(11)*01    \ e.g. 1101010111111101
+    11(01)*OO(11)*(10)*11
+    11(01)*1101(11)*(10)*11
+
+
+loner 0xs = loner xs
+loner 1 = T
+loner 110 = T
+loner xs = loner' xs
+loner' 1101xs = loner' 11xs
+loner' 1111xs = loner' 11xs
+loner' 1100xs = loner'' xs
+loner'' 11xs = loner'' xs
+loner 1101xs = loner' 11xs
+loner 11
+
+
