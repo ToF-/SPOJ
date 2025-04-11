@@ -4,11 +4,25 @@ REQUIRE loner.fs
 
 ." TEST-LONER" CR
 T{ ." can parse a simple pattern" CR
-    S" 1" LONER-A ?TRUE S" " ?STR
-    S" 0" LONER-A ?FALSE S" 0" ?STR
-    S" 110" LONER-B ?TRUE S" " ?STR
-    S" 0000" ZEROES ?TRUE S" " ?STR
+    S" 1" LONER-A EXECUTE ?TRUE S" " ?STR
+    S" 0" LONER-A EXECUTE ?FALSE S" 0" ?STR
+    S" 110" LONER-B EXECUTE ?TRUE S" " ?STR
+    S" 111" LONER-B EXECUTE ?FALSE S" 111" ?STR
 }T 
+
+T{ ." can parse zeroes" CR
+    S" 000001" ZEROES EXECUTE ?TRUE S" 1" ?STR
+}T
+
+T{ ." can parse complex patterns" CR
+    S" 110101111101" LONER-C EXECUTE ?TRUE S" " ?STR
+    S" 11011101" LONER-C EXECUTE ?TRUE S" " ?STR
+    S" 1101011101" LONER-C EXECUTE ?TRUE S" " ?STR
+    S" 111101" LONER-C EXECUTE ?TRUE S" " ?STR
+    S" 1111111101" LONER-C EXECUTE ?TRUE S" " ?STR
+}T
+
+BYE
 
 T{ ." can parse the board" CR
     S" 000001000" LONER ?TRUE S" " ?STR

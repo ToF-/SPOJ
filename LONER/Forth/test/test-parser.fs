@@ -1,63 +1,41 @@
 REQUIRE ffl/tst.fs
 REQUIRE parser.fs
 
-." test-parser" CR
+." TEST-PARSER" CR
 
 T{ ." can parse a char" CR
-    S" *" CHAR * PARSE-CHAR ?TRUE S" " ?STR
-    S" *" CHAR + PARSE-CHAR ?FALSE S" *" ?STR
-    S" foo" CHAR f PARSE-CHAR ?TRUE S" oo" ?STR
-    S" bar" CHAR f PARSE-CHAR ?FALSE S" bar" ?STR
-    S" " CHAR * PARSE-CHAR ?FALSE S" " ?STR
+    CHAR * PC CONSTANT MY-STAR
+    S" *foo" MY-STAR EXECUTE ?TRUE S" foo" ?STR
+    S" #" MY-STAR EXECUTE ?FALSE S" #" ?STR
 }T
 
-T{ ." can create a parser" CR
-    CHAR * CHAR-PARSER STAR
-    CHAR + CHAR-PARSER PLUS
-    S" *foo" STAR ?TRUE S" foo" ?STR
-    S" +bar" PLUS ?TRUE S" bar" ?STR
+T{ ." can parse a repetition" CR
+    CHAR * PC P* CONSTANT MY-STARS
+    S" *****foo" MY-STARS EXECUTE ?TRUE S" foo" ?STR
+    S" #foo" MY-STARS EXECUTE ?TRUE S" #foo" ?STR
+    S" " MY-STARS EXECUTE ?TRUE 2DROP
 }T
 
-T{ ." can create an alternative " CR
-    ' STAR ' PLUS ALTERNATIVE STAR|PLUS
-    S" *foo" STAR|PLUS ?TRUE S" foo" ?STR
-    S" +foo" STAR|PLUS ?TRUE S" foo" ?STR
-    S" #foo" STAR|PLUS ?FALSE S" #foo" ?STR
+T{ ." can parse an alternative " CR
+    CHAR * PC CHAR + PC P| CONSTANT MY-ALT
+    S" *foo" MY-ALT EXECUTE ?TRUE S" foo" ?STR
+    S" +foo" MY-ALT EXECUTE ?TRUE S" foo" ?STR
+    S" #foo" MY-ALT EXECUTE ?FALSE S" #foo" ?STR
 }T
 
-T{ ." can create a sequence " CR
-    ' STAR ' PLUS SEQUENCE STAR&PLUS
-    S" *+foo" STAR&PLUS ?TRUE S" foo" ?STR
-    S" +*foo" STAR&PLUS ?FALSE S" +*foo" ?STR
-    S" *#foo" STAR&PLUS ?FALSE S" *#foo" ?STR
-}T
-
-T{ ." can chain parsers" CR
-    CHAR # CHAR-PARSER SHARP
-    ' STAR|PLUS ' SHARP ALTERNATIVE PREFIX
-    S" *foo" PREFIX ?TRUE S" foo" ?STR
-    S" +foo" PREFIX ?TRUE S" foo" ?STR
-    S" #foo" PREFIX ?TRUE S" foo" ?STR
-    S" @foo" PREFIX ?FALSE S" @foo" ?STR
-    ' SHARP ' STAR|PLUS SEQUENCE PREFIXES
-    S" #+foo" PREFIXES ?TRUE S" foo" ?STR
-    S" #*foo" PREFIXES ?TRUE S" foo" ?STR
-    S" +#foo" PREFIXES ?FALSE S" +#foo" ?STR
-}T
-
-T{  ." can repeat a parser" CR
-    ' STAR REPETITION STARS
-    S" *****foo" STARS ?TRUE S" foo" ?STR
-    S" " STARS ?TRUE S" " ?STR
-    S" **" STARS ?TRUE S" " ?STR
+T{ ." can parse a sequence " CR
+    CHAR * PC CHAR + PC P& CONSTANT MY-SEQ
+    S" *+foo" MY-SEQ EXECUTE ?TRUE S" foo" ?STR
+    S" +*foo" MY-SEQ EXECUTE ?FALSE S" +*foo" ?STR
+    S" *#foo" MY-SEQ EXECUTE ?FALSE S" *#foo" ?STR
 }T
 
 T{  ." can parse end of string" CR
-    S" " EOS ?TRUE S" " ?STR
-    ' STAR ' STAR SEQUENCE 2STARS
-    ' STAR ' EOS SEQUENCE FINAL-STAR
-    ' 2STARS ' FINAL-STAR SEQUENCE 3STARS
-    S" *****" 3STARS ?FALSE S" *****" ?STR
-    S" ***" 3STARS ?TRUE S" " ?STR
+    S" " P. EXECUTE ?TRUE S" " ?STR
+}T
 
+T{  ." can parse a sequence defined by a string" CR
+    S" foobar" P$ CONSTANT MY-STR
+    S" foobarqux" MY-STR EXECUTE ?TRUE S" qux" ?STR
+    S" fooquxbar" MY-STR EXECUTE ?FALSE S" fooquxbar" ?STR
 }T
