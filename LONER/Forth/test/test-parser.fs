@@ -31,3 +31,23 @@ T{ ." can create a sequence " CR
     S" +*foo" STAR&PLUS ?FALSE S" +*foo" ?STR
     S" *#foo" STAR&PLUS ?FALSE S" *#foo" ?STR
 }T
+
+T{ ." can chain parsers" CR
+    CHAR # CHAR-PARSER SHARP
+    ' STAR|PLUS ' SHARP ALTERNATIVE PREFIX
+    S" *foo" PREFIX ?TRUE S" foo" ?STR
+    S" +foo" PREFIX ?TRUE S" foo" ?STR
+    S" #foo" PREFIX ?TRUE S" foo" ?STR
+    S" @foo" PREFIX ?FALSE S" @foo" ?STR
+    ' SHARP ' STAR|PLUS SEQUENCE PREFIXES
+    S" #+foo" PREFIXES ?TRUE S" foo" ?STR
+    S" #*foo" PREFIXES ?TRUE S" foo" ?STR
+    S" +#foo" PREFIXES ?FALSE S" +#foo" ?STR
+}T
+
+T{  ." can repeat a parser" CR
+    ' STAR REPETITION STARS
+    S" *****foo" STARS ?TRUE S" foo" ?STR
+    S" " STARS ?TRUE S" " ?STR
+    S" **" STARS ?TRUE S" " ?STR
+}T

@@ -23,8 +23,7 @@
         ELSE
             R> EXECUTE
         THEN ;
-        
-        
+
 : SEQUENCE ( p-xt,q-xt <name> -- )
     CREATE SWAP 2,
     DOES>
@@ -39,3 +38,12 @@
             R> DROP 2R> 2DROP FALSE
         THEN ;
 
+: REPETITION ( p-xt <name> -- )
+    CREATE ,
+    DOES>
+        @ >R
+        BEGIN
+            DUP IF R@ EXECUTE ELSE FALSE THEN
+            WHILE
+        REPEAT
+        R> DROP TRUE ;
