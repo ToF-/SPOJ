@@ -17,6 +17,21 @@
     CREATE C,
     DOES> C@ PARSE-CHAR ;
 
+: C ( char -- xt )
+    NONAME
+    CREATE C, LATESTXT
+    DOES> C@ PARSE-CHAR ;
+
+: | ( p-xt,q-xt -- xt )
+    NONAME CREATE 2, LATESTXT
+    DOES>
+        2@ 2>R
+        R> EXECUTE IF
+            R> DROP TRUE
+        ELSE
+            R> EXECUTE
+        THEN ;
+
 : ALTERNATIVE ( p-xt,q-xt <name> -- )
     CREATE 2,
     DOES>
@@ -27,6 +42,7 @@
         ELSE
             R> EXECUTE
         THEN ;
+
 
 : SEQUENCE ( p-xt,q-xt <name> -- )
     CREATE SWAP 2,
