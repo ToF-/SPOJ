@@ -51,3 +51,13 @@ T{  ." can repeat a parser" CR
     S" " STARS ?TRUE S" " ?STR
     S" **" STARS ?TRUE S" " ?STR
 }T
+
+T{  ." can parse end of string" CR
+    S" " EOS ?TRUE S" " ?STR
+    ' STAR ' STAR SEQUENCE 2STARS
+    ' STAR ' EOS SEQUENCE FINAL-STAR
+    ' 2STARS ' FINAL-STAR SEQUENCE 3STARS
+    S" *****" 3STARS ?FALSE S" *****" ?STR
+    S" ***" 3STARS ?TRUE S" " ?STR
+
+}T

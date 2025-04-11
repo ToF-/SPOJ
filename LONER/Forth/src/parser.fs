@@ -1,3 +1,4 @@
+\ -------- parser.fs --------
 
 : (PARSE-CHAR) ( str,count,char -- str',count',flag )
     >R OVER C@ R> = IF
@@ -8,6 +9,9 @@
 
 : PARSE-CHAR ( str,count,char -- str',count',flag )
     OVER IF (PARSE-CHAR) ELSE DROP FALSE THEN ;
+
+: EOS ( str,count -- str',count',flag )
+    DUP 0= ;
 
 : CHAR-PARSER ( char <name> -- )
     CREATE C,
