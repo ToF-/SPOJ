@@ -9,11 +9,18 @@ T{ ." can parse a char" CR
     S" #" MY-STAR EXECUTE ?FALSE S" #" ?STR
 }T
 
-T{ ." can parse a repetition" CR
+T{ ." can parse an optional repetition" CR
     CHAR * PC P* CONSTANT MY-STARS
     S" *****foo" MY-STARS EXECUTE ?TRUE S" foo" ?STR
     S" #foo" MY-STARS EXECUTE ?TRUE S" #foo" ?STR
     S" " MY-STARS EXECUTE ?TRUE 2DROP
+}T
+
+T{ ." can parse a repetition" CR
+    CHAR * PC P+ CONSTANT MY-STARS+
+    S" *****foo" MY-STARS+ EXECUTE ?TRUE S" foo" ?STR
+    S" #foo" MY-STARS+ EXECUTE ?FALSE S" #foo" ?STR
+    S" " MY-STARS+ EXECUTE ?FALSE 2DROP
 }T
 
 T{ ." can parse an alternative " CR

@@ -11,10 +11,16 @@
 : PARSE-CHAR ( str,count,char -- str',count',flag )
     OVER IF (PARSE-CHAR) ELSE DROP FALSE THEN ;
 
-: PARSE-REPETITION ( str,count,xt -- str',count',flag )
+: PARSE-OPTION ( str,count,xt -- str',count',flag )
     >R BEGIN
         DUP IF R@ EXECUTE ELSE FALSE THEN WHILE
     REPEAT R> DROP TRUE ;
+
+: (PARSE-REPETITION) ( str,count,xt -- str',count',flag )
+    >R R@ EXECUTE IF R> PARSE-OPTION ELSE R> DROP FALSE THEN ;
+
+: PARSE-REPETITION ( str,count,xt -- str',count',flag )
+    OVER IF (PARSE-REPETITION) ELSE DROP FALSE THEN ;
 
 : PARSE-ALTERNATIVE ( str,count,p-xt,q-xt -- str',count',flag )
     2>R R> EXECUTE IF
@@ -46,6 +52,10 @@
     DOES> C@ PARSE-CHAR ;
 
 : P* ( xt -- xt' )
+    NONAME CREATE , LATESTXT
+    DOES> @ PARSE-OPTION ;
+
+: P+ ( xt -- xt' )
     NONAME CREATE , LATESTXT
     DOES> @ PARSE-REPETITION ;
 
