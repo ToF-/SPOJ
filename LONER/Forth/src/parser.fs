@@ -23,10 +23,15 @@
     OVER IF (PARSE-REPETITION) ELSE DROP FALSE THEN ;
 
 : PARSE-ALTERNATIVE ( str,count,p-xt,q-xt -- str',count',flag )
-    2>R R> EXECUTE IF
-        R> DROP TRUE
+    2OVER ROT EXECUTE IF
+        2>R EXECUTE IF
+            2R> DMIN
+        ELSE
+            2DROP 2R>
+        THEN
+        TRUE
     ELSE
-        R> EXECUTE
+        2DROP EXECUTE
     THEN ;
 
 : PARSE-SEQUENCE ( str,count,p-xt,q-xt -- str',count',flag )
