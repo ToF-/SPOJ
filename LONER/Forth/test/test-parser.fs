@@ -54,3 +54,8 @@ T{ ." can parse an alternative greedily" CR
     S" FOO"  MY-STARS EXECUTE ?TRUE S" FOO" ?STR
     S" *FOO" MY-STARS EXECUTE ?TRUE S" FOO" ?STR
 }T
+
+T{ ." can backtrack on a failing pattern" CR
+    CHAR * PC P* P" *+" P& CONSTANT MY-BACK
+    S" *****+" MY-BACK EXECUTE ?TRUE 2DROP
+}T
