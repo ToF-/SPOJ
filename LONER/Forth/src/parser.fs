@@ -83,3 +83,7 @@
         I C@ P, 
     LOOP ;
 
+: P" ( chars" -- xt )
+    34 PARSE P$ ;
+
+

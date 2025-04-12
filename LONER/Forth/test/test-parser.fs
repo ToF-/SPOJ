@@ -42,7 +42,7 @@ T{  ." can parse end of string" CR
 }T
 
 T{  ." can parse a sequence defined by a string" CR
-    S" foobar" P$ CONSTANT MY-STR
+    P" foobar" CONSTANT MY-STR
     S" foobarqux" MY-STR EXECUTE ?TRUE S" qux" ?STR
     S" fooquxbar" MY-STR EXECUTE ?FALSE S" fooquxbar" ?STR
 }T
