@@ -70,6 +70,11 @@ where p can be
     11(01)*OO(11)*(10)*11
     11(01)*1101(11)*(10)*11
 
+    11(01)*(11)*01 is ambiguous and can be decomposed in
+
+        11(01)+
+        11(01)*(11)+01
+
 
 loner 0xs = loner xs
 loner 1 = T
@@ -81,5 +86,29 @@ loner' 1100xs = loner'' xs
 loner'' 11xs = loner'' xs
 loner 1101xs = loner' 11xs
 loner 11
+
+backtracking problem over ambiguities :
+
+    0*p0*
+
+    1
+
+    110
+
+    11(01)*(11)*01
+
+        → 11(01)+
+        → (11)+01
+        → 11(01)+(11)+01
+
+    11(01)*OO(11)*(10)*11
+
+        → 11(01)*00(11)+
+        → 11(01)*00(11)*(10)+11
+
+    11(01)*1101(11)*(10)*11
+
+        → 11(01)*1101(11)+
+        → 11(01)*1101(11)*(10)+11
 
 

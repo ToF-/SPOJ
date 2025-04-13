@@ -3,6 +3,7 @@ REQUIRE parser.fs
 REQUIRE loner.fs
 REQUIRE parse.fs
 REQUIRE input.fs
+REQUIRE process.fs
 
 ." TEST-PROCESS " CR
 
