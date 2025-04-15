@@ -91,4 +91,13 @@
 : P" ( chars" -- xt )
     34 PARSE P$ ;
 
-
+: REVERSE ( str,count -- )
+    OVER + 1-
+    BEGIN
+        2DUP < WHILE
+        2DUP
+        C@ SWAP C@
+        2OVER ROT SWAP C! C!
+        1- SWAP 1+ SWAP
+    REPEAT
+    2DROP ;

@@ -91,7 +91,16 @@
 : P" ( chars" -- xt )
     34 PARSE P$ ;
 
-
+: REVERSE ( str,count -- )
+    OVER + 1-
+    BEGIN
+        2DUP < WHILE
+        2DUP
+        C@ SWAP C@
+        2OVER ROT SWAP C! C!
+        1- SWAP 1+ SWAP
+    REPEAT
+    2DROP ;
 \ --------- loner.fs --------
 
 \    0*p0*
@@ -150,7 +159,8 @@ CONSTANT LONER-ALL
 ZEROES LONER-ALL P& ZEROES P& P. P& CONSTANT LONER
 
 : LONER? ( str,count -- flag )
-    LONER EXECUTE -ROT 2DROP ;
+    2DUP LONER EXECUTE >R 2DROP
+    2DUP REVERSE LONER EXECUTE >R 2DROP 2R> OR ;
 
 \ -------- parse.fs ------------
 
