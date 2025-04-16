@@ -112,3 +112,11 @@ backtracking problem over ambiguities :
         → 11(01)*1101(11)*(10)+11
 
 
+how to generate test cases ?
+
+ - start with a one surrounded with a specific number of zeroes
+ - "untake" ones : 0001000 becomes 0110000 or becomes 0000110, then 0110000 becomes 0101100, which becomes 0101011
+or
+ - start with two ones separated with a specific number of zeroes
+ - "untake" ones : 0010000100 becomes 0001100011 etc.
+
