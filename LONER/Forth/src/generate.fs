@@ -4,6 +4,7 @@ REQUIRE parser.fs
 320 CONSTANT MAX-LINE
 CREATE LINE MAX-LINE 3 + ALLOT
 VARIABLE LINE-LENGTH
+VARIABLE FIRST-PAWN
 
 CHAR 1 CONSTANT PAWN
 CHAR 0 CONSTANT SQUARE
@@ -16,12 +17,56 @@ CHAR 0 CONSTANT SQUARE
 : RAND-FLAG ( -- F|T )
     2 RANDOM 1- ;
 
-: ADD-SQUARES ( addr,count -- addr,count' )
-    3 0 DO
-        2DUP + SQUARE SWAP C!  1+
+: INIT-LINE ( f -- )
+    MAX-LINE RANDOM LINE-LENGTH !
+    LINE LINE-LENGTH @ SQUARE FILL
+    LINE-LENGTH @ RANDOM
+    DUP FIRST-PAWN ! LINE +
+    PAWN SWAP C!
+    0= IF
+        LINE-LENGTH @ RANDOM
+        FIRST-PAWN @ OVER - ABS
+        3 >= IF
+            LINE + PAWN SWAP C!
+        ELSE
+            DROP
+        THEN
+    THEN ;
+
+: UN-TAKE
+    LINE-LENGTH @ 3 > IF
+        LINE-LENGTH @ 3 - 0 DO
+            LINE I + C@ PAWN =
+            LINE I + 1 + C@ SQUARE = AND
+            LINE I + 2 + C@ SQUARE = AND
+            RAND-FLAG AND IF
+                SQUARE LINE I + C!
+                PAWN LINE I + 1 + C!
+                PAWN LINE I + 2 + C!
+            THEN 
+        LOOP
+    THEN ;
+
+: UN-TAKES
+    40 0 DO
+        RAND-FLAG IF LINE LINE-LENGTH @ REVERSE THEN
+        UN-TAKE
     LOOP ;
 
-: ADD-PAWN ( addr,count -- addr,count' )
-    2DUP + PAWN SWAP C!  1+ 1+ ;
+: GENERATE
+    RAND-FLAG DUP INIT-LINE UN-TAKES
+    [CHAR] S EMIT [CHAR] " EMIT SPACE
+    LINE LINE-LENGTH @ TYPE [CHAR] " EMIT SPACE
+    ." LONER? " IF ." ?TRUE" ELSE ." ?FALSE" THEN CR ;
 
+: GENERATE-TESTS
+    100 0 DO GENERATE LOOP ;
 
+UTIME DROP SEED !
+
+." FPATH PATH+ src" CR
+." REQUIRE ffl/tst.fs" CR
+." REQUIRE parser.fs" CR
+." REQUIRE loner.fs" CR
+
+GENERATE-TESTS BYE
