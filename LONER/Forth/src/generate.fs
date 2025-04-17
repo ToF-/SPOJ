@@ -5,6 +5,7 @@ REQUIRE parser.fs
 CREATE LINE MAX-LINE 3 + ALLOT
 VARIABLE LINE-LENGTH
 VARIABLE FIRST-PAWN
+VARIABLE SECOND-PAWN
 
 CHAR 1 CONSTANT PAWN
 CHAR 0 CONSTANT SQUARE
@@ -27,11 +28,17 @@ CHAR 0 CONSTANT SQUARE
         LINE-LENGTH @ RANDOM
         FIRST-PAWN @ OVER - ABS
         3 >= IF
+            DUP SECOND-PAWN !
             LINE + PAWN SWAP C!
         ELSE
             DROP
         THEN
-    THEN ;
+    THEN 
+    FIRST-PAWN @
+    SECOND-PAWN @
+    2DUP > IF SWAP THEN
+    SECOND-PAWN !
+    FIRST-PAWN ! ;
 
 : UN-TAKE
     LINE-LENGTH @ 3 > IF
@@ -39,6 +46,8 @@ CHAR 0 CONSTANT SQUARE
             LINE I + C@ PAWN =
             LINE I + 1 + C@ SQUARE = AND
             LINE I + 2 + C@ SQUARE = AND
+            LINE I + 1 + FIRST-PAWN @ SECOND-PAWN @ WITHIN 0= AND
+            LINE I + 2 + FIRST-PAWN @ SECOND-PAWN @ WITHIN 0= AND
             RAND-FLAG AND IF
                 SQUARE LINE I + C!
                 PAWN LINE I + 1 + C!
