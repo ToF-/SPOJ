@@ -1,4 +1,5 @@
 REQUIRE random.fs
+REQUIRE parser.fs
 
 320 CONSTANT MAX-LINE
 CREATE LINE MAX-LINE 3 + ALLOT
@@ -7,74 +8,20 @@ VARIABLE LINE-LENGTH
 CHAR 1 CONSTANT PAWN
 CHAR 0 CONSTANT SQUARE
 
-: UNTAKE ( i,dir -- )
-    LINE >R 2DUP + DUP ROT +
-    R@ + PAWN SWAP C!
-    R@ + PAWN SWAP C!
-    R> + SQUARE SWAP C! ;
+\ 000000100 → 000011000
+\ 000000100 → 000000011
+\ 000011000 → 001100110
+\ 001100110 → 110011110
 
-: FIT? ( i,dir -- f )
-    LINE >R 2DUP + DUP ROT +
-    R@ + C@ SQUARE =
-    SWAP R@ + C@ SQUARE = AND
-    SWAP R> + C@ PAWN = AND ;
+: RAND-FLAG ( -- F|T )
+    2 RANDOM 1- ;
 
-: RANDOM-DIR ( -- 1|-1 )
-    2 RANDOM IF -1 ELSE 1 THEN ;
+: ADD-SQUARES ( addr,count -- addr,count' )
+    3 0 DO
+        2DUP + SQUARE SWAP C!  1+
+    LOOP ;
 
-: UNTAKE-MAYBE ( i -- )
-    RANDOM-DIR 2DUP FIT? IF UNTAKE THEN ;
+: ADD-PAWN ( addr,count -- addr,count' )
+    2DUP + PAWN SWAP C!  1+ 1+ ;
 
-: RANDOM-PAWNS ( -- p1,p2,n )
-    LINE-LENGTH @ RANDOM
-    RANDOM 2 IF LINE-LENGTH @ RANDOM ELSE DUP THEN
-    2DUP - ABS 3 < IF DROP 1 ELSE 2 THEN ;
-
-: GENERATE-INITIAL 
-    MAX-LINE 3 - RANDOM 3 + LINE-LENGTH !
-    LINE LINE-LENGTH @ SQUARE FILL
-    RANDOM-PAWNS DUP >R 0 DO
-        LINE + PAWN SWAP C!
-    LOOP R> ;
-
-: GENERATE-UNTAKE ( -- f )
-    FALSE
-    LINE-LENGTH @ 2 - 2 2DUP > IF
-        DO
-            I RANDOM-DIR
-            2DUP FIT? IF
-                UNTAKE DROP TRUE
-            ELSE
-                2DROP
-            THEN
-        LOOP
-    ELSE
-        2DROP
-    THEN ;
-
-: GENERATE-UNTAKES
-    TRUE
-    BEGIN
-        WHILE
-        GENERATE-UNTAKE
-    REPEAT ;
-
-: GENERATE-LINE
-    GENERATE-INITIAL
-    GENERATE-UNTAKES
-    [CHAR] S EMIT [CHAR] " EMIT SPACE 
-    LINE LINE-LENGTH @ TYPE [CHAR] " EMIT SPACE
-    ." LONER? " 2 = IF ." ?FALSE" ELSE ." ?TRUE" THEN CR ;
-
-: GENERATE-TESTS
-    ." FPATH PATH+ src" CR
-    ." FPATH PATH+ test" CR
-    ." REQUIRE ffl/tst.fs" CR
-    ." REQUIRE parser.fs" CR
-    ." REQUIRE loner.fs" CR
-    CR
-    UTIME DROP SEED !
-    100 0 DO GENERATE-LINE LOOP ;
-
-GENERATE-TESTS BYE
 
