@@ -1,0 +1,59 @@
+REQUIRE random.fs
+
+32 CONSTANT MAX-LINE
+CREATE LINE MAX-LINE ALLOT
+VARIABLE LINE-LENGTH
+
+CHAR 1 CONSTANT PAWN
+CHAR 0 CONSTANT SQUARE
+
+: UNTAKE ( i,dir -- )
+    LINE >R 2DUP + DUP ROT +
+    R@ + PAWN SWAP C!
+    R@ + PAWN SWAP C!
+    R> + SQUARE SWAP C! ;
+
+: FIT? ( i,dir -- f )
+    LINE >R 2DUP + DUP ROT +
+    R@ + C@ SQUARE =
+    SWAP R@ + C@ SQUARE = AND
+    SWAP R> + C@ PAWN = AND ;
+
+: RANDOM-DIR ( -- 1|-1 )
+    2 RANDOM IF -1 ELSE 1 THEN ;
+
+: UNTAKE-MAYBE ( i -- )
+    RANDOM-DIR 2DUP FIT? IF UNTAKE THEN ;
+
+: GENERATE-INITIAL 
+    MAX-LINE 3 - RANDOM 3 + LINE-LENGTH !
+    LINE LINE-LENGTH @ SQUARE FILL
+    2 RANDOM 1+ 0 DO
+        LINE-LENGTH @ RANDOM 2 + LINE-LENGTH @ 2 - MIN
+        LINE + PAWN SWAP C!
+    LOOP ;
+
+: GENERATE-UNTAKE ( -- f )
+    FALSE
+    LINE-LENGTH @ 2 - 2 2DUP > IF
+        DO
+            I RANDOM-DIR
+            2DUP FIT? IF
+                UNTAKE
+                DROP TRUE
+            THEN
+        LOOP
+    ELSE
+        2DROP
+    THEN ;
+
+: GENERATE-UNTAKES
+    TRUE
+    BEGIN
+        WHILE
+        GENERATE-UNTAKE
+        LINE LINE-LENGTH @ TYPE CR .S CR
+    REPEAT ;
+
+
+

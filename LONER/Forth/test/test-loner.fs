@@ -32,6 +32,7 @@ T{ ." can parse a big complex pattern" CR
 }T
 T{  ." can solve the problem" CR
     S" 0" LONER? ?FALSE
+    S" 00000000000000" LONER? ?FALSE
     S" 1" LONER? ?TRUE
     S" 10" LONER? ?TRUE
     S" 01" LONER? ?TRUE
