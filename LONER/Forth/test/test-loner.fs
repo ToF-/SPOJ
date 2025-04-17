@@ -31,6 +31,7 @@ T{ ." can parse a big complex pattern" CR
     S" 110101" LONER-ALL EXECUTE ?TRUE 2DROP
 }T
 T{  ." can solve the problem" CR
+    S" 00000001101" LONER? ?TRUE
     S" 0" LONER? ?FALSE
     S" 00000000000000" LONER? ?FALSE
     S" 1" LONER? ?TRUE
