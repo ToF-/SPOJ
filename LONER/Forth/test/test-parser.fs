@@ -3,6 +3,31 @@ REQUIRE parser.fs
 
 ." TEST-PARSER" CR
 
+T{ ." executing a parser " CR
+
+: F-PARSER ( str,count -- str',count',F )
+    FALSE ;
+    S" foo"
+' F-PARSER EXEC-P ?FALSE S" foo" ?STR
+
+: ANY-CHAR-PARSER ( str,count -- str',count',T )
+    1- SWAP 1+ SWAP TRUE ;
+
+    S" foo"
+' ANY-CHAR-PARSER EXEC-P ?TRUE S" oo" ?STR
+}T 
+T{  ." parsing a given char " CR
+    CHAR f C-PARSER
+    S" foo" ROT EXEC-P ?TRUE S" oo" ?STR
+    CHAR g C-PARSER
+    S" foo" ROT EXEC-P ?FALSE S" foo" ?STR
+}T
+T{
+    ." parsing a sequence" CR
+    CHAR f C-PARSER CHAR o C-PARSER SEQ
+    S" foo" ROT EXEC-P ?TRUE S" o" ?STR
+}T
+BYE
 T{ ." can parse a char" CR
     CHAR * PC CONSTANT MY-STAR
     S" *foo" MY-STAR EXECUTE ?TRUE S" foo" ?STR
