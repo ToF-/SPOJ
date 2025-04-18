@@ -23,4 +23,12 @@ T{ ." compiling a sequence parser" CR
     S" foobarqux" MY-SEQ EXEC-P ?TRUE S" qux" ?STR
     S" oofbarqux" MY-SEQ EXEC-P ?FALSE S" oofbarqux" ?STR
     S" foobalqux" MY-SEQ EXEC-P ?FALSE S" foobalqux" ?STR
+}T
+
+T{ ." compiling an alternative parser" CR
+    ' FOO ' BAR ALT-P CONSTANT MY-ALT
+    S" foo" MY-ALT EXEC-P ?TRUE S" " ?STR
+    S" bar" MY-ALT EXEC-P ?TRUE S" " ?STR
+    S" qux" MY-ALT EXEC-P ?FALSE S" qux" ?STR
+}T
 BYE

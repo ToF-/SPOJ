@@ -4,7 +4,6 @@
     EXECUTE ;
 
 : STR-PARSE ( str,sc,pat,pc -- str',sc',f )
-    ." parse: " 2DUP TYPE CR
     2OVER ROT 2DUP                       \ str,sc,pat,str,sc,pc,sc,pc
     >= IF
         -ROT DROP OVER                   \ str,sc,pat,pc,str,pc
@@ -36,7 +35,17 @@
         R> DROP 2DROP FALSE
     THEN ;
 
+: ALT-PARSE ( src,sc,xt1,xt2 -- src',sc',f )
+    >R EXECUTE IF
+        R> DROP TRUE
+    ELSE
+        R> EXECUTE
+    THEN ;
+
 : SEQ-P ( xt1,xt2 -- xt )
     NONAME CREATE 2, LATESTXT
     DOES> 2@ SEQ-PARSE ;
 
+: ALT-P ( xt1,xt2 -- xt )
+    NONAME CREATE 2, LATESTXT
+    DOES> 2@ ALT-PARSE ;
