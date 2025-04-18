@@ -1,60 +1,21 @@
 \ --------- loner.fs --------
 
-\    0*p0*
-\
-\ a   1
-\
-\ b   110
-\
-\    11(01)*(11)*01
-\
-\ c      → 11(01)+
-\ d      → (11)+01
-\ e      → 11(01)+(11)+01
-\
-\    11(01)*OO(11)*(10)*11
-\
-\ f      → 11(01)*00(11)+
-\ g      → 11(01)*00(11)*(10)+11
-\
-\    11(01)*1101(11)*(10)*11
-\
-\ h      → 11(01)*1101(11)+
-\ i      → 11(01)*1101(11)*(10)+11
+S" 0" STR-P OPT-P CONSTANT 0*
+S" 1" STR-P CONSTANT _1
+S" 110" STR-P CONSTANT _110
 
-CHAR 1 PC CONSTANT LONER-A
+: <&> SEQ-P ;
 
-CHAR 0 PC P* CONSTANT ZEROES
+: <|> ALT-P ;
 
-P" 110" CONSTANT LONER-B
+: :. EOS-P <&> ;
 
-P" 11" P" 01" P+ P& CONSTANT LONER-C
+0* _1    <&> 0* <&> :. CONSTANT LONER-A
+0* _110  <&> 0* <&> :. CONSTANT LONER-B
 
-P" 11" P+ P" 01" P& CONSTANT LONER-D
+LONER-A LONER-B <|> CONSTANT LONER
 
-P" 11" P" 01" P+ P& P" 11" P+ P& P" 01" P& CONSTANT LONER-E
 
-P" 11" P" 01" P* P& P" 00" P& P" 11" P+ P& CONSTANT LONER-F
-
-P" 11" P" 01" P* P& P" 00" P& P" 11" P* P& P" 10" P+ P& P" 11" P& CONSTANT LONER-G
-
-P" 11" P" 01" P* P& P" 1101" P& P" 11" P+ P& CONSTANT LONER-H
-
-P" 11" P" 01" P* P& P" 1101" P& P" 11" P* P& P" 10" P+ P& P" 11" P& CONSTANT LONER-I
-
-LONER-A
-LONER-B P|
-LONER-C P|
-LONER-D P|
-LONER-E P|
-LONER-F P|
-LONER-G P|
-LONER-H P|
-LONER-I P|
-CONSTANT LONER-ALL
-
-ZEROES LONER-ALL P& ZEROES P& P. P& CONSTANT LONER
-
-: LONER? ( str,count -- flag )
-    2DUP LONER EXECUTE >R 2DROP
-    2DUP REVERSE LONER EXECUTE >R 2DROP 2R> OR ;
+: LONER? ( str,sc -- f )
+    LONER EXECUTE -ROT 2DROP ;
+    

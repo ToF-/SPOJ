@@ -4,11 +4,20 @@ REQUIRE loner.fs
 
 ." TEST-LONER" CR
 T{ ." can parse a simple pattern" CR
-    S" 1" LONER-A EXECUTE ?TRUE S" " ?STR
-    S" 0" LONER-A EXECUTE ?FALSE S" 0" ?STR
-    S" 110" LONER-B EXECUTE ?TRUE S" " ?STR
-    S" 111" LONER-B EXECUTE ?FALSE S" 111" ?STR
+    S" 1" LONER? ?TRUE
+    S" " LONER? ?FALSE
 }T 
+
+T{ ." can parse a simple pattern surrounded with zeroes" CR
+    S" 000010000" LONER? ?TRUE
+    S" 000000000" LONER? ?FALSE
+    S" 00010000100" LONER? ?FALSE
+}T
+
+T{ ." can parse several simple patterns" CR
+    S" 110" LONER? ?TRUE
+}T
+BYE
 
 T{ ." can parse zeroes" CR
     S" 000001" ZEROES EXECUTE ?TRUE S" 1" ?STR

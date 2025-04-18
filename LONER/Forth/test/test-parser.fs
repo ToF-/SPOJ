@@ -8,6 +8,7 @@ T{ ." parsing a string " CR
     S" foo" S" foobar" STR-PARSE ?FALSE S" foo" ?STR
     S" foo" S" bar" STR-PARSE ?FALSE S" foo" ?STR
     S" foo" S" foo" STR-PARSE ?TRUE S" " ?STR
+    S" " S" foo" STR-PARSE ?FALSE S" " ?STR
 }T
 
 T{ ." compiling a string parser" CR
@@ -40,4 +41,15 @@ T{ ." compiling a repetition parser" CR
     s" foofoofo" MY-REP EXEC-P ?TRUE S" fo" ?STR
     s" barfoofoofo" MY-REP EXEC-P ?FALSE S" barfoofoofo" ?STR
 }T
-BYE
+
+T{ ." compiling an option parser" CR
+    FOO OPT-P CONSTANT MY-OPT
+    s" foofoobar" MY-OPT EXEC-P ?TRUE S" bar" ?STR
+    s" barqux" MY-OPT EXEC-P ?TRUE S" barqux" ?STR
+}T
+
+T{ ." compiling an end of string parser" CR
+    FOO EOS-P SEQ-P CONSTANT MY-EOS
+    s" foofoo" MY-EOS EXEC-P ?FALSE s" foofoo" ?STR
+    s" foo" MY-EOS EXEC-P ?TRUE s" " ?STR
+}T
