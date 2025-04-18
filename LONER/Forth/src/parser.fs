@@ -24,6 +24,13 @@
     DOES> ( str,sc,addr -- str',sc',f )
         @ COUNT STR-PARSE ;
 
+: STR-P ( str,sc -- xt )
+    HERE -ROT
+    DUP C, HERE OVER ALLOT SWAP CMOVE
+    NONAME CREATE , LATESTXT
+    DOES> ( str,sc,addr -- str',sc',f )
+        @ COUNT STR-PARSE ;
+    
 : SEQ-PARSE ( src,sc,xt1,xt2 -- src',sc',f )
     >R >R 2DUP R> EXECUTE IF
         R> EXECUTE IF
@@ -42,6 +49,13 @@
         R> EXECUTE
     THEN ;
 
+: REP-PARSE ( src,sc,xt -- src',sc',f )
+    -ROT 2DUP 2>R ROT >R
+    BEGIN
+        R@ EXECUTE WHILE
+    REPEAT R> DROP
+    2DUP 2R> D= 0= ;
+
 : SEQ-P ( xt1,xt2 -- xt )
     NONAME CREATE 2, LATESTXT
     DOES> 2@ SEQ-PARSE ;
@@ -49,3 +63,8 @@
 : ALT-P ( xt1,xt2 -- xt )
     NONAME CREATE 2, LATESTXT
     DOES> 2@ ALT-PARSE ;
+
+: REP-P ( xt -- xt )
+    NONAME CREATE , LATESTXT
+    DOES> ( str,sc,addr -- src',sc',f )
+        @ REP-PARSE ;
