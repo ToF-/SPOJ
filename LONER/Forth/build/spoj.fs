@@ -1,166 +1,145 @@
 \ -------- parser.fs --------
 
+: EXEC-P ( str,sc,xt -- str',sc',f )
+    EXECUTE ;
 
-: (PARSE-CHAR) ( str,count,char -- str',count',flag )
-    >R OVER C@ R> = IF
-        1- SWAP 1+ SWAP TRUE
+: STR-PARSE ( str,sc,pat,pc -- str',sc',f )
+    2OVER ROT 2DUP                       \ str,sc,pat,str,sc,pc,sc,pc
+    >= IF
+        -ROT DROP OVER                   \ str,sc,pat,pc,str,pc
+        DUP >R
+        COMPARE 0= IF
+            R@ - SWAP R> + SWAP TRUE
+        ELSE
+            R> DROP FALSE
+        THEN
     ELSE
-        FALSE
+        2DROP 2DROP FALSE
     THEN ;
 
-: PARSE-CHAR ( str,count,char -- str',count',flag )
-    OVER IF (PARSE-CHAR) ELSE DROP FALSE THEN ;
+: STR-P ( str,sc -- xt )
+    HERE -ROT
+    DUP C, HERE OVER ALLOT SWAP CMOVE
+    NONAME CREATE , LATESTXT
+    DOES> ( str,sc,addr -- str',sc',f )
+        @ COUNT STR-PARSE ;
 
-: PARSE-OPTION ( str,count,xt -- str',count',flag )
-    >R BEGIN
-        DUP IF R@ EXECUTE ELSE FALSE THEN WHILE
+: SEQ-PARSE ( src,sc,xt1,xt2 -- src',sc',f )
+    >R >R 2DUP R> EXECUTE IF
+        R> EXECUTE IF
+            2SWAP 2DROP TRUE
+        ELSE
+            2DROP FALSE
+        THEN
+    ELSE
+        R> DROP 2DROP FALSE
+    THEN ;
+
+: ALT-PARSE ( src,sc,xt1,xt2 -- src',sc',f )
+    >R EXECUTE IF
+        R> DROP TRUE
+    ELSE
+        R> EXECUTE
+    THEN ;
+
+: REP-PARSE ( src,sc,xt -- src',sc',f )
+    -ROT 2DUP 2>R ROT >R
+    BEGIN
+        R@ EXECUTE WHILE
+    REPEAT R> DROP
+    2DUP 2R> D= 0= ;
+
+: OPT-PARSE ( src,sc,xt -- src',sc',f )
+    -ROT ROT >R
+    BEGIN
+        R@ EXECUTE WHILE
     REPEAT R> DROP TRUE ;
 
-: (PARSE-REPETITION) ( str,count,xt -- str',count',flag )
-    >R R@ EXECUTE IF R> PARSE-OPTION ELSE R> DROP FALSE THEN ;
-
-: PARSE-REPETITION ( str,count,xt -- str',count',flag )
-    OVER IF (PARSE-REPETITION) ELSE DROP FALSE THEN ;
-
-: PARSE-ALTERNATIVE ( str,count,p-xt,q-xt -- str',count',flag )
-    2OVER ROT EXECUTE IF
-        2>R EXECUTE IF
-            2R> DMIN
-        ELSE
-            2DROP 2R>
-        THEN
-        TRUE
-    ELSE
-        2DROP EXECUTE
-    THEN ;
-
-: PARSE-SEQUENCE ( str,count,p-xt,q-xt -- str',count',flag )
-    2OVER 2>R 2>R
-    R> EXECUTE IF
-        R> EXECUTE IF
-            2R> 2DROP TRUE
-        ELSE
-            2DROP 2R> FALSE
-        THEN
-    ELSE
-        R> DROP 2R> 2DROP FALSE
-    THEN ;
-
-: PARSE-END-OF-STRING ( str,count -- str',count',flag )
+: EOS-PARSE ( src,sc -- src',sc',t )
     DUP 0= ;
 
-: PARSE-TRUE ( str,count -- str,count,flag )
-    TRUE ;
-
-: PC ( char -- xt )
-    NONAME CREATE C, LATESTXT
-    DOES> C@ PARSE-CHAR ;
-
-: P* ( xt -- xt' )
-    NONAME CREATE , LATESTXT
-    DOES> @ PARSE-OPTION ;
-
-: P+ ( xt -- xt' )
-    NONAME CREATE , LATESTXT
-    DOES> @ PARSE-REPETITION ;
-
-: P| ( p-xt,q-xt -- xt' )
+: SEQ-P ( xt1,xt2 -- xt )
     NONAME CREATE 2, LATESTXT
-    DOES> 2@ PARSE-ALTERNATIVE ;
+    DOES> 2@ SEQ-PARSE ;
 
-: P& ( p-xt,q-xt -- xt' )
-    NONAME CREATE SWAP 2, LATESTXT
-    DOES> 2@ PARSE-SEQUENCE ;
+: ALT-P ( xt1,xt2 -- xt )
+    NONAME CREATE 2, LATESTXT
+    DOES> 2@ ALT-PARSE ;
 
-: P. ( -- xt )
-    NONAME CREATE LATESTXT
-    DOES> DROP PARSE-END-OF-STRING ;
+: REP-P ( xt -- xt )
+    NONAME CREATE , LATESTXT
+    DOES> ( str,sc,addr -- src',sc',f )
+        @ REP-PARSE ;
 
-: P@ ( -- xt )
-    NONAME CREATE LATESTXT
-    DOES> DROP PARSE-TRUE ;
+: OPT-P ( xt -- xt )
+    NONAME CREATE , LATESTXT
+    DOES> ( str,sc,addr -- src',sc',f )
+        @ OPT-PARSE ;
 
-: P, ( xt,char -- xt' )
-    PC P& ;
+' EOS-PARSE CONSTANT EOS-P
 
-: P$ ( str,count -- xt )
-    OVER + SWAP P@ -ROT DO
-        I C@ P, 
-    LOOP ;
+\ --------- loner.fs --------
 
-: P" ( chars" -- xt )
-    34 PARSE P$ ;
+S" 0" STR-P OPT-P CONSTANT 0*
+S" 0" STR-P OPT-P EOS-P SEQ-P CONSTANT 0*.
+S" 1" STR-P CONSTANT _1
+S" 110" STR-P CONSTANT _110
+S" 00" STR-P CONSTANT _00
+S" 01" STR-P CONSTANT _01
+S" 11" STR-P CONSTANT _11
+S" 01" STR-P REP-P CONSTANT _01+
+S" 10" STR-P REP-P CONSTANT _10+
+S" 11" STR-P REP-P CONSTANT _11+
 
-: REVERSE ( str,count -- )
+: & SEQ-P ;
+
+: | ALT-P ;
+
+0* _1   & 0*.  &                    CONSTANT LONER-A
+0* _110 & 0*.  &                    CONSTANT LONER-B
+0* _11+ & _01  & 0*.  &             CONSTANT LONER-C1
+0* _11  & _01+ & 0*.  &             CONSTANT LONER-C2
+0* _11  & _01+ & _11+ & _01 & 0*. & CONSTANT LONER-C3
+0* _11  & _00  & _10+ & _11 & 0*. & CONSTANT LONER-D1
+0* _11  & _00  & _11+ & 0*.       & CONSTANT LONER-D2
+0* _11  & _00  & _11+ & _10+ & _11 & 0*. & CONSTANT LONER-D3
+0* _11  & _01+ & _00  & _11  & 0*. & CONSTANT LONER-D4
+0* _11  & _01+ & _00  & _10+ & _11 & 0*. & CONSTANT LONER-D5
+0* _11  & _01+ & _00  & _11+ & 0*. & CONSTANT LONER-D6
+0* _11  & _01+ & _00  & _11+ & _10+ & _11 & 0*. & CONSTANT LONER-D7
+0* _11  & _11  & _01  & _10+ & _11  & 0*. & CONSTANT LONER-E1
+0* _11  & _11  & _01  & _11+ & 0*.  & CONSTANT LONER-E2
+0* _11  & _11  & _01  & _11+ & _10+ & _11 & 0*. & CONSTANT LONER-E3
+0* _11  & _01+ & _11  & _01  & _11 & 0*. & CONSTANT LONER-E4
+0* _11  & _01+ & _11  & _01  & _10+ & _11 & 0*. & CONSTANT LONER-E5
+0* _11  & _01+ & _11  & _01  & _11+ & 0*.       & CONSTANT LONER-E6
+0* _11  & _01+ & _11  & _01  & _11+ & _10+ & _11 & 0*. & CONSTANT LONER-E7
+
+LONER-A
+LONER-B  |
+LONER-C1 | LONER-C2 | LONER-C3 |
+LONER-D1 | LONER-D2 | LONER-D3 | LONER-D4 | LONER-D5 | LONER-D6 | LONER-D7 |
+LONER-E1 | LONER-E2 | LONER-E3 | LONER-E4 | LONER-E5 | LONER-E6 | LONER-E7 |
+CONSTANT LONER
+
+
+: REVERSE ( str,sc -- )
     OVER + 1-
     BEGIN
         2DUP < WHILE
-        2DUP
-        C@ SWAP C@
-        2OVER ROT SWAP C! C!
+        2DUP C@ SWAP C@
+        2>R 2DUP
+        R> SWAP C!
+        R> SWAP C!
         1- SWAP 1+ SWAP
-    REPEAT
-    2DROP ;
-\ --------- loner.fs --------
+    REPEAT 2DROP ;
 
-\    0*p0*
-\
-\ a   1
-\
-\ b   110
-\
-\    11(01)*(11)*01
-\
-\ c      → 11(01)+
-\ d      → (11)+01
-\ e      → 11(01)+(11)+01
-\
-\    11(01)*OO(11)*(10)*11
-\
-\ f      → 11(01)*00(11)+
-\ g      → 11(01)*00(11)*(10)+11
-\
-\    11(01)*1101(11)*(10)*11
-\
-\ h      → 11(01)*1101(11)+
-\ i      → 11(01)*1101(11)*(10)+11
-
-CHAR 1 PC CONSTANT LONER-A
-
-CHAR 0 PC P* CONSTANT ZEROES
-
-P" 110" CONSTANT LONER-B
-
-P" 11" P" 01" P+ P& CONSTANT LONER-C
-
-P" 11" P+ P" 01" P& CONSTANT LONER-D
-
-P" 11" P" 01" P+ P& P" 11" P+ P& P" 01" P& CONSTANT LONER-E
-
-P" 11" P" 01" P* P& P" 00" P& P" 11" P+ P& CONSTANT LONER-F
-
-P" 11" P" 01" P* P& P" 00" P& P" 11" P* P& P" 10" P+ P& P" 11" P& CONSTANT LONER-G
-
-P" 11" P" 01" P* P& P" 1101" P& P" 11" P+ P& CONSTANT LONER-H
-
-P" 11" P" 01" P* P& P" 1101" P& P" 11" P* P& P" 10" P+ P& P" 11" P& CONSTANT LONER-I
-
-LONER-A
-LONER-B P|
-LONER-C P|
-LONER-D P|
-LONER-E P|
-LONER-F P|
-LONER-G P|
-LONER-H P|
-LONER-I P|
-CONSTANT LONER-ALL
-
-ZEROES LONER-ALL P& ZEROES P& P. P& CONSTANT LONER
-
-: LONER? ( str,count -- flag )
-    2DUP LONER EXECUTE >R 2DROP
-    2DUP REVERSE LONER EXECUTE >R 2DROP 2R> OR ;
+: LONER? ( str,sc -- f )
+    2DUP
+    LONER EXECUTE >R 2DROP
+    2DUP REVERSE
+    LONER EXECUTE >R 2DROP
+    2R> OR ;
 
 \ -------- parse.fs ------------
 

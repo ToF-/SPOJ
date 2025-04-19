@@ -10,7 +10,8 @@ spoj:
 	cat src/process.fs >>build/spoj.fs
 	cat src/main.fs   >>build/spoj.fs
 
-spike:
-
+test: spoj
+	gforth build/spoj.fs <../test/sample.txt
+	
 clean:
 	rm build/*
