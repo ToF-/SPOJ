@@ -1,7 +1,6 @@
 
 FPATH PATH+ src
 FPATH PATH+ test
-REQUIRE test-parser.fs
-REQUIRE test-loner.fs
-REQUIRE test-process.fs
+REQUIRE parser-test.fs
+REQUIRE loner-test.fs
 BYE
