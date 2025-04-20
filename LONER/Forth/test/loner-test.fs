@@ -37,10 +37,10 @@ T{ ." can parse several simple patterns" CR
 }T
 T{ ." can reverse a string" CR
     S" xuqraboof" 2DUP REVERSE S" foobarqux" ?STR
+    S" barc" 2DUP REVERSE S" crab" ?STR
 }T
 
 T{ ." can parse the reverse of the source string" CR
     S" 011" LONER? ?TRUE
     S" 1011" LONER? ?TRUE
 }T
-BYE
