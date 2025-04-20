@@ -44,3 +44,4 @@ T{ ." can parse the reverse of the source string" CR
     S" 011" LONER? ?TRUE
     S" 1011" LONER? ?TRUE
 }T
+
