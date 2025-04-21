@@ -24,11 +24,11 @@ VARIABLE INPUT-FILE
     STR>NUMBER >R
     READ-INPUT-LINE ASSERT( )
     DUP R> ASSERT( = )
-    LONER EXECUTE IF
+    LONER? IF
         ." yes"
     ELSE
         ." no"
-    THEN CR 2DROP ;
+    THEN CR ;
 
 
 
