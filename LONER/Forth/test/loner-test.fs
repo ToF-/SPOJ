@@ -34,6 +34,7 @@ T{ ." can parse several simple patterns" CR
     S" 11010101110110101011" LONER? ?TRUE
     S" 1101010101110111111111" LONER? ?TRUE
     S" 11010101110111111110101011" LONER? ?TRUE
+    S" 11100111" LONER? TRUE
 }T
 T{ ." can reverse a string" CR
     S" xuqraboof" 2DUP REVERSE S" foobarqux" ?STR

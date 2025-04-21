@@ -51,7 +51,7 @@ LEFT-TAKE  STR-P CONSTANT LEFT-TAKE-P
     REPEAT R> DROP ;
 
 : REPLACE-WITH-TAKE ( str,sc,xt,pat,pc -- )
-    2>R SEARCH-TAKE IF
+    2>R SEARCH-TAKE RANDOM-FLAG AND IF
         3 - 2R> ROT SWAP \ pat,str-3,pc
         CMOVE
     ELSE
