@@ -1,13 +1,3 @@
-scanner: src/scanner.y
-	bison -d src/scanner.y --output src/scanner.c
-
-parser: src/parser.l
-	lex -o src/parser.c  src/parser.l 
-
-loner: scanner parser
+lone: src/re-loner.c
 	mkdir -p bin
-	gcc -o bin/loner src/parser.c src/scanner.c
-
-regexp: src/regexp-first.c
-	mkdir -p bin
-	gcc -o bin/regexp-first src/regexp-first.c
+	gcc -o bin/re-loner src/re-loner.c
