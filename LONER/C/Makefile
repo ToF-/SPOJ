@@ -7,3 +7,7 @@ parser: src/parser.l
 loner: scanner parser
 	mkdir -p bin
 	gcc -o bin/loner src/parser.c src/scanner.c
+
+regexp: src/regexp-first.c
+	mkdir -p bin
+	gcc -o bin/regexp-first src/regexp-first.c
