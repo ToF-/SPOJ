@@ -45,6 +45,10 @@ int already_seen(const Bitset *b) {
         cur = cur->next;
     }
     Node *new_node = malloc(sizeof(Node));
+    if (new_node == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(1); // Terminer en cas d'erreur d'allocation
+    }
     new_node->key = *b;
     new_node->next = visited[h];
     visited[h] = new_node;
@@ -95,11 +99,10 @@ int bfs_reverse(Bitset *target, int n) {
         Bitset b = { .len = (n + WORD_BITS - 1) / WORD_BITS };
         set_bit(&b, i, 1);
         if (!already_seen(&b)) {
+            if (back >= QUEUE_SIZE) {
+                return 0; // Éviter d'ajouter trop d'éléments dans la file
+            }
             queue[back++] = b;
-        }
-        // S'assurer que la file ne déborde pas
-        if (back >= QUEUE_SIZE) {
-            return 0; // Si la file est pleine, retourner échec
         }
     }
 
@@ -118,11 +121,10 @@ int bfs_reverse(Bitset *target, int n) {
                 set_bit(&next, i + 1, 0);
                 set_bit(&next, i + 2, 0);
                 if (!already_seen(&next)) {
-                    if (back < QUEUE_SIZE) {
-                        queue[back++] = next;
-                    } else {
+                    if (back >= QUEUE_SIZE) {
                         return 0; // Si la file est pleine
                     }
+                    queue[back++] = next;
                 }
             }
         }
@@ -133,11 +135,10 @@ int bfs_reverse(Bitset *target, int n) {
                 set_bit(&next, i - 1, 0);
                 set_bit(&next, i - 2, 0);
                 if (!already_seen(&next)) {
-                    if (back < QUEUE_SIZE) {
-                        queue[back++] = next;
-                    } else {
+                    if (back >= QUEUE_SIZE) {
                         return 0; // Si la file est pleine
                     }
+                    queue[back++] = next;
                 }
             }
         }
