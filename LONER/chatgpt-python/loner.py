@@ -10,30 +10,31 @@ def main():
         init = int(s, 2)
         visited = set()
         stack = [init]
-        found = False
+        success = False
 
         while stack:
             state = stack.pop()
             if state in visited:
                 continue
             visited.add(state)
+
             if bin(state).count('1') == 1:
-                found = True
+                success = True
                 break
-            for i in range(n - 2):
-                # saut à droite
-                if (state >> i) & 0b111 == 0b110:
-                    new_state = state & ~(1 << i) & ~(1 << (i + 1)) | (1 << (i + 2))
-                    if new_state not in visited:
+
+            for i in range(n):
+                # saut vers la droite : 1 1 0 -> 0 0 1
+                if i + 2 < n:
+                    if ((state >> i) & 0b111) == 0b011:
+                        new_state = state & ~(1 << i) & ~(1 << (i + 1)) | (1 << (i + 2))
                         stack.append(new_state)
-            for i in range(2, n):
-                # saut à gauche
-                if ((state >> (i - 2)) & 0b111) == 0b011:
-                    new_state = state & ~(1 << i) & ~(1 << (i - 1)) | (1 << (i - 2))
-                    if new_state not in visited:
+                # saut vers la gauche : 0 1 1 -> 1 0 0
+                if i - 2 >= 0:
+                    if ((state >> (i - 2)) & 0b111) == 0b110:
+                        new_state = state & ~(1 << i) & ~(1 << (i - 1)) | (1 << (i - 2))
                         stack.append(new_state)
 
-        print("yes" if found else "no")
+        print("yes" if success else "no")
 
 threading.Thread(target=main).start()
 
