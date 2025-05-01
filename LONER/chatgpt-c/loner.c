@@ -2,47 +2,82 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_N 32
-#define VISITED_SIZE (1 << 20)  // 1 million d'entrées ~1 Mo
+#define MAX_N 32000
+#define HASH_MAP_SIZE (1 << 20)
 
-char visited[VISITED_SIZE];
+typedef struct Node {
+    char *key;
+    struct Node *next;
+} Node;
 
-unsigned int hash(unsigned int state) {
-    state ^= state >> 16;
-    state *= 0x85ebca6b;
-    state ^= state >> 13;
-    state *= 0xc2b2ae35;
-    state ^= state >> 16;
-    return state & (VISITED_SIZE - 1);
+Node *hash_table[HASH_MAP_SIZE];
+
+unsigned long hash(const char *s, int n) {
+    unsigned long h = 5381;
+    for (int i = 0; i < n; i++) {
+        h = ((h << 5) + h) + s[i];
+    }
+    return h % HASH_MAP_SIZE;
 }
 
-int dfs(unsigned int state, int n, int count) {
+int in_hash(const char *s, int n) {
+    unsigned long h = hash(s, n);
+    Node *cur = hash_table[h];
+    while (cur) {
+        if (memcmp(cur->key, s, n) == 0) return 1;
+        cur = cur->next;
+    }
+    return 0;
+}
+
+void insert_hash(const char *s, int n) {
+    unsigned long h = hash(s, n);
+    Node *new_node = malloc(sizeof(Node));
+    new_node->key = malloc(n);
+    memcpy(new_node->key, s, n);
+    new_node->next = hash_table[h];
+    hash_table[h] = new_node;
+}
+
+int dfs(char *board, int n, int count) {
     if (count == 1) return 1;
+    if (in_hash(board, n)) return 0;
+    insert_hash(board, n);
 
-    unsigned int h = hash(state);
-    if (visited[h]) return 0;
-    visited[h] = 1;
-
-    for (int i = 0; i < n; i++) {
-        // droite
-        if (i + 2 < n && ((state >> i) & 7) == 3) {
-            unsigned int new_state = state;
-            new_state &= ~(1u << i);
-            new_state &= ~(1u << (i + 1));
-            new_state |= (1u << (i + 2));
-            if (dfs(new_state, n, count - 1)) return 1;
+    for (int i = 0; i < n - 2; i++) {
+        if (board[i] == '1' && board[i + 1] == '1' && board[i + 2] == '0') {
+            board[i] = board[i + 1] = '0';
+            board[i + 2] = '1';
+            if (dfs(board, n, count - 1)) return 1;
+            board[i] = board[i + 1] = '1';
+            board[i + 2] = '0';
         }
-        // gauche
-        if (i - 2 >= 0 && ((state >> (i - 2)) & 7) == 6 && ((state >> i) & 1)) {
-            unsigned int new_state = state;
-            new_state &= ~(1u << i);
-            new_state &= ~(1u << (i - 1));
-            new_state |= (1u << (i - 2));
-            if (dfs(new_state, n, count - 1)) return 1;
+    }
+
+    for (int i = 2; i < n; i++) {
+        if (board[i] == '1' && board[i - 1] == '1' && board[i - 2] == '0') {
+            board[i] = board[i - 1] = '0';
+            board[i - 2] = '1';
+            if (dfs(board, n, count - 1)) return 1;
+            board[i] = board[i - 1] = '1';
+            board[i - 2] = '0';
         }
     }
 
     return 0;
+}
+
+void clear_hash() {
+    for (int i = 0; i < HASH_MAP_SIZE; i++) {
+        Node *cur = hash_table[i];
+        while (cur) {
+            Node *tmp = cur;
+            cur = cur->next;
+            free(tmp->key);
+            free(tmp);
+        }
+        hash_table[i] = NULL;
+    }
 }
 
 int main() {
@@ -50,26 +85,18 @@ int main() {
     scanf("%d", &t);
     while (t--) {
         int n;
-        char buf[40];
         scanf("%d", &n);
-        scanf("%s", buf);
+        char *board = malloc(n + 1);
+        scanf("%s", board);
 
-        if (n > MAX_N) {
-            printf("no\n");
-            continue;
-        }
-
-        unsigned int state = 0;
         int count = 0;
-        for (int i = 0; i < n; i++) {
-            if (buf[i] == '1') {
-                state |= (1u << i);
-                count++;
-            }
-        }
+        for (int i = 0; i < n; i++)
+            if (board[i] == '1') count++;
 
-        memset(visited, 0, sizeof(visited));
-        printf(dfs(state, n, count) ? "yes\n" : "no\n");
+        clear_hash();
+        printf(dfs(board, n, count) ? "yes\n" : "no\n");
+
+        free(board);
     }
     return 0;
 }
