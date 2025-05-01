@@ -5,8 +5,8 @@ sys.setrecursionlimit(10000)
 
 def can_win(s):
     n = len(s)
-    initial = int(s, 2)
-    visited = set([initial])
+    initial = int(s, 2)  # Représenter l'état sous forme binaire
+    visited = set([initial])  # Set des états visités
     stack = [initial]
 
     while stack:
@@ -16,6 +16,7 @@ def can_win(s):
         if bin(state).count('1') == 1:
             return True
 
+        # Exploration des mouvements possibles
         for i in range(n):
             # Saut vers la droite : 1 1 0 -> 0 0 1
             if i + 2 < n and ((state >> i) & 0b111) == 0b011:
