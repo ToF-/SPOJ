@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>  // requis pour malloc, free
 #include <string.h>
 
 #define MAX_N 32000
