@@ -1,60 +1,84 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-#define MAX_K 20
-char dp[1 << MAX_K];
-int computed[1 << MAX_K];
+#define MAX_N 32000
+#define HASH_SIZE (1 << 20)
 
-int popcount(int x) {
-    int c = 0;
-    while (x) {
-        c += x & 1;
-        x >>= 1;
+typedef struct State {
+    char *key;
+    struct State *next;
+} State;
+
+State *visited[HASH_SIZE];
+
+unsigned long hash(const char *s, int n) {
+    unsigned long h = 5381;
+    for (int i = 0; i < n; i++) {
+        h = ((h << 5) + h) + s[i];
     }
-    return c;
+    return h & (HASH_SIZE - 1);
 }
 
-int solve_block(int mask, int len) {
-    if (computed[mask]) return dp[mask];
-    computed[mask] = 1;
-
-    if (popcount(mask) == 1) {
-        dp[mask] = 1;
-        return 1;
+int already_seen(const char *s, int n) {
+    unsigned long h = hash(s, n);
+    State *cur = visited[h];
+    while (cur) {
+        if (memcmp(cur->key, s, n) == 0) return 1;
+        cur = cur->next;
     }
-
-    for (int i = 0; i < len - 2; i++) {
-        if (((mask >> i) & 7) == 3) {
-            int new_mask = mask & ~(1 << i) & ~(1 << (i + 1)) | (1 << (i + 2));
-            if (solve_block(new_mask, len)) {
-                dp[mask] = 1;
-                return 1;
-            }
-        }
-    }
-    for (int i = 2; i < len; i++) {
-        if (((mask >> (i - 2)) & 7) == 6 && ((mask >> i) & 1)) {
-            int new_mask = mask & ~(1 << i) & ~(1 << (i - 1)) | (1 << (i - 2));
-            if (solve_block(new_mask, len)) {
-                dp[mask] = 1;
-                return 1;
-            }
-        }
-    }
-
-    dp[mask] = 0;
+    State *new_state = malloc(sizeof(State));
+    new_state->key = malloc(n);
+    memcpy(new_state->key, s, n);
+    new_state->next = visited[h];
+    visited[h] = new_state;
     return 0;
 }
 
-int is_block_winnable(const char *block, int len) {
-    if (len > MAX_K) return 0;
+int count_pawns(const char *s, int n) {
+    int c = 0;
+    for (int i = 0; i < n; i++) if (s[i] == '1') c++;
+    return c;
+}
 
-    int mask = 0;
-    for (int i = 0; i < len; i++) {
-        if (block[i] == '1') mask |= (1 << i);
+int dfs(char *s, int n, int count) {
+    if (count == 1) return 1;
+    if (already_seen(s, n)) return 0;
+
+    for (int i = 0; i < n - 2; i++) {
+        if (s[i] == '1' && s[i + 1] == '1' && s[i + 2] == '0') {
+            s[i] = s[i + 1] = '0';
+            s[i + 2] = '1';
+            if (dfs(s, n, count - 1)) return 1;
+            s[i] = s[i + 1] = '1';
+            s[i + 2] = '0';
+        }
     }
 
-    return solve_block(mask, len);
+    for (int i = 2; i < n; i++) {
+        if (s[i] == '1' && s[i - 1] == '1' && s[i - 2] == '0') {
+            s[i] = s[i - 1] = '0';
+            s[i - 2] = '1';
+            if (dfs(s, n, count - 1)) return 1;
+            s[i] = s[i - 1] = '1';
+            s[i - 2] = '0';
+        }
+    }
+
+    return 0;
+}
+
+void clear_hash() {
+    for (int i = 0; i < HASH_SIZE; i++) {
+        State *cur = visited[i];
+        while (cur) {
+            State *tmp = cur;
+            cur = cur->next;
+            free(tmp->key);
+            free(tmp);
+        }
+        visited[i] = NULL;
+    }
 }
 
 int main() {
@@ -62,31 +86,12 @@ int main() {
     scanf("%d", &t);
     while (t--) {
         int n;
-        static char board[32010];
+        static char s[MAX_N + 1];
         scanf("%d", &n);
-        scanf("%s", board);
-
-        int ok = 1;
-        for (int i = 0; i < (1 << MAX_K); i++) {
-            computed[i] = 0;
-            dp[i] = 0;
-        }
-
-        int i = 0;
-        while (i < n) {
-            while (i < n && board[i] == '0') i++;
-            int start = i;
-            while (i < n && board[i] == '1') i++;
-            int end = i;
-
-            if (end - start == 0) continue;
-            if (!is_block_winnable(board + start, end - start)) {
-                ok = 0;
-                break;
-            }
-        }
-
-        printf(ok ? "yes\n" : "no\n");
+        scanf("%s", s);
+        int count = count_pawns(s, n);
+        clear_hash();
+        printf(dfs(s, n, count) ? "yes\n" : "no\n");
     }
     return 0;
 }
