@@ -21,6 +21,7 @@ typedef struct Node {
 
 Node *visited[HASH_SIZE];
 
+// Hash function for Bitset
 uint64_t bitset_hash(const Bitset *b) {
     uint64_t h = 14695981039346656037ULL;
     for (int i = 0; i < b->len; i++) {
@@ -30,6 +31,7 @@ uint64_t bitset_hash(const Bitset *b) {
     return h & (HASH_SIZE - 1);
 }
 
+// Function to check if two Bitsets are equal
 int bitset_equal(const Bitset *a, const Bitset *b) {
     if (a->len != b->len) return 0;
     for (int i = 0; i < a->len; i++)
@@ -37,6 +39,7 @@ int bitset_equal(const Bitset *a, const Bitset *b) {
     return 1;
 }
 
+// Check if Bitset has been seen before
 int already_seen(const Bitset *b) {
     uint64_t h = bitset_hash(b);
     Node *cur = visited[h];
@@ -47,7 +50,7 @@ int already_seen(const Bitset *b) {
     Node *new_node = malloc(sizeof(Node));
     if (new_node == NULL) {
         fprintf(stderr, "Memory allocation failed\n");
-        exit(1); // Terminer en cas d'erreur d'allocation
+        exit(1); // Terminate in case of allocation failure
     }
     new_node->key = *b;
     new_node->next = visited[h];
@@ -55,10 +58,12 @@ int already_seen(const Bitset *b) {
     return 0;
 }
 
+// Get the value of a specific bit in the Bitset
 int get_bit(const Bitset *b, int i) {
     return (b->bits[i / WORD_BITS] >> (i % WORD_BITS)) & 1;
 }
 
+// Set the value of a specific bit in the Bitset
 void set_bit(Bitset *b, int i, int v) {
     if (v)
         b->bits[i / WORD_BITS] |= ((uint64_t)1 << (i % WORD_BITS));
@@ -66,6 +71,7 @@ void set_bit(Bitset *b, int i, int v) {
         b->bits[i / WORD_BITS] &= ~((uint64_t)1 << (i % WORD_BITS));
 }
 
+// Clear the hash table used for visited states
 void clear_hash() {
     for (int i = 0; i < HASH_SIZE; i++) {
         Node *cur = visited[i];
@@ -78,6 +84,7 @@ void clear_hash() {
     }
 }
 
+// Check if two Bitsets are equal (for plain bits comparison)
 int bitset_equal_plain(const Bitset *b, const Bitset *ref, int len) {
     int full = len / WORD_BITS;
     for (int i = 0; i < full; i++)
@@ -90,30 +97,31 @@ int bitset_equal_plain(const Bitset *b, const Bitset *ref, int len) {
     return 1;
 }
 
+// BFS to check if the game can be won
 int bfs_reverse(Bitset *target, int n) {
     Bitset queue[QUEUE_SIZE];
     int front = 0, back = 0;
 
-    // Ajouter tous les états possibles avec 1 seul pion
+    // Add all states with exactly one pawn
     for (int i = 0; i < n; i++) {
         Bitset b = { .len = (n + WORD_BITS - 1) / WORD_BITS };
         set_bit(&b, i, 1);
         if (!already_seen(&b)) {
             if (back >= QUEUE_SIZE) {
-                return 0; // Éviter d'ajouter trop d'éléments dans la file
+                return 0; // Queue overflow, return failure
             }
             queue[back++] = b;
         }
     }
 
-    // BFS inversé
+    // Reverse BFS
     while (front < back) {
         Bitset cur = queue[front++];
-        
-        // Vérifier si l'état courant est égal à l'état cible
+
+        // Check if the current state matches the target state
         if (bitset_equal_plain(&cur, target, n)) return 1;
 
-        // Examiner les déplacements possibles dans les deux directions
+        // Check moves in both directions
         for (int i = 0; i < n - 2; i++) {
             if (!get_bit(&cur, i) && get_bit(&cur, i + 1) && get_bit(&cur, i + 2)) {
                 Bitset next = cur;
@@ -122,7 +130,7 @@ int bfs_reverse(Bitset *target, int n) {
                 set_bit(&next, i + 2, 0);
                 if (!already_seen(&next)) {
                     if (back >= QUEUE_SIZE) {
-                        return 0; // Si la file est pleine
+                        return 0; // Queue overflow, return failure
                     }
                     queue[back++] = next;
                 }
@@ -136,7 +144,7 @@ int bfs_reverse(Bitset *target, int n) {
                 set_bit(&next, i - 2, 0);
                 if (!already_seen(&next)) {
                     if (back >= QUEUE_SIZE) {
-                        return 0; // Si la file est pleine
+                        return 0; // Queue overflow, return failure
                     }
                     queue[back++] = next;
                 }
