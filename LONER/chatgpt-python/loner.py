@@ -2,42 +2,36 @@ import sys
 import threading
 
 def main():
-    import sys
-    sys.setrecursionlimit(1000000)
-
     t = int(sys.stdin.readline())
-
     for _ in range(t):
         n = int(sys.stdin.readline())
         s = sys.stdin.readline().strip()
-
-        init = int(s, 2)
+        initial = int(s, 2)
+        stack = [initial]
         visited = set()
+        found = False
 
-        def can_win(state):
+        while stack:
+            state = stack.pop()
             if state in visited:
-                return False
+                continue
             visited.add(state)
             if bin(state).count('1') == 1:
-                return True
+                found = True
+                break
             for i in range(n):
-                # déplacement vers la droite
+                # move right
                 if i + 2 < n:
-                    mask = (1 << i) | (1 << (i + 1))
-                    if (state & mask) == mask and not (state & (1 << (i + 2))):
-                        new_state = state & ~mask | (1 << (i + 2))
-                        if can_win(new_state):
-                            return True
-                # déplacement vers la gauche
+                    if ((state >> i) & 1) and ((state >> (i + 1)) & 1) and not ((state >> (i + 2)) & 1):
+                        new_state = state & ~(1 << i) & ~(1 << (i + 1)) | (1 << (i + 2))
+                        stack.append(new_state)
+                # move left
                 if i - 2 >= 0:
-                    mask = (1 << i) | (1 << (i - 1))
-                    if (state & mask) == mask and not (state & (1 << (i - 2))):
-                        new_state = state & ~mask | (1 << (i - 2))
-                        if can_win(new_state):
-                            return True
-            return False
+                    if ((state >> i) & 1) and ((state >> (i - 1)) & 1) and not ((state >> (i - 2)) & 1):
+                        new_state = state & ~(1 << i) & ~(1 << (i - 1)) | (1 << (i - 2))
+                        stack.append(new_state)
 
-        print("yes" if can_win(init) else "no")
+        print("yes" if found else "no")
 
 threading.Thread(target=main).start()
 
