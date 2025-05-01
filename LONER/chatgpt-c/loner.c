@@ -90,26 +90,40 @@ int bfs_reverse(Bitset *target, int n) {
     Bitset queue[QUEUE_SIZE];
     int front = 0, back = 0;
 
+    // Ajouter tous les états possibles avec 1 seul pion
     for (int i = 0; i < n; i++) {
         Bitset b = { .len = (n + WORD_BITS - 1) / WORD_BITS };
         set_bit(&b, i, 1);
-        if (!already_seen(&b))
+        if (!already_seen(&b)) {
             queue[back++] = b;
+        }
+        // S'assurer que la file ne déborde pas
+        if (back >= QUEUE_SIZE) {
+            return 0; // Si la file est pleine, retourner échec
+        }
     }
 
+    // BFS inversé
     while (front < back) {
         Bitset cur = queue[front++];
-
+        
+        // Vérifier si l'état courant est égal à l'état cible
         if (bitset_equal_plain(&cur, target, n)) return 1;
 
+        // Examiner les déplacements possibles dans les deux directions
         for (int i = 0; i < n - 2; i++) {
             if (!get_bit(&cur, i) && get_bit(&cur, i + 1) && get_bit(&cur, i + 2)) {
                 Bitset next = cur;
                 set_bit(&next, i, 1);
                 set_bit(&next, i + 1, 0);
                 set_bit(&next, i + 2, 0);
-                if (!already_seen(&next))
-                    queue[back++] = next;
+                if (!already_seen(&next)) {
+                    if (back < QUEUE_SIZE) {
+                        queue[back++] = next;
+                    } else {
+                        return 0; // Si la file est pleine
+                    }
+                }
             }
         }
         for (int i = 2; i < n; i++) {
@@ -118,8 +132,13 @@ int bfs_reverse(Bitset *target, int n) {
                 set_bit(&next, i, 1);
                 set_bit(&next, i - 1, 0);
                 set_bit(&next, i - 2, 0);
-                if (!already_seen(&next))
-                    queue[back++] = next;
+                if (!already_seen(&next)) {
+                    if (back < QUEUE_SIZE) {
+                        queue[back++] = next;
+                    } else {
+                        return 0; // Si la file est pleine
+                    }
+                }
             }
         }
     }
