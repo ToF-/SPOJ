@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <stdlib.h>  // requis pour malloc, free
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_N 32000
 #define WORD_BITS 64
-#define MAX_WORDS (MAX_N / WORD_BITS + 1)
+#define MAX_WORDS ((MAX_N + WORD_BITS - 1) / WORD_BITS)
 #define HASH_SIZE (1 << 21)
+#define QUEUE_SIZE (1 << 20)
 
 typedef struct {
     uint64_t bits[MAX_WORDS];
@@ -61,37 +62,6 @@ void set_bit(Bitset *b, int i, int v) {
         b->bits[i / WORD_BITS] &= ~((uint64_t)1 << (i % WORD_BITS));
 }
 
-int dfs(Bitset *b, int n, int count) {
-    if (count == 1) return 1;
-    if (already_seen(b)) return 0;
-
-    for (int i = 0; i < n - 2; i++) {
-        if (get_bit(b, i) && get_bit(b, i + 1) && !get_bit(b, i + 2)) {
-            set_bit(b, i, 0);
-            set_bit(b, i + 1, 0);
-            set_bit(b, i + 2, 1);
-            if (dfs(b, n, count - 1)) return 1;
-            set_bit(b, i, 1);
-            set_bit(b, i + 1, 1);
-            set_bit(b, i + 2, 0);
-        }
-    }
-
-    for (int i = 2; i < n; i++) {
-        if (get_bit(b, i) && get_bit(b, i - 1) && !get_bit(b, i - 2)) {
-            set_bit(b, i, 0);
-            set_bit(b, i - 1, 0);
-            set_bit(b, i - 2, 1);
-            if (dfs(b, n, count - 1)) return 1;
-            set_bit(b, i, 1);
-            set_bit(b, i - 1, 1);
-            set_bit(b, i - 2, 0);
-        }
-    }
-
-    return 0;
-}
-
 void clear_hash() {
     for (int i = 0; i < HASH_SIZE; i++) {
         Node *cur = visited[i];
@@ -104,6 +74,59 @@ void clear_hash() {
     }
 }
 
+int bitset_equal_plain(const Bitset *b, const Bitset *ref, int len) {
+    int full = len / WORD_BITS;
+    for (int i = 0; i < full; i++)
+        if (b->bits[i] != ref->bits[i]) return 0;
+    int rem = len % WORD_BITS;
+    if (rem) {
+        uint64_t mask = ((uint64_t)1 << rem) - 1;
+        if ((b->bits[full] & mask) != (ref->bits[full] & mask)) return 0;
+    }
+    return 1;
+}
+
+int bfs_reverse(Bitset *target, int n) {
+    Bitset queue[QUEUE_SIZE];
+    int front = 0, back = 0;
+
+    for (int i = 0; i < n; i++) {
+        Bitset b = { .len = (n + WORD_BITS - 1) / WORD_BITS };
+        set_bit(&b, i, 1);
+        if (!already_seen(&b))
+            queue[back++] = b;
+    }
+
+    while (front < back) {
+        Bitset cur = queue[front++];
+
+        if (bitset_equal_plain(&cur, target, n)) return 1;
+
+        for (int i = 0; i < n - 2; i++) {
+            if (!get_bit(&cur, i) && get_bit(&cur, i + 1) && get_bit(&cur, i + 2)) {
+                Bitset next = cur;
+                set_bit(&next, i, 1);
+                set_bit(&next, i + 1, 0);
+                set_bit(&next, i + 2, 0);
+                if (!already_seen(&next))
+                    queue[back++] = next;
+            }
+        }
+        for (int i = 2; i < n; i++) {
+            if (!get_bit(&cur, i) && get_bit(&cur, i - 1) && get_bit(&cur, i - 2)) {
+                Bitset next = cur;
+                set_bit(&next, i, 1);
+                set_bit(&next, i - 1, 0);
+                set_bit(&next, i - 2, 0);
+                if (!already_seen(&next))
+                    queue[back++] = next;
+            }
+        }
+    }
+
+    return 0;
+}
+
 int main() {
     int t;
     scanf("%d", &t);
@@ -113,16 +136,12 @@ int main() {
         scanf("%d %s", &n, s);
 
         Bitset b = { .len = (n + WORD_BITS - 1) / WORD_BITS };
-        int count = 0;
-        for (int i = 0; i < n; i++) {
-            if (s[i] == '1') {
+        for (int i = 0; i < n; i++)
+            if (s[i] == '1')
                 set_bit(&b, i, 1);
-                count++;
-            }
-        }
 
         clear_hash();
-        printf(dfs(&b, n, count) ? "yes\n" : "no\n");
+        printf(bfs_reverse(&b, n) ? "yes\n" : "no\n");
     }
     return 0;
 }
