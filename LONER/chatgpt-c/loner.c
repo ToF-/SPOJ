@@ -2,27 +2,38 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_N 32000
+#define MAX_N 32
+#define HASH_SIZE (1 << MAX_N)
 
-int can_win(char *board, int n, int remaining) {
-    if (remaining == 1) return 1;
+char visited[HASH_SIZE];
+
+int dfs(unsigned int state, int n, int count) {
+    if (count == 1) return 1;
+    if (visited[state]) return 0;
+    visited[state] = 1;
 
     for (int i = 0; i < n; i++) {
-        // Move right
-        if (i + 2 < n && board[i] == '1' && board[i + 1] == '1' && board[i + 2] == '0') {
-            board[i] = board[i + 1] = '0';
-            board[i + 2] = '1';
-            if (can_win(board, n, remaining - 1)) return 1;
-            board[i] = board[i + 1] = '1';
-            board[i + 2] = '0';
+        // i -> i+2 (right)
+        if (i + 2 < n) {
+            if (((state >> i) & 7) == 3) { // bits i, i+1 = 1,1 and i+2 = 0
+                unsigned int new_state = state;
+                new_state &= ~(1u << i);
+                new_state &= ~(1u << (i + 1));
+                new_state |= (1u << (i + 2));
+                if (dfs(new_state, n, count - 1)) return 1;
+            }
         }
-        // Move left
-        if (i - 2 >= 0 && board[i] == '1' && board[i - 1] == '1' && board[i - 2] == '0') {
-            board[i] = board[i - 1] = '0';
-            board[i - 2] = '1';
-            if (can_win(board, n, remaining - 1)) return 1;
-            board[i] = board[i - 1] = '1';
-            board[i - 2] = '0';
+        // i -> i-2 (left)
+        if (i - 2 >= 0) {
+            if (((state >> (i - 2)) & 7) == 3) { // bits i, i-1 = 1,1 and i-2 = 0
+                if ((state >> i) & 1) {
+                    unsigned int new_state = state;
+                    new_state &= ~(1u << i);
+                    new_state &= ~(1u << (i - 1));
+                    new_state |= (1u << (i - 2));
+                    if (dfs(new_state, n, count - 1)) return 1;
+                }
+            }
         }
     }
     return 0;
@@ -31,24 +42,29 @@ int can_win(char *board, int n, int remaining) {
 int main() {
     int t;
     scanf("%d", &t);
-
     while (t--) {
         int n;
-        char board[MAX_N + 1];
+        char buf[40];
         scanf("%d", &n);
-        scanf("%s", board);
+        scanf("%s", buf);
 
-        int count = 0;
-        for (int i = 0; i < n; i++) {
-            if (board[i] == '1') count++;
+        if (n > MAX_N) {
+            printf("no\n");
+            continue;
         }
 
-        if (can_win(board, n, count))
-            printf("yes\n");
-        else
-            printf("no\n");
-    }
+        unsigned int state = 0;
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            if (buf[i] == '1') {
+                state |= (1u << i);
+                count++;
+            }
+        }
 
+        memset(visited, 0, sizeof(visited));
+        printf(dfs(state, n, count) ? "yes\n" : "no\n");
+    }
     return 0;
 }
 
