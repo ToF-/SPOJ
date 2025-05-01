@@ -1,83 +1,60 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#define MAX_N 32000
-#define HASH_MAP_SIZE (1 << 20)
+#define MAX_K 20
+char dp[1 << MAX_K];
+int computed[1 << MAX_K];
 
-typedef struct Node {
-    char *key;
-    struct Node *next;
-} Node;
-
-Node *hash_table[HASH_MAP_SIZE];
-
-unsigned long hash(const char *s, int n) {
-    unsigned long h = 5381;
-    for (int i = 0; i < n; i++) {
-        h = ((h << 5) + h) + s[i];
+int popcount(int x) {
+    int c = 0;
+    while (x) {
+        c += x & 1;
+        x >>= 1;
     }
-    return h % HASH_MAP_SIZE;
+    return c;
 }
 
-int in_hash(const char *s, int n) {
-    unsigned long h = hash(s, n);
-    Node *cur = hash_table[h];
-    while (cur) {
-        if (memcmp(cur->key, s, n) == 0) return 1;
-        cur = cur->next;
+int solve_block(int mask, int len) {
+    if (computed[mask]) return dp[mask];
+    computed[mask] = 1;
+
+    if (popcount(mask) == 1) {
+        dp[mask] = 1;
+        return 1;
     }
+
+    for (int i = 0; i < len - 2; i++) {
+        if (((mask >> i) & 7) == 3) {
+            int new_mask = mask & ~(1 << i) & ~(1 << (i + 1)) | (1 << (i + 2));
+            if (solve_block(new_mask, len)) {
+                dp[mask] = 1;
+                return 1;
+            }
+        }
+    }
+    for (int i = 2; i < len; i++) {
+        if (((mask >> (i - 2)) & 7) == 6 && ((mask >> i) & 1)) {
+            int new_mask = mask & ~(1 << i) & ~(1 << (i - 1)) | (1 << (i - 2));
+            if (solve_block(new_mask, len)) {
+                dp[mask] = 1;
+                return 1;
+            }
+        }
+    }
+
+    dp[mask] = 0;
     return 0;
 }
 
-void insert_hash(const char *s, int n) {
-    unsigned long h = hash(s, n);
-    Node *new_node = malloc(sizeof(Node));
-    new_node->key = malloc(n);
-    memcpy(new_node->key, s, n);
-    new_node->next = hash_table[h];
-    hash_table[h] = new_node;
-}
+int is_block_winnable(const char *block, int len) {
+    if (len > MAX_K) return 0;
 
-int dfs(char *board, int n, int count) {
-    if (count == 1) return 1;
-    if (in_hash(board, n)) return 0;
-    insert_hash(board, n);
-
-    for (int i = 0; i < n - 2; i++) {
-        if (board[i] == '1' && board[i + 1] == '1' && board[i + 2] == '0') {
-            board[i] = board[i + 1] = '0';
-            board[i + 2] = '1';
-            if (dfs(board, n, count - 1)) return 1;
-            board[i] = board[i + 1] = '1';
-            board[i + 2] = '0';
-        }
+    int mask = 0;
+    for (int i = 0; i < len; i++) {
+        if (block[i] == '1') mask |= (1 << i);
     }
 
-    for (int i = 2; i < n; i++) {
-        if (board[i] == '1' && board[i - 1] == '1' && board[i - 2] == '0') {
-            board[i] = board[i - 1] = '0';
-            board[i - 2] = '1';
-            if (dfs(board, n, count - 1)) return 1;
-            board[i] = board[i - 1] = '1';
-            board[i - 2] = '0';
-        }
-    }
-
-    return 0;
-}
-
-void clear_hash() {
-    for (int i = 0; i < HASH_MAP_SIZE; i++) {
-        Node *cur = hash_table[i];
-        while (cur) {
-            Node *tmp = cur;
-            cur = cur->next;
-            free(tmp->key);
-            free(tmp);
-        }
-        hash_table[i] = NULL;
-    }
+    return solve_block(mask, len);
 }
 
 int main() {
@@ -85,18 +62,31 @@ int main() {
     scanf("%d", &t);
     while (t--) {
         int n;
+        static char board[32010];
         scanf("%d", &n);
-        char *board = malloc(n + 1);
         scanf("%s", board);
 
-        int count = 0;
-        for (int i = 0; i < n; i++)
-            if (board[i] == '1') count++;
+        int ok = 1;
+        for (int i = 0; i < (1 << MAX_K); i++) {
+            computed[i] = 0;
+            dp[i] = 0;
+        }
 
-        clear_hash();
-        printf(dfs(board, n, count) ? "yes\n" : "no\n");
+        int i = 0;
+        while (i < n) {
+            while (i < n && board[i] == '0') i++;
+            int start = i;
+            while (i < n && board[i] == '1') i++;
+            int end = i;
 
-        free(board);
+            if (end - start == 0) continue;
+            if (!is_block_winnable(board + start, end - start)) {
+                ok = 0;
+                break;
+            }
+        }
+
+        printf(ok ? "yes\n" : "no\n");
     }
     return 0;
 }
