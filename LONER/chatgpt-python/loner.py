@@ -9,40 +9,35 @@ def main():
 
     for _ in range(t):
         n = int(sys.stdin.readline())
-        board = sys.stdin.readline().strip()
+        s = sys.stdin.readline().strip()
+
+        init = int(s, 2)
         visited = set()
 
         def can_win(state):
             if state in visited:
                 return False
             visited.add(state)
-
-            if state.count('1') == 1:
+            if bin(state).count('1') == 1:
                 return True
-
-            state_list = list(state)
             for i in range(n):
-                # Move right: i, i+1 occupied and i+2 empty
-                if i + 2 < n and state_list[i] == '1' and state_list[i+1] == '1' and state_list[i+2] == '0':
-                    new_state = state_list[:]
-                    new_state[i] = '0'
-                    new_state[i+1] = '0'
-                    new_state[i+2] = '1'
-                    if can_win(''.join(new_state)):
-                        return True
-                # Move left: i, i-1 occupied and i-2 empty
-                if i - 2 >= 0 and state_list[i] == '1' and state_list[i-1] == '1' and state_list[i-2] == '0':
-                    new_state = state_list[:]
-                    new_state[i] = '0'
-                    new_state[i-1] = '0'
-                    new_state[i-2] = '1'
-                    if can_win(''.join(new_state)):
-                        return True
-
+                # déplacement vers la droite
+                if i + 2 < n:
+                    mask = (1 << i) | (1 << (i + 1))
+                    if (state & mask) == mask and not (state & (1 << (i + 2))):
+                        new_state = state & ~mask | (1 << (i + 2))
+                        if can_win(new_state):
+                            return True
+                # déplacement vers la gauche
+                if i - 2 >= 0:
+                    mask = (1 << i) | (1 << (i - 1))
+                    if (state & mask) == mask and not (state & (1 << (i - 2))):
+                        new_state = state & ~mask | (1 << (i - 2))
+                        if can_win(new_state):
+                            return True
             return False
 
-        result = "yes" if can_win(board) else "no"
-        print(result)
+        print("yes" if can_win(init) else "no")
 
 threading.Thread(target=main).start()
 
