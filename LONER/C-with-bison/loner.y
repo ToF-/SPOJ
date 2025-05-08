@@ -35,7 +35,7 @@ board:
   ;
     
 win:
-   P 
+   P
   | e_plus P e_plus
   | e_plus P P E e_plus
   | e_plus E P P e_plus
@@ -43,13 +43,8 @@ win:
 
 e_plus:
   %empty
+  | E
   | e_plus E         { printf("0+\n"); }
-  ;
-
-lose:
-    E lose
-  | P lose
-  | %empty
   ;
 
 %%
@@ -99,6 +94,6 @@ int main()
 #include <stdio.h>
 void yyerror(char const *s)
 {
-    fprintf(stderr, "%s\n", s);
+    printf("no\n");
 }
 
