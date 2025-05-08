@@ -20,14 +20,14 @@
 %%
 
 input:
-     COUNT '\n'    { printf("TEST_CASES\n"); }
+     COUNT '\n'    { test_count = count; }
      boards
      ;
 
 boards:
     %empty
-    | boards COUNT '\n' { winnable = 1; printf("BOARD_SIZE\n"); }
-    board               
+    | boards COUNT '\n' { winnable = 1; }
+      board
     ;
 
 board:
@@ -36,8 +36,6 @@ board:
     
 win:
    P 
-  | P P E
-  | e_plus P P E
   | e_plus P P E e_plus
   | e_plus E P P e_plus
   ;
@@ -48,9 +46,9 @@ e_plus:
   ;
 
 lose:
-  %empty
-  | E lose
+    E lose
   | P lose
+  | %empty
   ;
 
 %%
@@ -61,10 +59,24 @@ lose:
 int yylex(void)
 {
     int c = getchar();
-    printf("line %d %d\n", line_count,c);
+    if(c==EOF) {
+        exit(0);
+    }
+    if(c=='\n')
+    {
+        line_count++;
+        if(test_count > 0 && line_count / 2 > test_count) exit(0);
+        return c;
+    }
     if(c != '\n' && (line_count == 0 || line_count % 2 == 1))
     {
-        count = count * 10 + c - '0';
+        count = 0;
+        while(c != '\n')
+        {
+            count = count * 10 + c - '0';
+            c = getchar();
+        }
+        ungetc(c, stdin);
         return COUNT;
     }
     else
@@ -73,12 +85,6 @@ int yylex(void)
         {
             case '0': return E;
             case '1': return P;
-            case '\n':
-            {
-                line_count++;
-                count = 0;
-                return c;
-            }
         }
     }
     return c;
