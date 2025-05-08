@@ -5,6 +5,9 @@
 #include <stdbool.h>
 
 
+#define NB_PATTERNS 38
+#define PATTERN_BUF_SIZE 1024
+
 char* patterns[] = { 
     "^0*(1",
     "|110",
@@ -24,19 +27,26 @@ char* patterns[] = {
     "|11(01)+110111",
     "|11(01)+1101(10)+11",
     "|11(01)+1101(11)+",
-    "|11(01)+1101(11)+(10)+11)0*$" };
-
-void reverse(char *string) {
-    int i = 0;
-    int j = strlen(string)-1;
-    while(i<j) {
-        char c = string[i];
-        string[i] = string[j];
-        string[j] = c;
-        i++;
-        j--;
-    }
-}
+    "|11(01)+1101(11)+(10)+11",
+    "|011",
+    "|10(11)+",
+    "|(10)+11",
+    "|10(11)+(10)+11",
+    "|11(01)+0011",
+    "|(11)+0011",
+    "|11(01)+(11)+0011",
+    "|1100(10)+11",
+    "|11(01)+00(10)+11",
+    "|(11)+00(10)+11",
+    "|11(01)+(11)+00(10)+11",
+    "|11(01)+101111",
+    "|(11)+101111",
+    "|11(01)+(11)+101111",
+    "|111011(10)+11",
+    "|11(01)+1011(10)+11",
+    "|(11)+1011(10)+11",
+    "|11(01)+(11)+1011(10)+11",
+    ")0*$" };
 
 bool match(regex_t *regex, char *board) {
     int result = regexec(regex, board, 0, NULL, 0);
@@ -54,8 +64,8 @@ bool match(regex_t *regex, char *board) {
 int main(int argc, char const *argv[])
 {
     regex_t regex;
-    char loner_patterns[500] = "\0";
-    for(int p=0; p<19; p++) {
+    char loner_patterns[PATTERN_BUF_SIZE] = "\0";
+    for(int p=0; p<NB_PATTERNS; p++) {
         strcat(loner_patterns, patterns[p]);
     }
     int result = regcomp(&regex, loner_patterns, REG_EXTENDED);
@@ -70,16 +80,13 @@ int main(int argc, char const *argv[])
         scanf("%d", &n);
         char *board = malloc((n + 1) * sizeof(char));
         scanf("%s", board);
-        if(match(&regex, board))
+        if(match(&regex, board)) {
             puts("yes");
-        else {
-            reverse(board);
-            if(match(&regex, board))
-                puts("yes");
-            else
-                puts("no");
+        } else {
+            puts("no");
         }
         free(board);
     }
     regfree(&regex);
 }
+
