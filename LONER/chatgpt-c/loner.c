@@ -5,127 +5,106 @@
 #define MAX_N 32000
 #define HASH_SIZE 1000003
 
-typedef struct State {
-    char *board;
-    int count;
-} State;
+// Bitmask representation for up to 32-bit window
+typedef unsigned int u32;
 
-typedef struct Node {
-    State state;
-    struct Node *next;
-} Node;
+typedef struct Memo {
+    u32 key;
+    int value;
+    struct Memo *next;
+} Memo;
 
-typedef struct {
-    Node *front, *rear;
-} Queue;
+Memo *memo[HASH_SIZE];
 
-typedef struct VisitedNode {
-    unsigned long h;
-    struct VisitedNode *next;
-} VisitedNode;
-
-VisitedNode *visited[HASH_SIZE];
-
-unsigned long hash(char *s, int n) {
-    unsigned long h = 5381;
-    for (int i = 0; i < n; i++)
-        h = ((h << 5) + h) + s[i];
-    return h;
+unsigned long hash(u32 x) {
+    x ^= x >> 16;
+    x *= 0x85ebca6b;
+    x ^= x >> 13;
+    x *= 0xc2b2ae35;
+    x ^= x >> 16;
+    return x % HASH_SIZE;
 }
 
-int is_visited(unsigned long h) {
-    int idx = h % HASH_SIZE;
-    VisitedNode *node = visited[idx];
-    while (node) {
-        if (node->h == h) return 1;
-        node = node->next;
+int memo_get(u32 key, int *found) {
+    unsigned long h = hash(key);
+    Memo *m = memo[h];
+    while (m) {
+        if (m->key == key) {
+            *found = 1;
+            return m->value;
+        }
+        m = m->next;
     }
-    VisitedNode *new_node = malloc(sizeof(VisitedNode));
-    new_node->h = h;
-    new_node->next = visited[idx];
-    visited[idx] = new_node;
+    *found = 0;
     return 0;
 }
 
-void enqueue(Queue *q, State state) {
-    Node *node = malloc(sizeof(Node));
-    node->state = state;
-    node->next = NULL;
-    if (q->rear) q->rear->next = node;
-    else q->front = node;
-    q->rear = node;
+void memo_set(u32 key, int value) {
+    unsigned long h = hash(key);
+    Memo *m = malloc(sizeof(Memo));
+    m->key = key;
+    m->value = value;
+    m->next = memo[h];
+    memo[h] = m;
 }
 
-int dequeue(Queue *q, State *out) {
-    if (!q->front) return 0;
-    Node *tmp = q->front;
-    *out = tmp->state;
-    q->front = tmp->next;
-    if (!q->front) q->rear = NULL;
-    free(tmp);
-    return 1;
+int count_bits(u32 x) {
+    int c = 0;
+    while (x) {
+        c += x & 1;
+        x >>= 1;
+    }
+    return c;
 }
 
-void clear_visited() {
+int dfs(u32 state) {
+    int found;
+    int cached = memo_get(state, &found);
+    if (found) return cached;
+    if (count_bits(state) == 1) {
+        memo_set(state, 1);
+        return 1;
+    }
+
+    for (int i = 0; i < 32; i++) {
+        // Move left
+        if (i >= 2 && ((state >> i) & 1) && ((state >> (i - 1)) & 1) && !((state >> (i - 2)) & 1)) {
+            u32 next = state;
+            next &= ~(1u << i);
+            next &= ~(1u << (i - 1));
+            next |= (1u << (i - 2));
+            if (dfs(next)) {
+                memo_set(state, 1);
+                return 1;
+            }
+        }
+        // Move right
+        if (i <= 29 && ((state >> i) & 1) && ((state >> (i + 1)) & 1) && !((state >> (i + 2)) & 1)) {
+            u32 next = state;
+            next &= ~(1u << i);
+            next &= ~(1u << (i + 1));
+            next |= (1u << (i + 2));
+            if (dfs(next)) {
+                memo_set(state, 1);
+                return 1;
+            }
+        }
+    }
+
+    memo_set(state, 0);
+    return 0;
+}
+
+void clear_memo() {
     for (int i = 0; i < HASH_SIZE; i++) {
-        VisitedNode *node = visited[i];
-        while (node) {
-            VisitedNode *next = node->next;
-            free(node);
-            node = next;
+        Memo *m = memo[i];
+        while (m) {
+            Memo *tmp = m;
+            m = m->next;
+            free(tmp);
         }
-        visited[i] = NULL;
+        memo[i] = NULL;
     }
-}
-
-int can_win_bfs(char *start, int n, int count) {
-    Queue q = {NULL, NULL};
-    char *init = malloc(n);
-    memcpy(init, start, n);
-    enqueue(&q, (State){init, count});
-    is_visited(hash(init, n));
-
-    State cur;
-    while (dequeue(&q, &cur)) {
-        if (cur.count == 1) {
-            free(cur.board);
-            clear_visited();
-            while (dequeue(&q, &cur)) free(cur.board);
-            return 1;
-        }
-
-        for (int i = 0; i < n; i++) {
-            // gauche
-            if (i >= 2 && cur.board[i] == '1' && cur.board[i-1] == '1' && cur.board[i-2] == '0') {
-                char *b = malloc(n);
-                memcpy(b, cur.board, n);
-                b[i] = b[i-1] = '0';
-                b[i-2] = '1';
-                unsigned long h = hash(b, n);
-                if (!is_visited(h))
-                    enqueue(&q, (State){b, cur.count - 1});
-                else
-                    free(b);
-            }
-            // droite
-            if (i + 2 < n && cur.board[i] == '1' && cur.board[i+1] == '1' && cur.board[i+2] == '0') {
-                char *b = malloc(n);
-                memcpy(b, cur.board, n);
-                b[i] = b[i+1] = '0';
-                b[i+2] = '1';
-                unsigned long h = hash(b, n);
-                if (!is_visited(h))
-                    enqueue(&q, (State){b, cur.count - 1});
-                else
-                    free(b);
-            }
-        }
-
-        free(cur.board);
-    }
-
-    clear_visited();
-    return 0;
 }
 
 int main() {
@@ -134,22 +113,27 @@ int main() {
     while (t--) {
         int n;
         scanf("%d", &n);
-        char *board = malloc(n + 1);
-        scanf("%s", board);
+        char *s = malloc(n + 1);
+        scanf("%s", s);
 
-        int count = 0;
-        for (int i = 0; i < n; i++)
-            if (board[i] == '1') count++;
-
-        if (count > 25) {
-            printf("no\n");
-            free(board);
-            continue;
+        // Slide over the board in windows of 32
+        int found = 0;
+        for (int i = 0; i <= n - 1 && !found; i++) {
+            u32 mask = 0;
+            int len = 0;
+            for (int j = i; j < n && len < 32; j++, len++) {
+                if (s[j] == '1') mask |= (1u << len);
+            }
+            if (count_bits(mask) == 0) continue;
+            if (dfs(mask)) {
+                found = 1;
+                break;
+            }
         }
 
-        int result = can_win_bfs(board, n, count);
-        printf(result ? "yes\n" : "no\n");
-        free(board);
+        printf(found ? "yes\n" : "no\n");
+        free(s);
+        clear_memo();
     }
     return 0;
 }
