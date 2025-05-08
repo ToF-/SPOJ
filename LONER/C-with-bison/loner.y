@@ -32,17 +32,18 @@ boards:
 
 board:
     win '\n'                            { printf("yes\n"); }
-  | lose  '\n'                          { printf("no\n"); }
+  ;
     
 win:
    P 
+  | e_plus P e_plus
   | e_plus P P E e_plus
   | e_plus E P P e_plus
   ;
 
 e_plus:
   %empty
-  | E e_plus        { printf("0+\n"); }
+  | e_plus E         { printf("0+\n"); }
   ;
 
 lose:
