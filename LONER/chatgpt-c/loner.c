@@ -5,105 +5,96 @@
 #define MAX_N 32000
 #define HASH_SIZE 1000003
 
-// Bitmask representation for up to 32-bit window
-typedef unsigned int u32;
+typedef struct State {
+    char *bits;
+    int len;
+} State;
 
-typedef struct Memo {
-    u32 key;
-    int value;
-    struct Memo *next;
-} Memo;
+typedef struct Node {
+    unsigned long h;
+    char *bits;
+    int len;
+    struct Node *next;
+} Node;
 
-Memo *memo[HASH_SIZE];
+Node *visited[HASH_SIZE];
 
-unsigned long hash(u32 x) {
-    x ^= x >> 16;
-    x *= 0x85ebca6b;
-    x ^= x >> 13;
-    x *= 0xc2b2ae35;
-    x ^= x >> 16;
-    return x % HASH_SIZE;
+unsigned long hash_bits(const char *bits, int len) {
+    unsigned long h = 5381;
+    for (int i = 0; i < len; i++) {
+        h = ((h << 5) + h) + bits[i];
+    }
+    return h % HASH_SIZE;
 }
 
-int memo_get(u32 key, int *found) {
-    unsigned long h = hash(key);
-    Memo *m = memo[h];
-    while (m) {
-        if (m->key == key) {
-            *found = 1;
-            return m->value;
-        }
-        m = m->next;
+int is_visited(const char *bits, int len) {
+    unsigned long h = hash_bits(bits, len);
+    Node *n = visited[h];
+    while (n) {
+        if (n->len == len && memcmp(n->bits, bits, len) == 0)
+            return 1;
+        n = n->next;
     }
-    *found = 0;
+    Node *new_node = malloc(sizeof(Node));
+    new_node->bits = malloc(len);
+    memcpy(new_node->bits, bits, len);
+    new_node->len = len;
+    new_node->h = h;
+    new_node->next = visited[h];
+    visited[h] = new_node;
     return 0;
 }
 
-void memo_set(u32 key, int value) {
-    unsigned long h = hash(key);
-    Memo *m = malloc(sizeof(Memo));
-    m->key = key;
-    m->value = value;
-    m->next = memo[h];
-    memo[h] = m;
-}
-
-int count_bits(u32 x) {
+int count_ones(const char *bits, int len) {
     int c = 0;
-    while (x) {
-        c += x & 1;
-        x >>= 1;
+    for (int i = 0; i < len; i++) {
+        if (bits[i] == '1') c++;
     }
     return c;
 }
 
-int dfs(u32 state) {
-    int found;
-    int cached = memo_get(state, &found);
-    if (found) return cached;
-    if (count_bits(state) == 1) {
-        memo_set(state, 1);
-        return 1;
-    }
+int dfs(char *bits, int len) {
+    if (is_visited(bits, len)) return 0;
+    if (count_ones(bits, len) == 1) return 1;
 
-    for (int i = 0; i < 32; i++) {
-        // Move left
-        if (i >= 2 && ((state >> i) & 1) && ((state >> (i - 1)) & 1) && !((state >> (i - 2)) & 1)) {
-            u32 next = state;
-            next &= ~(1u << i);
-            next &= ~(1u << (i - 1));
-            next |= (1u << (i - 2));
-            if (dfs(next)) {
-                memo_set(state, 1);
+    for (int i = 0; i < len; i++) {
+        if (i >= 2 && bits[i] == '1' && bits[i-1] == '1' && bits[i-2] == '0') {
+            char *next = malloc(len);
+            memcpy(next, bits, len);
+            next[i] = next[i-1] = '0';
+            next[i-2] = '1';
+            if (dfs(next, len)) {
+                free(next);
                 return 1;
             }
+            free(next);
         }
-        // Move right
-        if (i <= 29 && ((state >> i) & 1) && ((state >> (i + 1)) & 1) && !((state >> (i + 2)) & 1)) {
-            u32 next = state;
-            next &= ~(1u << i);
-            next &= ~(1u << (i + 1));
-            next |= (1u << (i + 2));
-            if (dfs(next)) {
-                memo_set(state, 1);
+        if (i + 2 < len && bits[i] == '1' && bits[i+1] == '1' && bits[i+2] == '0') {
+            char *next = malloc(len);
+            memcpy(next, bits, len);
+            next[i] = next[i+1] = '0';
+            next[i+2] = '1';
+            if (dfs(next, len)) {
+                free(next);
                 return 1;
             }
+            free(next);
         }
     }
 
-    memo_set(state, 0);
     return 0;
 }
 
-void clear_memo() {
+void clear_visited() {
     for (int i = 0; i < HASH_SIZE; i++) {
-        Memo *m = memo[i];
-        while (m) {
-            Memo *tmp = m;
-            m = m->next;
+        Node *n = visited[i];
+        while (n) {
+            Node *tmp = n;
+            n = n->next;
+            free(tmp->bits);
             free(tmp);
         }
-        memo[i] = NULL;
+        visited[i] = NULL;
     }
 }
 
@@ -113,27 +104,14 @@ int main() {
     while (t--) {
         int n;
         scanf("%d", &n);
-        char *s = malloc(n + 1);
-        scanf("%s", s);
+        char *line = malloc(n + 1);
+        scanf("%s", line);
 
-        // Slide over the board in windows of 32
-        int found = 0;
-        for (int i = 0; i <= n - 1 && !found; i++) {
-            u32 mask = 0;
-            int len = 0;
-            for (int j = i; j < n && len < 32; j++, len++) {
-                if (s[j] == '1') mask |= (1u << len);
-            }
-            if (count_bits(mask) == 0) continue;
-            if (dfs(mask)) {
-                found = 1;
-                break;
-            }
-        }
+        int result = dfs(line, n);
+        printf(result ? "yes\n" : "no\n");
 
-        printf(found ? "yes\n" : "no\n");
-        free(s);
-        clear_memo();
+        free(line);
+        clear_visited();
     }
     return 0;
 }
