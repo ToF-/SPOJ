@@ -32,5 +32,5 @@ spec = do
 
         it "evaluate complex D boards" $ do
             loner "110011" `shouldBe` True 
-            loner "1101010011" `shouldBe` True
             loner "1100111111" `shouldBe` True
+            loner "110101001111" `shouldBe` True

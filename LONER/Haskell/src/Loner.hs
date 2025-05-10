@@ -78,6 +78,9 @@ d1 = many e <&> pp <&> some ep <&>  ee <&> pp <&> many e <&> eos
 d2 :: Parser
 d2 = many e <&> pp <&> ee <&> some pp <&> many e <&> eos
 
+d3 :: Parser
+d3 = many e <&> pp <&> many ep <&> ee <&> some pp <&> many e <&> eos
+
 loner :: String -> Bool
-loner = fst . (a <|> b <|> c0 <|> c1 <|> c2 <|> c3 <|> d0 <|> d1)
+loner = fst . (a <|> b <|> c0 <|> c1 <|> c2 <|> c3 <|> d0 <|> d1 <|> d2 <|> d3)
 
