@@ -46,10 +46,13 @@ a :: Parser
 a = many e <&> p <&> many e <&> eos
 
 b :: Parser
-b = many e <&> p <&> p <&> e <&> many e <&> eos
+b = many e <&> pp <&> e <&> many e <&> eos
 
 ep :: Parser
 ep = e <&> p
+
+pe :: Parser
+pe = p <&> e
 
 pp :: Parser
 pp = p <&> p
@@ -57,8 +60,8 @@ pp = p <&> p
 ee :: Parser
 ee = e <&> e
 
-c0 :: Parser
-c0 = many e <&> pp <&> ep  <&> many e <&> eos
+c :: Parser
+c = c1 <|> c2 <|> c3
 
 c1 :: Parser
 c1 = many e <&> pp <&> some ep <&> many e <&> eos
@@ -69,18 +72,33 @@ c2 = many e <&> some pp <&> ep <&> many e <&> eos
 c3 :: Parser
 c3 = many e <&> pp <&> some ep <&> some pp <&> ep <&> many e <&> eos
 
+d :: Parser
+d = d0 <|> d1 <|> d2 <|> d3 <|> d4 <|> d5 <|> d6 <|> d7
+
 d0 :: Parser
 d0 = many e <&> pp <&> ee <&> pp <&> many e <&> eos
 
 d1 :: Parser
-d1 = many e <&> pp <&> some ep <&>  ee <&> pp <&> many e <&> eos
+d1 = many e <&> pp <&> some ep <&> ee <&> pp <&> many e <&> eos
 
 d2 :: Parser
 d2 = many e <&> pp <&> ee <&> some pp <&> many e <&> eos
 
 d3 :: Parser
-d3 = many e <&> pp <&> many ep <&> ee <&> some pp <&> many e <&> eos
+d3 = many e <&> pp <&> some ep <&> ee <&> some pp <&> many e <&> eos
+
+d4 :: Parser
+d4 = many e <&> pp <&> ee <&> some pe <&> pp <&> many e <&> eos
+
+d5 :: Parser
+d5 = many e <&> pp <&> some ep <&> ee <&> some pe <&> pp <&> many e <&> eos
+
+d6 :: Parser
+d6 = many e <&> pp <&> ee <&> some pp <&> some pe <&> pp <&> many e <&> eos
+
+d7 :: Parser
+d7 = many e <&> pp <&> some ep <&> ee <&> some pp <&> some pe <&> pp <&> many e <&> eos
 
 loner :: String -> Bool
-loner = fst . (a <|> b <|> c0 <|> c1 <|> c2 <|> c3 <|> d0 <|> d1 <|> d2 <|> d3)
+loner = fst . ( a <|> b <|> c <|> d )
 

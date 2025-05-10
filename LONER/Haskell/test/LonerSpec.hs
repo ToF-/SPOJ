@@ -34,3 +34,7 @@ spec = do
             loner "110011" `shouldBe` True 
             loner "1100111111" `shouldBe` True
             loner "110101001111" `shouldBe` True
+            loner "110010101011" `shouldBe` True 
+            loner "11010100101011" `shouldBe` True 
+            loner "11001111101011" `shouldBe` True
+            loner "110101001111101011" `shouldBe` True
