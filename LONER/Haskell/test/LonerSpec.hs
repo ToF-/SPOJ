@@ -1,4 +1,4 @@
-module LonerSpec
+module LonerSpec (spec)
     where
 
 import Test.Hspec
@@ -6,43 +6,26 @@ import Loner
 
 spec :: SpecWith ()
 spec = do
-    describe "capture" $ do 
-        it "changes a board by removing a pawn and moving another" $ do
-            capture "110" `shouldBe` Just "001"
-            capture "011" `shouldBe` Just "100"
-        it "is only possible for pairs of pawn before or after a free square" $ do
-            capture "000" `shouldBe` Nothing
-            capture "0" `shouldBe` Nothing
+    describe "loner" $ do
+        it "evaluate trivial cases" $ do
+            loner "1" `shouldBe` True
+            loner "0" `shouldBe` False
+            loner ""  `shouldBe` False
 
-    describe "captures" $ do
-        it "yields all possible captures on a board" $ do
-            captures "110" `shouldBe` ["001"]
-            captures "011" `shouldBe` ["100"]
-            captures "01"  `shouldBe` []
-            captures "0110" `shouldBe` ["1000","0001"]
-            captures "01110" `shouldBe` ["10010","01001"]
-
-    describe "moves" $ do
-        it "yields all possible captures that are not a fail" $ do
-            moves "0110" `shouldBe` ["1000","0001"]
-
-    describe "evaluate" $ do
-        it "finds out if a board can be won" $ do
-            evaluate ["0110011"] `shouldBe` True
-            evaluate ["111001"] `shouldBe` False
-
-    describe "Loner" $ do
-        it "wins if the board has only one pawn" $ do
+        it "evaluate simple cases" $ do
+            loner "10" `shouldBe` True
+            loner "11" `shouldBe` False
+            loner "100" `shouldBe` True
+            loner "101" `shouldBe` False
             loner "001" `shouldBe` True
-            loner "000010000" `shouldBe` True
 
-        it "looses if the board has isolated pawns" $ do
-            loner "10001" `shouldBe` False
-
-        it "can transform sequences of 2 pawns followed by a free square" $ do
+        it "evaluate 3 sized boards" $ do
             loner "110" `shouldBe` True
-            loner "11000" `shouldBe` True
+            loner "111" `shouldBe` False 
+            loner "0000110000" `shouldBe` True
 
-        it "can transform sequences of a free square and 2 pawns" $ do
-            loner "011" `shouldBe` True
-            loner "00011" `shouldBe` True
+        it "evaluate complex C boards" $ do
+            loner "1101" `shouldBe` True 
+            loner "110101" `shouldBe` True
+            loner "111101" `shouldBe` True 
+            loner "110101111101" `shouldBe` True

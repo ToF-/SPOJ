@@ -1,5 +1,6 @@
 module Main (main) where
 
-import Loner
-
-main = process
+main :: IO ()
+main = do
+    putStrLn "yes"
+    putStrLn "no"
