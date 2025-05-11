@@ -1,5 +1,4 @@
-module Loner (loner)
-    where
+module Loner (loner) where
 
 type Parser = String -> (Bool, String)
 

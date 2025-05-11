@@ -1,69 +1,151 @@
 
-import Data.Maybe
+type Parser = String -> (Bool, String)
 
-capture :: String -> Maybe String
-capture "110" = Just "001"
-capture "011" = Just "100"
-capture s = Nothing
+parseChar :: Char -> Parser
+parseChar c (x:xs) | c == x = (True, xs)
+parseChar _ xs     = (False,xs)
+
+eos :: Parser
+eos "" = (True,"")
+eos s  = (False, s)
+
+infixl 7 <&>
+infixl 6 <|>
+
+(<&>) :: Parser -> Parser -> Parser
+(parserA <&> parserB) s =
+        case parserA s of
+            (True, t) -> parserB t
+            r -> r
 
 
+(<|>) :: Parser -> Parser -> Parser
+(parserA <|> parserB) s =
+        case parserA s of
+            (False,_) -> parserB s
+            r -> r
 
-captures' :: String -> [Maybe String]
-captures' (a:b:c:xs) = fmap (++ xs) (capture [a,b,c]) : fmap (fmap ( a:)) (captures' (b:c:xs))
-captures' _ = []
+many :: Parser -> Parser
+many parser s = case parser s of
+                  (False, _) -> (True, s)
+                  (True, t) -> many parser t
 
-viable :: Maybe String -> Bool
-viable Nothing = False
-viable (Just s) = null $ filter (> 2) $ zipWith (-) (tail ps) ps
-    where ps = map fst $ filter (\(_,x) -> x == '1') $ zip [0..] s
+some :: Parser -> Parser
+some parser s = case parser s of
+                  (True, t) -> many parser t
+                  r -> r
+p :: Parser
+p = parseChar '1'
 
-moves' :: String -> [Maybe String]
-moves' (a:b:c:xs) = filter viable $ fmap (++ xs) (capture [a,b,c]) : fmap (fmap (a:)) (moves' (b:c:xs))
-moves' _ = []
+e :: Parser
+e = parseChar '0'
 
-moves :: String -> [String]
-moves = catMaybes . moves'
 
-evaluate :: [String] -> Bool
-evaluate [] = False
-evaluate bs | or $ map containsSinglePawn bs = True
-evaluate bs = if ms == bs then True else evaluate ms
-    where ms = bs >>= moves
+a_patterns :: Parser
+a_patterns = es <&> p <&> es <&> eos
 
-captures :: String -> [String]
-captures = catMaybes . captures'
+b_patterns :: Parser
+b_patterns = es <&> pp <&> e <&> es <&> eos
 
-containsSinglePawn :: String -> Bool
-containsSinglePawn ['1'] = True
-containsSinglePawn ['0'] = False
-containsSinglePawn ('0':xs) = containsSinglePawn xs
-containsSinglePawn ('1':xs) = not ('1' `elem` xs)
+ep :: Parser
+ep = e <&> p
 
-transform :: String -> String
-transform [] = []
-transform ('0':'1':'1':xs) = '1':'0':'0':transform xs
-transform ('1':'1':'0':xs) = '0':'0':'1':transform xs
-transform ('0':xs) = '0':transform xs
-transform ('1':xs) = '1':transform xs
+pe :: Parser
+pe = p <&> e
+
+pp :: Parser
+pp = p <&> p
+
+ee :: Parser
+ee = e <&> e
+
+es :: Parser
+es = many e
+
+c_patterns :: Parser
+c_patterns = c1 <|> c2 <|> c3
+
+c1 :: Parser
+c1 = es <&> pp <&> some ep <&> es <&> eos
+
+c2 :: Parser
+c2 = es <&> some pp <&> ep <&> es <&> eos
+
+c3 :: Parser
+c3 = es <&> pp <&> some ep <&> some pp <&> ep <&> es <&> eos
+
+d_patterns :: Parser
+d_patterns = d0 <|> d1 <|> d2 <|> d3 <|> d4 <|> d5 <|> d6 <|> d7
+
+d0 :: Parser
+d0 = es <&> pp <&> ee <&> pp <&> es <&> eos
+
+d1 :: Parser
+d1 = es <&> pp <&> some ep <&> ee <&> pp <&> es <&> eos
+
+d2 :: Parser
+d2 = es <&> pp <&> ee <&> some pp <&> es <&> eos
+
+d3 :: Parser
+d3 = es <&> pp <&> some ep <&> ee <&> some pp <&> es <&> eos
+
+d4 :: Parser
+d4 = es <&> pp <&> ee <&> some pe <&> pp <&> es <&> eos
+
+d5 :: Parser
+d5 = es <&> pp <&> some ep <&> ee <&> some pe <&> pp <&> es <&> eos
+
+d6 :: Parser
+d6 = es <&> pp <&> ee <&> some pp <&> some pe <&> pp <&> es <&> eos
+
+d7 :: Parser
+d7 = es <&> pp <&> some ep <&> ee <&> some pp <&> some pe <&> pp <&> es <&> eos
+
+e_patterns :: Parser
+e_patterns = e0 <|> e1 <|> e2 <|> e3 <|> e4 <|> e5 <|> e6 <|> e7
+
+e0 :: Parser
+e0 = es <&> pp <&> pp <&> ep <&> pp <&> es <&> eos
+
+e1 :: Parser
+e1 = es <&> pp <&> some ep <&> pp <&> ep <&> pp <&> es <&> eos
+
+e2 :: Parser
+e2 = es <&> pp <&> pp <&> ep <&> some pp <&> es <&> eos
+
+e3 :: Parser
+e3 = es <&> pp <&> some ep <&> pp <&> ep <&> some pp <&> es <&> eos
+
+e4 :: Parser
+e4 = es <&> pp <&> pp <&> ep <&> some pe <&> pp <&> es <&> eos
+
+e5 :: Parser
+e5 = es <&> pp <&> some ep <&> pp <&> ep <&> some pe <&> pp <&> es <&> eos
+
+e6 :: Parser
+e6 = es <&> pp <&> pp <&> ep <&> some pp <&> some pe <&> pp <&> es <&> eos
+
+e7 :: Parser
+e7 = es <&> pp <&> some ep <&> pp <&> ep <&> some pp <&> some pe <&> pp <&> es <&> eos
+
+all_patterns :: Parser
+all_patterns = a_patterns <|> b_patterns <|> c_patterns <|> d_patterns <|> e_patterns
 
 loner :: String -> Bool
-loner s | containsSinglePawn (transform s) = True
-loner s = False
+loner s = fst (all_patterns s) || fst (all_patterns (reverse s))
 
-readInt :: IO Int
-readInt = readLn 
 
-processTestCase :: Int -> IO ()
-processTestCase 0 = return ()
-processTestCase n = do
-    l <- readInt
-    s <- getLine
-    putStrLn $ if evaluate [take l s] then "yes" else "no"
-    processTestCase (pred n)
+process :: Int -> IO ()
+process 0 = return () 
+process n = do
+    _ <- read <$> getLine :: IO Int
+    board <- getLine
+    case loner board of
+      True -> putStrLn "yes"
+      False -> putStrLn "no"
+    process (pred n)
 
-process :: IO ()
-process = do
-    t <- readInt
-    processTestCase t
-
-main = process
+main :: IO ()
+main = do
+    test_cases <- read <$> getLine
+    process test_cases
