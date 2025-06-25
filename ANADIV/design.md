@@ -105,5 +105,44 @@ permutations of 8740 =
 8740,8704,8470,8407,8074,8047,7840,7804,7480,7408,7084,7048,4870,4807,4780,4708,4087,4078,0874,0847,0784,0748,0487,0478
 
 
+permutations of 991 = 
+
+    [9] :: permutations of 91
+        permutations of 91 = 91,19
+    991,919
+
+ ∪  [9] :: permutations of 91
+        permutations of 91 = 91,19
+    991,919
+
+ ∪  [1] :: permutations of 99
+        permutations of 99 = 99
+    199
+991,919,199
+
+permutations of 5221 = 
+    [5] :: permutations of 221 
+        permutations of 221 =
+        [2] :: permutations of 21
+            permutations of 21 = 21,12
+        221,212
+    ∪   permutations of 221
+    ∪   permutations of 122
+        [1] :: permutations of 22
+        122
+   5221,5212,5122
+∪  [2] :: permutations of 521
+   2521,2512,2251,2215,2152,2125
+   [2] :: permutations of 521
+∪  [1] :: permutations of 522
+    permutations of 522
+        522,252,225
+    1522,1252,1225
+5221,5212,5122,2521,2512,2251,2215,2152,2125,1522,1252,1225
+    
+
+
+
+
 
 
