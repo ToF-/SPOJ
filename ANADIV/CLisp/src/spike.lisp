@@ -1,18 +1,20 @@
+; read pairs of numbers on each line and print them
 
-(ql:quickload "str")
+(defparameter result nil)
+(defun read-pair ()
+  (handler-case
+    (let* ((line (concatenate 'string "(" (read-line) ")"))
+             (input (make-string-input-stream line))
+             (pair (read input)))
+      pair)
+    (end-of-file () nil)))
 
-; read numbers on each line until eof and print numbers with index
-; returns a list of numbers
+(defun process ()
+  (let ((pair (read-pair)))
+    (if pair
+      (progn
+        (format t "~A ~A ~%" pair (type-of pair))
+        (process))
+      )))
 
-
-(defun spike ()
-  (let* ((data (read-line *standard-input*))
-         (words (str:words data)))
-    (if data
-      (format t "~A ~A ~%" words (type-of words))
-      (format t "EOF ~%"))))
-
-(spike)
-(spike)
-(spike)
-
+(process)
