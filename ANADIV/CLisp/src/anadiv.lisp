@@ -5,6 +5,16 @@
       (cons (rem n 10) (digits-aux (truncate n 10)))))
   (sort (digits-aux n) #'>))
 
+(defun all-permutations (list)
+  (cond
+    ((null list) (list list))
+    ((null (cdr list)) (list list))
+    (t (loop for element in list
+             append
+             (mapcar
+               (lambda (l) (cons element l))
+               (all-permutations
+                 (remove element list)))))))
 
 (defun extract (n l)
   (defun extract-aux (n lst rst)
@@ -23,13 +33,3 @@
            (extract n lst)
            (extractions-aux (1+ n) m lst)))))
   (extractions-aux 0 (length lst) lst))
-
-(defun permutations (lst)
-  (defun permutations-aux (lst)
-    (cond
-      ((null lst) nil)
-      (t (let ((x (car lst))
-               (r (cdr lst)))
-           (map 'list #'(lambda (l) (cons x l))
-                (permutations-aux r))))))
-  (map 'list #'permutations-aux (extractions lst)))
