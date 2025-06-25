@@ -23,3 +23,13 @@
            (extract n lst)
            (extractions-aux (1+ n) m lst)))))
   (extractions-aux 0 (length lst) lst))
+
+(defun permutations (lst)
+  (defun permutations-aux (lst)
+    (cond
+      ((null lst) nil)
+      (t (let ((x (car lst))
+               (r (cdr lst)))
+           (map 'list #'(lambda (l) (cons x l))
+                (permutations-aux r))))))
+  (map 'list #'permutations-aux (extractions lst)))

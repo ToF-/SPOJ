@@ -19,5 +19,9 @@
              (assert-equal '((1 2 3)(2 1 3)(3 1 2)) (extractions '(1 2 3)))
              )
 
+(define-test permutations
+             (assert-equal '((1)) (permutations '(1)))
+             )
+
 (run-tests :all)
 (sb-ext:quit)
