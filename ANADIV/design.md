@@ -14,7 +14,8 @@ A number is divisible by:
 - 3, if the sum of the digits is divisible by 3.
 - 4, if the last two digits form a number divisible by 4.
 - 5, if the last digit is 0 or 5.
-- 7, if the number without the last digit minus (last digit x 2) is divisible by 7
+- 6, if the sum of the digits is divisible by 3 and the last digit is even
+- 7, if the number without the last digit minus (last digit x 2) is divisible by 7.
 - 8, if the last three digits form a number divisible by 8.
 - 9, if the sum of the digits is divisible by 9.
 - 10, if the last digit is a 0.
@@ -51,99 +52,28 @@ b[0] = 1, b[1] = 2, b[2] = 2, b[3] = 2, b[4] = 1, b[5] = 2, b[6] = 1, b[7]=1, b[
 
 an anagram of N = permutation of all digits of N that is ≠ N
 
-permutations of 8740 =
-   
-   [8] :: permutations of 740
-        [7] :: permutations of 40
-            permutations of 40 = 40,04
-        740,704
-    ∪   [4] :: permutations of 70
-            permutations of 70 = 70,07
-        470,407
-    ∪   [0] :: permutations of 74
-            permutations of 74 = 74,47
-        074,047
+all permutations of a list L :
+    for each element E in L
+        cons E with all permutations of list L minus E
 
-    8740,8704,8470,8407,8074,8047
+naive method:
 
- ∪ [7] :: permutations of 840
-        [8] :: permutations of 40
-            permutations of 40 = 40,04
-        840,804
-    ∪   [4] :: permutations of 80
-            permutations of 80 = 80,08
-        480,408
-    ∪   [0] :: permutations of 84
-            permutations of 84 = 84,48
-        084,048
-    7840,7804,7480,7408,7084,7048
-
- ∪ [4] :: permutations of 870
-        [8] :: permutations of 70
-            permutations of 70 = 70,07
-        870,807
-    ∪   [7] :: permutations of 80
-            permutations of 80 = 80,08
-        780,708
-    ∪   [0] :: permutations of 87
-            permutations of 87 = 87,78
-        087,078
-    4870,4807,4780,4708,4087,4078
-    
- ∪ [0] :: permutations of 874
-        [8] :: permutations of 74
-            permutations of 74 = 74,47
-        874,847
-    ∪   [7] :: permutations of 84
-            permutations of 84 = 84,48
-        784,748
-    ∪   [4] :: permutations of 87
-            permutations of 87 = 87,78
-        487,478
-    0874,0847,0784,0748,0487,0478
+    - compute Pi,Pj,…,Pk, all permutations of the number, sorted in decreasing order
+    - from Pi to Pk:
+        if Pi != N:
+            - if M = 1 → S = Pi
+            - if M = 2 & Pi[l] is even → S = Pi
+            - if M = 3 & Sum(Pi[…]) is not divisible by 3 → S = -1
+            - if M = 3 & Sum(Pi[…]) is divisible by 3 → S = Pi
+            - if M = 4 & Pi[l-1,l] is divisible by 4 → S = Pi
+            - if M = 5 & Pi[l] is divisible by 5 → S = Pi
+            - if M = 6 & Sum(Pi[…]) is not divisible by 3 → S = -1
+            - if M = 6 & Pi[l] is even & Sum(Pi[…]) is divisible by 3 → S = Pi
+            - fi M = 7 & Pi
 
 
-8740,8704,8470,8407,8074,8047,7840,7804,7480,7408,7084,7048,4870,4807,4780,4708,4087,4078,0874,0847,0784,0748,0487,0478
+            - if M = 9 & Pi is not divisible by 9 → S = -1
+            - if Pi ≠ N & Pi is divisible by M → S = Pi
 
-
-permutations of 991 = 
-
-    [9] :: permutations of 91
-        permutations of 91 = 91,19
-    991,919
-
- ∪  [9] :: permutations of 91
-        permutations of 91 = 91,19
-    991,919
-
- ∪  [1] :: permutations of 99
-        permutations of 99 = 99
-    199
-991,919,199
-
-permutations of 5221 = 
-    [5] :: permutations of 221 
-        permutations of 221 =
-        [2] :: permutations of 21
-            permutations of 21 = 21,12
-        221,212
-    ∪   permutations of 221
-    ∪   permutations of 122
-        [1] :: permutations of 22
-        122
-   5221,5212,5122
-∪  [2] :: permutations of 521
-   2521,2512,2251,2215,2152,2125
-   [2] :: permutations of 521
-∪  [1] :: permutations of 522
-    permutations of 522
-        522,252,225
-    1522,1252,1225
-5221,5212,5122,2521,2512,2251,2215,2152,2125,1522,1252,1225
-    
-
-
-
-
-
+problem: if N is 1000 digits long, the total number of permutations in 1000!, so 
 
