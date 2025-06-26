@@ -21,6 +21,7 @@ A number is divisible by:
 
 e.g 8470 is divisible by 7 ?  847 - 2 x 0 = 845
 e.g 2023 is divisible by 7 ?  202 - 2 x 3 = 196, 196 mod 7 = 0 
+e.g 49 is divisible by 7 ? 4 - 2 x 9 = -16
 
 
 e.g : 35655243119027
