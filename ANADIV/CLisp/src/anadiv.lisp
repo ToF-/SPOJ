@@ -16,3 +16,16 @@
                (all-permutations
                  (remove element elements)))))))
 
+(defun divisible-7-p (n)
+  (cond
+    ((or (= 0 n) (= 7 n) (= (- 7) n)) t)
+    ((> (abs n) 10)
+     (multiple-value-bind (q r)
+       (truncate n 10)
+       (let ((m (- q (* 2 r))))
+         (progn
+           (format t "n:~A q:~A r:~A m:~A ~%" n q r m)
+           (divisible-7-p m)))))
+    (t nil)))
+
+

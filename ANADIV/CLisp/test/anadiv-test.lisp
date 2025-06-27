@@ -16,5 +16,10 @@
              (assert-equal '((1 2 3) (1 3 2) (2 1 3) (2 3 1) (3 1 2) (3 2 1)) (all-permutations '(1 2 3)))
              )
 
+(define-test divisible-by-7
+             (assert-equal t (divisible-7-p 7))
+             (assert-equal t (divisible-7-p 14))
+             )
+
 (run-tests :all)
 (sb-ext:quit)
