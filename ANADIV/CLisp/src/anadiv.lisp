@@ -14,6 +14,11 @@
     0
     (+ (car elements) (* 10 (lan (cdr elements))))))
 
+(defun nal-minus (a b)
+  (cond
+    ((null b) a)
+    (t (cons (- (car a) (car b)) (nal-minus (cdr a) (cdr b))))))
+
 (defun digits (n)
   (sort (nal n) #'<))
 

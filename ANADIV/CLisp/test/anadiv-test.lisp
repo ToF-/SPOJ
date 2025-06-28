@@ -26,6 +26,12 @@
                  (assert-equal n (lan (nal n))))
              )
 
+(define-test number-as-list-minus
+             (assert-equal 4 (lan (nal-minus (nal 7) (nal 3))))
+             (assert-equal 15 (lan (nal-minus (nal 18) (nal 3))))
+             (assert-equal 17 (lan (nal-minus (nal 22) (nal 5))))
+             )
+
 (define-test all-permutations
              (assert-equal '(()) (all-permutations '()))
              (assert-equal '((1)) (all-permutations '(1)))
