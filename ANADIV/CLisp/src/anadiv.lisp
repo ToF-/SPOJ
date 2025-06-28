@@ -1,9 +1,21 @@
+(defun number-pair-from-string (input)
+  (with-input-from-string (s input)
+    (cons (read s) (read s))))
+
+(defun nal (n)
+  (if (= n 0)
+    ()
+    (multiple-value-bind (q r)
+      (truncate n 10)
+      (cons r (nal q)))))
+
+(defun lan (elements)
+  (if (null elements)
+    0
+    (+ (car elements) (* 10 (lan (cdr elements))))))
+
 (defun digits (n)
-  (defun digits-aux (n)
-    (if (= n 0)
-      ()
-      (cons (rem n 10) (digits-aux (truncate n 10)))))
-  (sort (digits-aux n) #'>))
+  (sort (nal n) #'<))
 
 (defun all-permutations (elements)
   (cond
@@ -16,16 +28,5 @@
                (all-permutations
                  (remove element elements)))))))
 
-(defun divisible-7-p (n)
-  (cond
-    ((or (= 0 n) (= 7 n) (= (- 7) n)) t)
-    ((> (abs n) 10)
-     (multiple-value-bind (q r)
-       (truncate n 10)
-       (let ((m (- q (* 2 r))))
-         (progn
-           (format t "n:~A q:~A r:~A m:~A ~%" n q r m)
-           (divisible-7-p m)))))
-    (t nil)))
 
 

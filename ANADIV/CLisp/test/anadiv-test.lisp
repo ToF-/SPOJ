@@ -4,9 +4,26 @@
 (setq *print-failures* t)
 (load "src/anadiv")
 
+(define-test number-pair-from-string
+             (assert-equal (cons 4807 7) (number-pair-from-string "4807 7"))
+             )
+
 (define-test digits
-             (assert-equal '(8 7 4 0) (digits 4807))
-             (assert-equal '(9 9 5 4 2) (digits 54929))
+             (assert-equal '(0 4 7 8) (digits 4807))
+             (assert-equal '(2 4 5 9 9) (digits 54929))
+             )
+
+(define-test number-as-list
+             (assert-equal '(7 0 8 4) (nal 4807))
+             (assert-equal '(1 8 2) (nal 281))
+             )
+
+(define-test list-as-number
+             (assert-equal 7 (lan '(7)))
+             (assert-equal 217 (lan '(7 1 2)))
+             (assert-equal 7084 (lan '(4 8 0 7)))
+             (let ((n (random 100000)))
+                 (assert-equal n (lan (nal n))))
              )
 
 (define-test all-permutations
@@ -16,10 +33,6 @@
              (assert-equal '((1 2 3) (1 3 2) (2 1 3) (2 3 1) (3 1 2) (3 2 1)) (all-permutations '(1 2 3)))
              )
 
-(define-test divisible-by-7
-             (assert-equal t (divisible-7-p 7))
-             (assert-equal t (divisible-7-p 14))
-             )
 
 (run-tests :all)
 (sb-ext:quit)
