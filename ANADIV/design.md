@@ -75,5 +75,26 @@ naive method:
             - if M = 9 & Pi is not divisible by 9 → S = -1
             - if Pi ≠ N & Pi is divisible by M → S = Pi
 
-problem: if N is 1000 digits long, the total number of permutations in 1000!, so 
+problem: if N is 1000 digits long, the total number of permutations in 1000!, so don't compute all permutations.
+
+problem: given a number N with digits D1D2…Dn, what is the max anagram < N, i.e a permutation M of D1D2…Dn such that there is no permutation of D1D2…Dn between N and M
+e.g. max lower anagram of 4807 is 4780
+e.g. max lower anagram of 32768 is 32687
+
+4807 → 4870 ? no
+4807 → 4708 → 4780
+
+3012 → 3021 ? no
+3012 → 3210 ? no
+3012 → 3201 ? no
+3012 → 3102 ? no
+3012 → 3120 ? no
+3012 → 2013 → 2310
+
+
+1871 → 1817
+1817 → 1718 → 1781
+1781 → 1718
+1718 → 1178 → 1187
+1187 → 1178
 

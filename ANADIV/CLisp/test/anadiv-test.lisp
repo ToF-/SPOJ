@@ -26,6 +26,11 @@
                  (assert-equal n (lan (nal n))))
              )
 
+(define-test number-as-list-9-complement
+             (assert-equal 8 (lan (nal-9-complement (nal 1))))
+             (assert-equal 5192 (lan (nal-9-complement (nal 4807))))
+             )
+
 (define-test number-as-list-minus
              (assert-equal 4 (lan (nal-minus (nal 7) (nal 3))))
              (assert-equal 15 (lan (nal-minus (nal 18) (nal 3))))

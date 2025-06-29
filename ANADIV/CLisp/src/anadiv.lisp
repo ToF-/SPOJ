@@ -14,6 +14,11 @@
     0
     (+ (car elements) (* 10 (lan (cdr elements))))))
 
+(defun nal-9-complement (digits)
+  (if (null digits)
+    ()
+    (cons (- 9 (car digits)) (nal-9-complement (cdr digits)))))
+
 (defun nal-minus (a b)
   (cond
     ((null b) a)
