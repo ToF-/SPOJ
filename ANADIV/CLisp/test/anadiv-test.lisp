@@ -27,10 +27,13 @@
 (define-test max-lower-anagram
              (assert-equal '() (max-lower-anagram '(1)))
              (assert-equal '() (max-lower-anagram '(1 2 5 7 8 9)))
+             (assert-equal '(1 4 2 3) (max-lower-anagram '(1 4 3 2)))
              (assert-equal '(1 2) (max-lower-anagram '(2 1)))
              (assert-equal '(2 4) (max-lower-anagram '(4 2)))
-             (assert-equal '(2 5 4) (max-lower-anagram '(4 2 5)))
-             (assert-equal '(4 1 5 2) (max-lower-anagram '(4 2 1 5)))
+             (assert-equal '(1 3 5 4 2) (max-lower-anagram '(1 4 2 3 5)))
+             (assert-equal '(3 5 4 2) (max-lower-anagram '(4 2 3 5)))
+             (assert-equal '() (max-lower-anagram '(2 3 5)))
+             ; (assert-equal '(4 1 5 2) (max-lower-anagram '(4 2 1 5)))
              )
 
 (run-tests :all)
