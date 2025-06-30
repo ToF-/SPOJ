@@ -28,7 +28,16 @@
   (let ((split (split-digits digits)))
     (if (null (cadr split))
       '()
-      '(0 4 7 8))))
+      (let* ((pref (car split))
+             (suff (cadr split))
+             (l (car (last pref)))
+             (pre (butlast pref))
+             (sub (sort suff #'>))
+             (new (car sub))
+             (post (cdr sub)))
+        (format t "pref:~A suff:~A pre:~A l:~A sub:~A new:~A post:~A~%" pref suff pre l sub new post)
+        (append pre (list new) (sort (cons l post) #'> ))))))
+
 
 (defun nal-9-complement (digits)
   (if (null digits)

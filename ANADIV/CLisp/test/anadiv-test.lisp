@@ -23,6 +23,9 @@
 (define-test max-lower-anagram
              (assert-equal '() (max-lower-anagram '(0 4 7 8)))
              (assert-equal '(0 4 7 8) (max-lower-anagram '(0 4 8 7)))
+             (assert-equal '(4 7 8 0) (max-lower-anagram '(4 8 0 7)))
+             (assert-equal '(4 7 0 8) (max-lower-anagram '(4 7 8 0)))
+             (assert-equal '(4 0 8 7) (max-lower-anagram '(4 7 0 8)))
              )
 
 (define-test number-as-list
