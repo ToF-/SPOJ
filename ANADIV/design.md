@@ -77,24 +77,43 @@ naive method:
 
 problem: if N is 1000 digits long, the total number of permutations in 1000!, so don't compute all permutations.
 
-problem: given a number N with digits D1D2…Dn, what is the max anagram < N, i.e a permutation M of D1D2…Dn such that there is no permutation of D1D2…Dn between N and M
-e.g. max lower anagram of 4807 is 4780
-e.g. max lower anagram of 32768 is 32687
+problem: given a number K with N digits {d1,d2,…,dn}, what is the maximum anagram of N that is < N,
+i.e a permutation M of {d1,d2,…,dn} that there is no permutation {d1,d2,…,dn} between N and M
 
-4807 → 4870 ? no
-4807 → 4708 → 4780
+let L = ⌊K/10ⁿ⌋ where n = N - length of { d1,d2,…,di } such that d1 ≤ d2 ≤ … ≤ di
+let M = K - L
 
-3012 → 3021 ? no
-3012 → 3210 ? no
-3012 → 3201 ? no
-3012 → 3102 ? no
-3012 → 3120 ? no
-3012 → 2013 → 2310
+if M = n = 0 , then S = ∅
 
+let {dj,dk,…,dm} digits of M
 
-1871 → 1817
-1817 → 1718 → 1781
-1781 → 1718
-1718 → 1178 → 1187
-1187 → 1178
+if dj ≤ dk ≤ … ≤ dm then S = {d1,d2,…,dm} ++ largest anagram of {di,dj,dk}
+else S = { d1,d2,…,di } ++ maximum lower anagram of { dj,dk,…,dm }
+
+eg LLA(238712)
+L = 238
+M = 712
+S = 238 ++ LLA(712)
+  L = 7
+  M = 12
+  S = 2 ++ LA(17)
+  S = 271
+S = 238271
+
+LLA(238271)
+L = 238
+M = 271
+S = 238 ++ LLA(271)
+   L = 27
+   M = 1
+   S = 21 ++ LA(7)
+   S = 217
+S = 238217
+
+LLA(238217)
+L = 238
+M = 217
+S = 237 ++ LA(218)
+S = 237821
+
 
