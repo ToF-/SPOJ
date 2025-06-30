@@ -14,6 +14,16 @@
     0
     (+ (car elements) (* 10 (lan (cdr elements))))))
 
+(defun split-digits (digits)
+  (defun split-digits-aux (dgts last-digit left)
+    (if (null dgts)
+      (list left '())
+      (let ((digit (car dgts)))
+        (if (< digit last-digit)
+          (list left dgts)
+          (split-digits-aux (cdr dgts) digit (append left (list digit)))))))
+  (split-digits-aux digits 0 '()))
+
 (defun nal-9-complement (digits)
   (if (null digits)
     ()

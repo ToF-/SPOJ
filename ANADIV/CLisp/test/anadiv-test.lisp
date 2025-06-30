@@ -13,6 +13,13 @@
              (assert-equal '(2 4 5 9 9) (digits 54929))
              )
 
+(define-test split-digits
+             (assert-equal '((1) ()) (split-digits '(1)))
+             (assert-equal '((4 8) (0 7)) (split-digits '(4 8 0 7)))
+             (assert-equal '((3) (2 7 6 8)) (split-digits '(3 2 7 6 8)))
+             (assert-equal '((9) (8 6 5 1)) (split-digits '(9 8 6 5 1)))
+             )
+
 (define-test number-as-list
              (assert-equal '(7 0 8 4) (nal 4807))
              (assert-equal '(1 8 2) (nal 281))
