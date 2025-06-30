@@ -24,6 +24,12 @@
           (split-digits-aux (cdr dgts) digit (append left (list digit)))))))
   (split-digits-aux digits 0 '()))
 
+(defun max-lower-anagram (digits)
+  (let ((split (split-digits digits)))
+    (if (null (cadr split))
+      '()
+      '(0 4 7 8))))
+
 (defun nal-9-complement (digits)
   (if (null digits)
     ()

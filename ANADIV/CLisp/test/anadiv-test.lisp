@@ -20,6 +20,11 @@
              (assert-equal '((9) (8 6 5 1)) (split-digits '(9 8 6 5 1)))
              )
 
+(define-test max-lower-anagram
+             (assert-equal '() (max-lower-anagram '(0 4 7 8)))
+             (assert-equal '(0 4 7 8) (max-lower-anagram '(0 4 8 7)))
+             )
+
 (define-test number-as-list
              (assert-equal '(7 0 8 4) (nal 4807))
              (assert-equal '(1 8 2) (nal 281))
