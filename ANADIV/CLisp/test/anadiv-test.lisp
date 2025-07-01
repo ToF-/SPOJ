@@ -60,7 +60,7 @@
              (assert-equal '(1 2 3) (digit-subtract '(1 3 4) '(1 1)))
              (assert-equal '(1 2 3 4) (digit-subtract '(1 4 5 6) '(2 2 2)))
              (assert-equal '(2 3) (digit-subtract '(3 1) '(8)))
-             (assert-equal '(9 8 9)    (digit-subtract '(1 0 0 6) '(1 7)))
+             (assert-equal '(0 9 8 9)    (digit-subtract '(1 0 0 6) '(1 7)))
              )
 
 (define-test divisible
@@ -75,6 +75,14 @@
              (assert-equal t (divisible (number-to-digits 4810) 5))
              (assert-equal nil (divisible (number-to-digits 4807) 6))
              (assert-equal t (divisible (number-to-digits 4806) 6))
+             (assert-equal t (divisible (number-to-digits (* 14 14 4807)) 7))
+             (assert-equal nil (divisible (number-to-digits 4807) 7))
+             (assert-equal t (divisible (number-to-digits 4862) 8))
+             (assert-equal nil (divisible (number-to-digits 4807) 8))
+             (assert-equal nil (divisible (number-to-digits 4807) 9))
+             (assert-equal t (divisible (number-to-digits 4806) 9))
+             (assert-equal nil (divisible (number-to-digits 4807) 10))
+             (assert-equal t (divisible (number-to-digits 4810) 10))
              )
 (run-tests :all)
 (sb-ext:quit)

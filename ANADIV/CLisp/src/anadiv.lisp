@@ -79,17 +79,45 @@
 
 (defun digit-subtract (digits sub)
   
+  (defun decrease (digits)
+    (cond
+      ((null digits) ())
+      ((= 0 (car digits)) (cons 9 (decrease (cdr digits))))
+      (t (cons (- (car digits) 1) (cdr digits)))))
+
   (defun digit-subtract-aux (digits sub result)
     (format t "digits:~A sub:~A result:~A~%" digits sub result)
     (cond
       ((null digits) result)
       ((null sub) (append result digits))
-      (t (if (< (car sub) (car digits))
-           (digit-subtract-aux (cdr digits) (cdr sub) (append result (list (- (car digits) (car sub)))))
-           (digit-subtract-aux (cdr digits) (cons (+ 1 (cadr sub)) (cddr sub))
-                               (append result (list (- (+ 10 (car digits)) (car sub)))))))))
+      ((<= (car sub) (car digits))
+       (digit-subtract-aux (cdr digits) (cdr sub)
+                           (append result (list (- (car digits) (car sub))))))
+      (t
+        (digit-subtract-aux (decrease (cdr digits)) (cdr sub)
+                            (append result (list (- (+ 10 (car digits)) (car sub))))))))
 
-  (reverse (digit-subtract-aux (reverse digits) (append '(0 0 0) (reverse sub)) ())))
+  (reverse (digit-subtract-aux (reverse digits) (reverse sub) ())))
+
+(defun divisible-7 (digits)
+  (format t "divisible-7 digits:~A~%" digits)
+  (if (< (length digits) 4)
+    (= 0 (rem (digits-to-number digits) 7))
+    (let* ((digit (car (last digits)))
+           (remain (butlast digits))
+           (sub (number-to-digits (* digit 2))))
+      (divisible-7 (digit-subtract remain sub)))))
+
+(defun divisible-8 (digits)
+
+  (defun first-three (dgts)
+    (cons (car dgts)
+          (cons (cadr dgts)
+          (list (caddr dgts)))))
+
+  (let ((m (apply #'+ (if (> (length digits) 3)
+                        (first-three (reverse digits)) digits))))
+    (= 0 (rem m 8))))
 
 (defun divisible (digits n)
   (let ((stigid (reverse digits)))
@@ -105,4 +133,13 @@
        (or (= 0 (car stigid)) (= 5 (car stigid))))
       ((= 6 n)
        (and (= 0 (rem (apply #'+ digits) 3)) (evenp (car stigid))))
+      ((= 7 n)
+       (divisible-7 digits))
+      ((= 8 n)
+       (divisible-8 digits))
+      ((= 9 n)
+       (= 0 (rem (apply #'+ digits) 9)))
+      ((= 10 n)
+       (= 0 (car (reverse digits))))
       )))
+
