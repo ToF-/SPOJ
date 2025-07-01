@@ -16,6 +16,11 @@
 (define-test digits-to-number
              (assert-equal 4807 (digits-to-number '(4 8 0 7)))
              )
+
+(define-test number-to-digits
+             (assert-equal '(4 8 0 7) (number-to-digits 4807))
+             )
+
 (define-test max-anagram
              (assert-equal '(8 7 4 0) (max-anagram '(4 8 0 7)))
              )

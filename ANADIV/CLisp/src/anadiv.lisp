@@ -3,24 +3,28 @@
     (cons (read s) (read s))))
 
 (defun digits (n)
-
-  (defun digits-aux (nb)
-    (if (= nb 0)
-      ()
-      (multiple-value-bind (qu re)
-        (truncate nb 10)
-        (cons re (digits-aux qu)))))
-
-  (sort (digits-aux n) #'<))
+  (sort (number-to-digits n) #'<))
 
 (defun digits-to-number (digits)
-  
+
   (defun digits-to-number-aux (dgts result)
     (if (null dgts)
       result
       (digits-to-number-aux (cdr dgts) (+ (* result 10) (car dgts)))))
 
   (digits-to-number-aux digits 0))
+
+(defun number-to-digits (n)
+
+  (defun number-to-digits-aux (nb result)
+    (if (= nb 0)
+      result
+      (multiple-value-bind (qu re)
+        (truncate nb 10)
+        (number-to-digits-aux qu (cons re result)))))
+
+  (number-to-digits-aux n ()))
+
 
 
 (defun split-digits (dgts)
