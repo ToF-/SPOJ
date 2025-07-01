@@ -13,6 +13,12 @@
              (assert-equal '(2 4 5 9 9) (digits 54929))
              )
 
+(define-test digits-to-number
+             (assert-equal 4807 (digits-to-number '(4 8 0 7)))
+             )
+(define-test max-anagram
+             (assert-equal '(8 7 4 0) (max-anagram '(4 8 0 7)))
+             )
 (define-test split-digits
              (assert-equal '((1)) (split-digits '(1)))
              (assert-equal '((1 3)) (split-digits '(1 3)))
@@ -24,6 +30,13 @@
              (assert-equal '((9) 8 6 5 1) (split-digits '(9 8 6 5 1)))
              )
 
+(define-test extract-lower
+             (assert-equal '(4 0 7 8) (extract-lower 7 '(4 8 0 7)))
+             (assert-equal '(7 4 0 8) (extract-lower 8 '(4 8 0 7)))
+             (assert-equal '(0 4 7 8) (extract-lower 4 '(4 8 0 7)))
+             (assert-equal '(8 7 4 0) (extract-lower 9 '(4 8 0 7)))
+             )
+
 (define-test max-lower-anagram
              (assert-equal '() (max-lower-anagram '(1)))
              (assert-equal '() (max-lower-anagram '(1 2 5 7 8 9)))
@@ -33,7 +46,7 @@
              (assert-equal '(1 3 5 4 2) (max-lower-anagram '(1 4 2 3 5)))
              (assert-equal '(3 5 4 2) (max-lower-anagram '(4 2 3 5)))
              (assert-equal '() (max-lower-anagram '(2 3 5)))
-             ; (assert-equal '(4 1 5 2) (max-lower-anagram '(4 2 1 5)))
+             (assert-equal '(4 1 5 2) (max-lower-anagram '(4 2 1 5)))
              )
 
 (run-tests :all)

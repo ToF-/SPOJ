@@ -13,6 +13,15 @@
 
   (sort (digits-aux n) #'<))
 
+(defun digits-to-number (digits)
+  
+  (defun digits-to-number-aux (dgts result)
+    (if (null dgts)
+      result
+      (digits-to-number-aux (cdr dgts) (+ (* result 10) (car dgts)))))
+
+  (digits-to-number-aux digits 0))
+
 
 (defun split-digits (dgts)
 
@@ -29,16 +38,32 @@
 
   (split-digits-aux dgts '()))
 
+(defun max-anagram (digits)
+  (sort digits #'>))
+
+(defun extract-lower (digit dgts)
+  
+  (defun extract-lower-aux (digits result)
+    (cond
+      ((null digits) result)
+      ((< (car digits) digit) (cons (car digits) (append (cdr digits) result)))
+      (t (extract-lower-aux (cdr digits) (cons (car digits) result)))))
+
+  (extract-lower-aux (sort dgts #'>) ()))
+
 (defun max-lower-anagram (digits)
   (let ((split (split-digits digits)))
-  (cond
-    ((null (cdr split)) ())
-    ((and (= 2 (length digits)) (> (car digits) (cadr digits))) (reverse digits))
-    (t (let ((suff (max-lower-anagram (cdr split))))
-         (format t "split:~A suff:~A~%" split suff)
-         (if suff
-           (append (car split) suff)
-           (append (cdr (reverse (car split)))
-                   (list (car suff))
-                   (sort (append (last (car split)) (cdr suff)) #'>))))))))
-
+  (if (null (cdr split))
+    ()
+    (let ((suff (max-lower-anagram (cdr split))))
+      (if suff
+        (append (car split) suff)
+        (let* ((prefix (reverse (car split)))
+               (suffix (cdr split))
+               (split-digit (car prefix))
+               (split-rem   (cdr prefix))
+               (extract (extract-lower split-digit suffix))
+               (new-digit (car extract))
+               (new-suffix (cdr extract)))
+          (append (reverse (cons new-digit split-rem))
+                  (sort (cons split-digit new-suffix) #'>))))))))
