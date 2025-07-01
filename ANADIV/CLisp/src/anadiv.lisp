@@ -77,6 +77,20 @@
       (format t "~A~%" (digits-to-number digits))
       (max-lower-anagrams (max-lower-anagram digits)))))
 
+(defun digit-subtract (digits sub)
+  
+  (defun digit-subtract-aux (digits sub result)
+    (format t "digits:~A sub:~A result:~A~%" digits sub result)
+    (cond
+      ((null digits) result)
+      ((null sub) (append result digits))
+      (t (if (< (car sub) (car digits))
+           (digit-subtract-aux (cdr digits) (cdr sub) (append result (list (- (car digits) (car sub)))))
+           (digit-subtract-aux (cdr digits) (cons (+ 1 (cadr sub)) (cddr sub))
+                               (append result (list (- (+ 10 (car digits)) (car sub)))))))))
+
+  (reverse (digit-subtract-aux (reverse digits) (append '(0 0 0) (reverse sub)) ())))
+
 (defun divisible (digits n)
   (let ((stigid (reverse digits)))
     (cond
