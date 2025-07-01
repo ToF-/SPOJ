@@ -2,9 +2,6 @@
   (with-input-from-string (s input)
     (cons (read s) (read s))))
 
-(defun digits (n)
-  (sort (number-to-digits n) #'<))
-
 (defun digits-to-number (digits)
 
   (defun digits-to-number-aux (dgts result)
@@ -25,7 +22,8 @@
 
   (number-to-digits-aux n ()))
 
-
+(defun digits (n)
+  (sort (number-to-digits n) #'<))
 
 (defun split-digits (dgts)
 
@@ -71,3 +69,26 @@
                (new-suffix (cdr extract)))
           (append (reverse (cons new-digit split-rem))
                   (sort (cons split-digit new-suffix) #'>))))))))
+
+(defun max-lower-anagrams (digits)
+  (if (null digits)
+    ()
+    (progn
+      (format t "~A~%" (digits-to-number digits))
+      (max-lower-anagrams (max-lower-anagram digits)))))
+
+(defun divisible (digits n)
+  (let ((stigid (reverse digits)))
+    (cond
+      ((= 1 n) t)
+      ((= 2 n) (evenp (car stigid)))
+      ((= 3 n) (= 0 (rem (apply #'+ digits) 3)))
+      ((= 4 n)
+       (if (>= (length digits) 2)
+         (= 0 (rem (+ (car stigid) (cadr stigid)) 4))
+         (= 0 (rem (car stigid) 4))))
+      ((= 5 n)
+       (or (= 0 (car stigid)) (= 5 (car stigid))))
+      ((= 6 n)
+       (and (= 0 (rem (apply #'+ digits) 3)) (evenp (car stigid))))
+      )))

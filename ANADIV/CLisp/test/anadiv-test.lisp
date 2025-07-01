@@ -54,5 +54,18 @@
              (assert-equal '(4 1 5 2) (max-lower-anagram '(4 2 1 5)))
              )
 
+(define-test divisible
+             (assert-equal t (divisible (number-to-digits 4807) 1))
+             (assert-equal nil (divisible (number-to-digits 4807) 2))
+             (assert-equal t (divisible (number-to-digits 32768) 2))
+             (assert-equal nil (divisible (number-to-digits 4807) 3))
+             (assert-equal t (divisible (number-to-digits (* 3 4807)) 3))
+             (assert-equal nil (divisible (number-to-digits 4807) 4))
+             (assert-equal t (divisible (number-to-digits 4848) 4))
+             (assert-equal nil (divisible (number-to-digits 4807) 5))
+             (assert-equal t (divisible (number-to-digits 4810) 5))
+             (assert-equal nil (divisible (number-to-digits 4807) 6))
+             (assert-equal t (divisible (number-to-digits 4806) 6))
+             )
 (run-tests :all)
 (sb-ext:quit)
