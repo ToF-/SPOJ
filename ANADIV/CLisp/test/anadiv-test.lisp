@@ -15,10 +15,17 @@
              (assert-equal (reverse (list 1 7)) (digits-from-number 17))
              (assert-equal (reverse (list 4 8 0 7)) (digits-from-number 4807))
              )
+
+(define-test value
+             (assert-equal 4807 (value (list 7 0 8 4)))
+             (assert-equal 42 (value (list 2 4 0 0 0)))
+             )
 (define-test subtract
              (assert-equal (list 3) (subtract (list 7) (list 4)))
              (assert-equal (digits-from-number 15) (subtract (digits-from-number 17) (digits-from-number 2)))
              (assert-equal (digits-from-number 32) (subtract (digits-from-number 34) (digits-from-number 2)))
+             (assert-equal (digits-from-number 24) (subtract (digits-from-number 32) (digits-from-number 8)))
+             (assert-equal 99 (value (subtract (digits-from-number 100) (digits-from-number 1))))
              )
 ; 
 ; 

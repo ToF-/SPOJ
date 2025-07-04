@@ -9,10 +9,24 @@
       (truncate n 10)
       (cons remainder (digits-from-number quotient)))))
 
+(defun value (digits)
+  (if (null digits)
+    0
+    (+ (car digits) (* 10 (value (cdr digits))))))
+
 (defun subtract (operand n)
+  (defun decrease (operand)
+    (cond
+      ((null operand) ())
+      ((> (car operand) 0) (cons (- (car operand) 1) (cdr operand)))
+      (t (cons 9 (decrease (cdr operand))))))
   (cond
     ((null n) operand)
-    (t (cons (- (car operand) (car n)) (subtract (cdr operand) (cdr n))))))
+    ((< (car operand) (car n))
+        (cons (- (+ (car operand) 10) (car n))
+              (subtract (decrease (cdr operand)) (cdr n))))
+    (t (cons (- (car operand) (car n))
+             (subtract (cdr operand) (cdr n))))))
 
 ; (defun digits-to-number (digits)
 ; 
