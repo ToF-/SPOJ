@@ -63,6 +63,12 @@
 
              (assert-sum-digits 19 4807)
              )
+
+(define-test divisible-by-7
+             (assert-equal t (divisible-by-7 (digits-from-number 7)))
+             (assert-equal nil (divisible-by-7 (digits-from-number 6)))
+             (assert-equal t (divisible-by-7 (digits-from-number (* 7 7 7 7 7 7 7 7 7 7 7))))
+             )
 ; 
 ; 
 ; (define-test digits

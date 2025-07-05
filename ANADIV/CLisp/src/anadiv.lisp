@@ -41,7 +41,7 @@
 
 (defun multiple (operand m)
   (if (= (length operand) 1)
-    (= (car operand) m)
+    (or (= m (car operand)) (= 0 (car operand)))
     (multiple (subtract operand (list m)) m)))
 
 (defun add (operand addend)
@@ -64,6 +64,12 @@
 
 (defun sum-digits (operand)
   (digits-from-number (apply #'+ operand)))
+
+(defun divisible-by-7 (digits)
+  (if (< (length digits) 3)
+    (multiple digits 7)
+    (let ((subtrahend (digits-from-number (* 2 (car digits)))))
+      (divisible-by-7 (subtract (cdr digits) subtrahend)))))
 
 ; (defun digits-to-number (digits)
 ; 
