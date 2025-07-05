@@ -71,6 +71,7 @@
     (let ((subtrahend (digits-from-number (* 2 (car digits)))))
       (divisible-by-7 (subtract (cdr digits) subtrahend)))))
 
+
 ; (defun digits-to-number (digits)
 ; 
 ;   (defun digits-to-number-aux (dgts result)
