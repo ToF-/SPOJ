@@ -10,9 +10,9 @@
       (cons remainder (digits-from-number quotient)))))
 
 (defun value (digits)
-  (if (null digits)
-    0
-    (+ (car digits) (* 10 (value (cdr digits))))))
+  (cond ((null digits) 0)
+        ((> (car digits) 9) (error (format nil "value called with ~A~%" (car digits))))
+        (t (+ (car digits) (* 10 (value (cdr digits)))))))
 
 (defun subtract (minuend subtrahend)
 
@@ -22,8 +22,15 @@
       ((> (car operand) 0) (cons (- (car operand) 1) (cdr operand)))
       (t (cons 9 (decrement (cdr operand))))))
 
+  (defun calibrate (operand)
+    (defun calibrate-aux (operand)
+      (cond ((null operand) ())
+            ((= (car operand) 0) (calibrate-aux (cdr operand)))
+            (t operand)))
+    (reverse (calibrate-aux (reverse operand))))
+
   (if (null subtrahend)
-    minuend
+    (calibrate minuend)
     (let ((m (car minuend))
           (s (car subtrahend))
           (ms (cdr minuend))
@@ -31,6 +38,32 @@
       (if (>= m s)
         (cons (- m s) (subtract ms ss))
         (cons (- (+ m 10) s) (subtract (decrement ms) ss))))))
+
+(defun multiple (operand m)
+  (if (= (length operand) 1)
+    (= (car operand) m)
+    (multiple (subtract operand (list m)) m)))
+
+(defun add (operand addend)
+
+  (defun increment (operand)
+    (cond
+      ((null operand) (list 1))
+      ((= (car operand) 9) (cons 0 (increment (cdr operand))))
+      (t (cons (1+ (car operand)) (cdr operand)))))
+
+  (if (null addend)
+    operand
+    (let ((o (car operand))
+          (a (car addend))
+          (os (cdr operand))
+          (as (cdr addend)))
+      (if (< (+ o a) 10)
+        (cons (+ o a) (add os as))
+        (cons (- (+ o a) 10) (add (increment os) as))))))
+
+(defun sum-digits (operand)
+  (digits-from-number (apply #'+ operand)))
 
 ; (defun digits-to-number (digits)
 ; 

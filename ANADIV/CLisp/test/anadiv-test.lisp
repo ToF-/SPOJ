@@ -8,7 +8,7 @@
              (assert-equal (cons 4807 7) (number-pair-from-string "4807 7"))
              )
 
-(define-test number-as-digit-list
+(define-test digits-from-number
              (assert-equal (list 3) (digits-from-number 3))
              (assert-equal (list 7) (digits-from-number 7))
              (assert-equal (reverse (list 4 2)) (digits-from-number 42))
@@ -20,12 +20,48 @@
              (assert-equal 4807 (value (list 7 0 8 4)))
              (assert-equal 42 (value (list 2 4 0 0 0)))
              )
+
 (define-test subtract
-             (assert-equal (list 3) (subtract (list 7) (list 4)))
-             (assert-equal (digits-from-number 15) (subtract (digits-from-number 17) (digits-from-number 2)))
-             (assert-equal (digits-from-number 32) (subtract (digits-from-number 34) (digits-from-number 2)))
-             (assert-equal (digits-from-number 24) (subtract (digits-from-number 32) (digits-from-number 8)))
-             (assert-equal 99 (value (subtract (digits-from-number 100) (digits-from-number 1))))
+             (defun assert-subtract (result minuend subtrahend)
+               (assert-equal result
+                             (value (subtract
+                                      (digits-from-number minuend)
+                                      (digits-from-number subtrahend)))))
+
+             (assert-subtract 7 14 7)
+             (assert-subtract 3 7 4)
+             (assert-subtract 15 17 2)
+             (assert-subtract 32 34 2)
+             (assert-subtract 24 32 8)
+             (assert-subtract 99 100 1)
+             (assert-subtract 75 100 25)
+             )
+
+(define-test multiple
+             (assert-equal t (multiple (digits-from-number 7) 7))
+             (assert-equal nil (multiple (digits-from-number 8) 7))
+             (assert-equal t (multiple (digits-from-number (* 7 7 7)) 7))
+             (assert-equal nil (multiple (digits-from-number 22) 7))
+             )
+
+(define-test add
+             (defun assert-add (result operand addend)
+               (assert-equal result
+                             (value (add
+                                      (digits-from-number operand)
+                                      (digits-from-number addend)))))
+
+             (assert-add 7 3 4)
+             (assert-add 9 5 4)
+             (assert-add 10 5 5)
+             (assert-add 243 210 33)
+             )
+
+(define-test sum-digits
+             (defun assert-sum-digits (result operand)
+               (assert-equal result (value (sum-digits (digits-from-number operand)))))
+
+             (assert-sum-digits 19 4807)
              )
 ; 
 ; 
