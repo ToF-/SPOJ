@@ -14,19 +14,23 @@
     0
     (+ (car digits) (* 10 (value (cdr digits))))))
 
-(defun subtract (operand n)
-  (defun decrease (operand)
+(defun subtract (minuend subtrahend)
+
+  (defun decrement (operand)
     (cond
       ((null operand) ())
       ((> (car operand) 0) (cons (- (car operand) 1) (cdr operand)))
-      (t (cons 9 (decrease (cdr operand))))))
-  (cond
-    ((null n) operand)
-    ((< (car operand) (car n))
-        (cons (- (+ (car operand) 10) (car n))
-              (subtract (decrease (cdr operand)) (cdr n))))
-    (t (cons (- (car operand) (car n))
-             (subtract (cdr operand) (cdr n))))))
+      (t (cons 9 (decrement (cdr operand))))))
+
+  (if (null subtrahend)
+    minuend
+    (let ((m (car minuend))
+          (s (car subtrahend))
+          (ms (cdr minuend))
+          (ss (cdr subtrahend)))
+      (if (>= m s)
+        (cons (- m s) (subtract ms ss))
+        (cons (- (+ m 10) s) (subtract (decrement ms) ss))))))
 
 ; (defun digits-to-number (digits)
 ; 

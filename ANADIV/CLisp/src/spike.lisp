@@ -1,6 +1,5 @@
 ; read pairs of numbers on each line and print them
 
-(defparameter result nil)
 (defun read-pair ()
   (handler-case
     (let* ((line (concatenate 'string "(" (read-line) ")"))
