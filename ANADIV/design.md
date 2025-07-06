@@ -77,43 +77,36 @@ naive method:
 
 problem: if N is 1000 digits long, the total number of permutations in 1000!, so don't compute all permutations.
 
-problem: given a number K with N digits {d1,d2,…,dn}, what is the maximum anagram of N that is < N,
-i.e a permutation M of {d1,d2,…,dn} that there is no permutation {d1,d2,…,dn} between N and M
+    ma(x) = d1d2…dn, di ϵ dg(x), di ≥ di+1
 
-let L = ⌊K/10ⁿ⌋ where n = N - length of { d1,d2,…,di } such that d1 ≤ d2 ≤ … ≤ di
-let M = K - L
+    lma(x) =
+        let P = p1p2…pn, pi ϵ dg(x), pi ≤ pi+1
+        let Q = q1q2…qn, qi ϵ dg(x), qi ≤ qi+1, q1 < pn
+        if Q = {∅} then S = {∅}
+        else
+           Q' = lma(Q)
+           if Q' = {∅}
+                d  = d = max ({ q1,q2,…,qk }, qi < pn)
+                S = p1p2…d ++ ma(q1q2…pn)
+            else
+                S = P ++ Q'
 
-if M = n = 0 , then S = ∅
 
-let {dj,dk,…,dm} digits of M
+problem : is N divisible by 7 ?
+if nb digits in N > 3 
+    p1p2…pmpn remove last digit pn
+    subtract q1q2 = 2pn from p1p2…pm
+    is M = r1r2…rm divisible by 7 ?
+else
+    compute N rem 7
 
-if dj ≤ dk ≤ … ≤ dm then S = {d1,d2,…,dm} ++ largest anagram of {di,dj,dk}
-else S = { d1,d2,…,di } ++ maximum lower anagram of { dj,dk,…,dm }
+subtract 2d
+(a+b+c+…+d) = 7x
+(b+c+…+d) = 7x-a
+    if a≥7 = 7(x+1)+(a-7)
+        if b≥7 = 7(x+2)+(a-7)+(b-7)
+    if a<7 = 7x-a
+                 
 
-eg LLA(238712)
-L = 238
-M = 712
-S = 238 ++ LLA(712)
-  L = 7
-  M = 12
-  S = 2 ++ LA(17)
-  S = 271
-S = 238271
-
-LLA(238271)
-L = 238
-M = 271
-S = 238 ++ LLA(271)
-   L = 27
-   M = 1
-   S = 21 ++ LA(7)
-   S = 217
-S = 238217
-
-LLA(238217)
-L = 238
-M = 217
-S = 237 ++ LA(218)
-S = 237821
 
 
