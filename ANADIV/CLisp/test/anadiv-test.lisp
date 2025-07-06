@@ -118,7 +118,7 @@
              )
 
 (define-test max-anagram
-             (assert-equal (list 8 7 4 0) (max-anagram (digits-from-number 4807)))
+             (assert-equal (list 0 4 7 8) (max-anagram (digits-from-number 4807)))
              )
 
 (define-test next-anagram
@@ -126,7 +126,28 @@
              (assert-equal 14 (value (next-anagram (digits-from-number 41))))
              (assert-equal 27 (value (next-anagram (digits-from-number 72))))
              (assert-equal nil (next-anagram (digits-from-number 14)))
+             (assert-equal 4780 (value (next-anagram (digits-from-number 4807))))
+             (assert-equal 4708 (value (next-anagram (digits-from-number 4780))))
+             (assert-equal 4087 (value (next-anagram (digits-from-number 4708))))
+             (assert-equal 4078 (value (next-anagram (digits-from-number 4087))))
+             (assert-equal 0874 (value (next-anagram (digits-from-number 4078))))
+             (assert-equal 0847 (value (next-anagram (digits-from-number 0874))))
+             (assert-equal 0784 (value (next-anagram (digits-from-number 0847))))
+             (assert-equal 0748 (value (next-anagram (digits-from-number 0784))))
+             (assert-equal 0487 (value (next-anagram (digits-from-number 0748))))
+             (assert-equal 0478 (value (next-anagram (digits-from-number 0487))))
+             (assert-equal nil (next-anagram (digits-from-number 0478)))
+             (assert-equal nil (next-anagram (digits-from-number 1122)))
+             (assert-equal 1122 (value (next-anagram (digits-from-number 1212))))
+             (assert-equal 12122 (value (next-anagram (digits-from-number 12212))))
+             (assert-equal 11221 (value (next-anagram (digits-from-number 12112))))
+             (assert-equal 11212 (value (next-anagram (digits-from-number 11221))))
+             (assert-equal 11122 (value (next-anagram (digits-from-number 11212))))
              )
 
+(define-test all-anagrams
+             (assert-equal '(652 625 562 526 265 256)
+                           (mapcar #'value (all-anagrams (digits-from-number 256))))
+             )
 (run-tests :all)
 (sb-ext:quit)

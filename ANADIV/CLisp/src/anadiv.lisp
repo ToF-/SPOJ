@@ -128,7 +128,7 @@
   (funcall (nth k divisible-functions) digits))
 
 (defun max-anagram (digits)
-  (sort digits #'>))
+  (sort digits #'<))
 
 (defun split (digits)
   (defun split-aux (digits result)
@@ -139,23 +139,24 @@
 
   (split-aux (cdr digits) (list (car digits))))
 
-(defun swap (digit digits)
-  (defun swap-aux (digits result)
-    (cond
-      ((null digits) nil)
-      ((> (car digits) digit) (cons (car result) (append (cdr result) digits)))
-      ((<= (car digits) digit) (swap-aux (cdr digits) (cons (car digits) result)))))
-
-  (let* ((sw (swap-aux (sort digits #'<) '()))
-         (head (car sw))
-         (tail (cdr sw)))
-    (cons head (sort tail #'<))))
+; assert (> (car suffix) (car (last prefix)))
+(defun swap (prefix suffix result)
+  (if (>= (car prefix) (car suffix))
+    (swap (cdr prefix) suffix (cons (car prefix) result))
+    (append (reverse (cdr prefix)) (cons (car suffix) result) (cons (car prefix) (cdr suffix)))))
 
 (defun next-anagram (digits)
   (let* ((sp (split digits))
          (prefix (car sp))
          (suffix (cdr sp)))
-  (cond
-    ((null suffix) nil)
-    (t (cons (cadr digits) (list (car digits)))))))
+    (if (null suffix)
+      nil
+      (swap prefix suffix ()))))
+
+(defun all-anagrams (digits)
+  (defun all-anagrams-aux (digits)
+    (if (null digits)
+      nil
+      (cons digits (all-anagrams-aux (next-anagram digits)))))
+  (all-anagrams-aux (max-anagram digits)))
 
