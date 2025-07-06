@@ -149,5 +149,10 @@
              (assert-equal '(652 625 562 526 265 256)
                            (mapcar #'value (all-anagrams (digits-from-number 256))))
              )
+
+(define-test max-anagram-divisible-by
+             (assert-equal 3220 (value (max-anagram-divisible-by 7 (digits-from-number 2023))))
+             (assert-equal nil (max-anagram-divisible-by 5 (digits-from-number 21)))
+             )
 (run-tests :all)
 (sb-ext:quit)

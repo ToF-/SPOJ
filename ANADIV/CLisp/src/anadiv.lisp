@@ -160,3 +160,38 @@
       (cons digits (all-anagrams-aux (next-anagram digits)))))
   (all-anagrams-aux (max-anagram digits)))
 
+(defun max-anagram-divisible-by (k digits)
+  (defun find-anagram (anagram)
+    (cond
+      ((null anagram) nil)
+      ((equal anagram digits) (find-anagram (next-anagram anagram)))
+      ((divisible-by k anagram) anagram)
+      (t (find-anagram (next-anagram anagram)))))
+
+  (find-anagram (max-anagram digits)))
+
+(defun read-pair ()
+  (handler-case
+    (let* ((line (concatenate 'string "(" (read-line) ")"))
+             (input (make-string-input-stream line))
+             (pair (read input)))
+      pair)
+    (end-of-file () nil)))
+
+(defun process-pair (pair)
+  (let* ((anagram
+           (max-anagram-divisible-by
+             (cdr pair)
+             (digits-from-number (car pair)))))
+    (format t "~A~%" (if anagram
+                       (value anagram)
+                       (- 1)))))
+
+(defun process ()
+  (let ((pair (read-pair)))
+    (if pair
+      (progn
+        (process-pair pair)
+        (process)
+      ))))
+
