@@ -103,3 +103,59 @@
 
 (defun divisible-by-10 (digits)
   (= (car digits) 0))
+
+(defun divisible-by-1 (digits)
+  t)
+
+(defun divisible-by-6 (digits)
+  (and (divisible-by-3 digits)
+       (divisible-by-2 digits)))
+
+(defparameter divisible-functions
+  (list nil
+        #'divisible-by-1
+        #'divisible-by-2
+        #'divisible-by-3
+        #'divisible-by-4
+        #'divisible-by-5
+        #'divisible-by-6
+        #'divisible-by-7
+        #'divisible-by-8
+        #'divisible-by-9
+        #'divisible-by-10))
+
+(defun divisible-by (k digits)
+  (funcall (nth k divisible-functions) digits))
+
+(defun max-anagram (digits)
+  (sort digits #'>))
+
+(defun split (digits)
+  (defun split-aux (digits result)
+    (cond
+      ((null digits) (cons (reverse result) digits))
+      ((> (car digits) (car result)) (cons (reverse result) digits))
+      (t (split-aux (cdr digits) (cons (car digits) result)))))
+
+  (split-aux (cdr digits) (list (car digits))))
+
+(defun swap (digit digits)
+  (defun swap-aux (digits result)
+    (cond
+      ((null digits) nil)
+      ((> (car digits) digit) (cons (car result) (append (cdr result) digits)))
+      ((<= (car digits) digit) (swap-aux (cdr digits) (cons (car digits) result)))))
+
+  (let* ((sw (swap-aux (sort digits #'<) '()))
+         (head (car sw))
+         (tail (cdr sw)))
+    (cons head (sort tail #'<))))
+
+(defun next-anagram (digits)
+  (let* ((sp (split digits))
+         (prefix (car sp))
+         (suffix (cdr sp)))
+  (cond
+    ((null suffix) nil)
+    (t (cons (cadr digits) (list (car digits)))))))
+
