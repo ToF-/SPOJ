@@ -181,7 +181,7 @@
 (defun process-pair (pair)
   (let* ((anagram
            (max-anagram-divisible-by
-             (cdr pair)
+             (cadr pair)
              (digits-from-number (car pair)))))
     (format t "~A~%" (if anagram
                        (value anagram)
