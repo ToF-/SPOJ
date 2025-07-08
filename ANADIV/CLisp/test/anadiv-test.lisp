@@ -5,7 +5,11 @@
 (load "src/anadiv")
 
 (define-test number-pair-from-string
-             (assert-equal (cons 4807 7) (number-pair-from-string "4807 7"))
+             (assert-equal (cons (digits-from-number 4807) (list 10)) (number-pair-from-string "4807 10"))
+             )
+
+(define-test string-from-digits
+             (assert-equal "4807" (string-from-digits (digits-from-number 4807)))
              )
 
 (define-test digits-from-number

@@ -1,6 +1,13 @@
 (defun number-pair-from-string (input)
-  (with-input-from-string (s input)
-    (cons (read s) (read s))))
+
+  (defun split-values (digits prefix)
+    (if (null (car digits))
+      (cons prefix (list (value (reverse (cdr digits)))))
+      (split-values (cdr digits) (cons (car digits) prefix))))
+
+  (let* ((all-digits (loop for c across input collect (digit-char-p c)))
+           (pair (split-values all-digits ())))
+    (cons (car pair) (cdr pair))))
 
 (defun digits-from-number (n)
   (if (= n 0)
@@ -8,6 +15,9 @@
     (multiple-value-bind (quotient remainder)
       (truncate n 10)
       (cons remainder (digits-from-number quotient)))))
+
+(defun string-from-digits (digits)
+  (concatenate 'string (loop for d in (reverse digits) collect (digit-char d))))
 
 (defun value (digits)
   (cond ((null digits) 0)
@@ -86,7 +96,7 @@
   (multiple (sum-digits digits) 9))
 
 (defun divisible-by-3 (digits)
-  (multiple (sum-digits digits) 3))
+  (= (rem (apply #'+ digits) 3) 0))
 
 (defun divisible-by-4 (digits)
   (if (< (length digits) 3)
@@ -172,19 +182,17 @@
 
 (defun read-pair ()
   (handler-case
-    (let* ((line (concatenate 'string "(" (read-line) ")"))
-             (input (make-string-input-stream line))
-             (pair (read input)))
-      pair)
+    (let ((line (read-line)))
+      (number-pair-from-string line))
     (end-of-file () nil)))
 
 (defun process-pair (pair)
   (let* ((anagram
            (max-anagram-divisible-by
              (cadr pair)
-             (digits-from-number (car pair)))))
+             (car pair))))
     (format t "~A~%" (if anagram
-                       (value anagram)
+                       (string-from-digits anagram)
                        (- 1)))))
 
 (defun process ()
