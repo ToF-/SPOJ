@@ -175,8 +175,12 @@
     (cond
       ((null anagram) nil)
       ((equal anagram digits) (find-anagram (next-anagram anagram)))
-      ((divisible-by k anagram) anagram)
-      (t (find-anagram (next-anagram anagram)))))
+      (t (if (divisible-by k anagram)
+           anagram
+           (cond ((= k 3) nil)
+                  ((= k 6) nil)
+                  ((= k 9) nil)
+                  (t (find-anagram (next-anagram anagram))))))))
 
   (find-anagram (max-anagram digits)))
 
@@ -191,9 +195,7 @@
            (max-anagram-divisible-by
              (cadr pair)
              (car pair))))
-    (format t "~A~%" (if anagram
-                       (string-from-digits anagram)
-                       (- 1)))))
+    (format t "~A~%" (if anagram (string-from-digits anagram) (- 1)))))
 
 (defun process ()
   (let ((pair (read-pair)))
