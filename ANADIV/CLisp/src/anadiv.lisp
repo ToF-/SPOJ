@@ -174,6 +174,8 @@
   (defun find-anagram (anagram)
     (cond
       ((null anagram) nil)
+      ((and (evenp k) (null (remove-if #'oddp digits))) nil)
+      ((and (= (rem k 3) 0) (> (rem (apply #'+ digits) 3) 0)) nil)
       ((equal anagram digits) (find-anagram (next-anagram anagram)))
       (t (if (divisible-by k anagram)
            anagram
