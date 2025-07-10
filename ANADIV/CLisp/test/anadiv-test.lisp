@@ -158,5 +158,10 @@
              (assert-equal 3220 (value (max-anagram-divisible-by 7 (digits-from-number 2023))))
              (assert-equal nil (max-anagram-divisible-by 5 (digits-from-number 21)))
              )
+(define-test max-anagram-divisible-by-7
+             (assert-equal 3220 (value (max-anagram-divisible-by-7 (digits-from-number 2023))))
+             (assert-equal 8624 (value (max-anagram-divisible-by-7 (digits-from-number 4826))))
+             (assert-equal 99888614000 (value (max-anagram-divisible-by-7 (digits-from-number 96889010408))))
+             )
 (run-tests :all)
 (sb-ext:quit)

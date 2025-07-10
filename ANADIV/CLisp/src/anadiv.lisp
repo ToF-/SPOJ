@@ -24,13 +24,13 @@
         ((> (car digits) 9) (error (format nil "value called with ~A~%" (car digits))))
         (t (+ (car digits) (* 10 (value (cdr digits)))))))
 
-(defun subtract (minuend subtrahend)
+(defun decrement (operand)
+  (cond
+    ((null operand) ())
+    ((> (car operand) 0) (cons (- (car operand) 1) (cdr operand)))
+    (t (cons 9 (decrement (cdr operand))))))
 
-  (defun decrement (operand)
-    (cond
-      ((null operand) ())
-      ((> (car operand) 0) (cons (- (car operand) 1) (cdr operand)))
-      (t (cons 9 (decrement (cdr operand))))))
+(defun subtract (minuend subtrahend)
 
   (defun calibrate (operand)
     (defun calibrate-aux (operand)
@@ -169,6 +169,31 @@
       nil
       (cons digits (all-anagrams-aux (next-anagram digits)))))
   (all-anagrams-aux (max-anagram digits)))
+
+(defun max-anagram-divisible-by-7 (digits)
+
+  (defun divisible-by-7 (digits)
+    (format t "(divisible-by-7 ~A)~%" (value digits))
+    (cond
+      ((< (length digits) 4) (= (rem (value digits) 7) 0))
+      (t (let* ((last-digit (car digits))
+                (tens (+ (cadr digits) (* (caddr digits) 10)))
+                (remain (cdddr digits))
+                (x (- tens (* last-digit 2)))
+                (y (if (< x 0) (+ 100 x) x))
+                (adjusted-remain (if (< x 0) (decrement remain) remain)))
+           (divisible-by-7 
+             (multiple-value-bind (quotient remainder)
+               (truncate x 10)
+               (cons remainder (cons quotient adjusted-remain))))))))
+
+  (defun find-anagram (anagram)
+    (cond
+      ((null anagram) nil)
+      ((divisible-by-7 anagram) anagram)
+      (t (find-anagram (next-anagram anagram)))))
+
+  (find-anagram (max-anagram digits)))
 
 (defun max-anagram-divisible-by (k digits)
   (defun find-anagram (anagram)
