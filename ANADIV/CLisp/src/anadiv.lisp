@@ -1,3 +1,4 @@
+(defparameter *limit* 10000)
 (defun value (digits)
   (cond ((null digits) 0)
         ((> (car digits) 9) (error (format nil "value called with ~A~%" (car digits))))
@@ -202,9 +203,10 @@
 
 (defun max-anagram-divisible-by (k digits)
   (defun find-anagram (anagram iter)
+    (format t "(find-anagram ~A)~%" iter)
     (cond
       ((null anagram) nil)
-      ((> iter 200) nil)
+      ((> iter *limit*) (format t "iter stop with ~A~%" (value anagram)))
       ((= 1 k) anagram)
       ((equal anagram digits) (find-anagram (next-anagram anagram) (1+ iter)))
       (t (if (divisible-by k anagram)
@@ -212,7 +214,9 @@
            (find-anagram (next-anagram anagram) (1+ iter))))))
 
   (if (early-stop k digits)
-    nil
+    (progn
+      (format t "early stop for ~A ~A~%" k digits)
+      nil)
     (find-anagram (max-anagram digits) 0)))
 
 (defun read-pair ()

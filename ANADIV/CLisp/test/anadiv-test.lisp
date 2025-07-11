@@ -166,6 +166,8 @@
 (define-test max-anagram-divisible-by-2
              (assert-equal 8704 (value (max-anagram-divisible-by 2 (digits-from-number 4807))))
              (assert-equal nil (max-anagram-divisible-by 2 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10))))
+             (assert-equal 975318 (value (max-anagram-divisible-by 2 (digits-from-number 987531))))
+             (assert-equal nil (max-anagram-divisible-by 2 (cons 8 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10)))))
              )
 
 (define-test max-anagram-divisible-by-3
