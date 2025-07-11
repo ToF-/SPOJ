@@ -81,11 +81,9 @@
 
 
 (defun divisible-by-8 (digits)
-  (if (< (length digits) 3)
-    (multiple digits 8)
-    (multiple (list (car digits)
-                    (cadr digits)
-                    (caddr digits)) 8)))
+  (if (<= (length digits) 3)
+    (= (rem (value digits) 8) 0)
+    (= (rem (+ (car digits) (* (cadr digits) 10) (* (caddr digits) 100)) 8) 0)))
 
 (defun divisible-by-9 (digits)
   (multiple (sum-digits digits) 9))
