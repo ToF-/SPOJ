@@ -190,7 +190,6 @@
   (find-anagram (max-anagram digits)))
 
 (defun early-stop (k digits)
-  (format t "(early-stop ~A ~A)~%" k digits)
   (cond
     ((null digits) t)
     ((= k 2) (null (remove-if #'oddp digits)))
@@ -205,7 +204,6 @@
 
 (defun max-anagram-divisible-by (k digits)
   (defun find-anagram (anagram)
-    (format t "(find-anagram ~A) k=~A digits=~A~%" anagram k digits)
     (cond
       ((null anagram) nil)
       ((= 1 k) anagram)
