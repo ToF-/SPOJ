@@ -1,3 +1,8 @@
+(defun value (digits)
+  (cond ((null digits) 0)
+        ((> (car digits) 9) (error (format nil "value called with ~A~%" (car digits))))
+        (t (+ (car digits) (* 10 (value (cdr digits)))))))
+
 (defun number-pair-from-string (input)
 
   (defun split-values (digits prefix)
@@ -18,11 +23,6 @@
 
 (defun string-from-digits (digits)
   (concatenate 'string (loop for d in (reverse digits) collect (digit-char d))))
-
-(defun value (digits)
-  (cond ((null digits) 0)
-        ((> (car digits) 9) (error (format nil "value called with ~A~%" (car digits))))
-        (t (+ (car digits) (* 10 (value (cdr digits)))))))
 
 (defun decrement (operand)
   (cond
@@ -79,11 +79,6 @@
     (list 0)
     (add (sum-digits (cdr operand)) (list (car operand)))))
 
-(defun divisible-by-7 (digits)
-  (if (< (length digits) 3)
-    (multiple digits 7)
-    (let ((subtrahend (digits-from-number (* 2 (car digits)))))
-      (divisible-by-7 (subtract (cdr digits) subtrahend)))))
 
 (defun divisible-by-8 (digits)
   (if (< (length digits) 3)
@@ -110,6 +105,20 @@
 
 (defun divisible-by-2 (digits)
   (evenp (car digits)))
+
+(defun divisible-by-7 (digits)
+  (cond
+    ((< (length digits) 4) (= (rem (value digits) 7) 0))
+    (t (let* ((last-digit (car digits))
+              (tens (+ (cadr digits) (* (caddr digits) 10)))
+              (remain (cdddr digits))
+              (x (- tens (* last-digit 2)))
+              (y (if (< x 0) (+ 100 x) x))
+              (adjusted-remain (if (< x 0) (decrement remain) remain)))
+         (divisible-by-7 
+           (multiple-value-bind (quotient remainder)
+             (truncate x 10)
+             (cons remainder (cons quotient adjusted-remain))))))))
 
 (defun divisible-by-10 (digits)
   (= (car digits) 0))
@@ -172,21 +181,6 @@
 
 (defun max-anagram-divisible-by-7 (digits)
 
-  (defun divisible-by-7 (digits)
-    (format t "(divisible-by-7 ~A)~%" (value digits))
-    (cond
-      ((< (length digits) 4) (= (rem (value digits) 7) 0))
-      (t (let* ((last-digit (car digits))
-                (tens (+ (cadr digits) (* (caddr digits) 10)))
-                (remain (cdddr digits))
-                (x (- tens (* last-digit 2)))
-                (y (if (< x 0) (+ 100 x) x))
-                (adjusted-remain (if (< x 0) (decrement remain) remain)))
-           (divisible-by-7 
-             (multiple-value-bind (quotient remainder)
-               (truncate x 10)
-               (cons remainder (cons quotient adjusted-remain))))))))
-
   (defun find-anagram (anagram)
     (cond
       ((null anagram) nil)
@@ -195,21 +189,34 @@
 
   (find-anagram (max-anagram digits)))
 
+(defun early-stop (k digits)
+  (format t "(early-stop ~A ~A)~%" k digits)
+  (cond
+    ((null digits) t)
+    ((= k 2) (null (remove-if #'oddp digits)))
+    ((= k 3) (> (rem (apply #'+ digits) 3) 0))
+    ((= k 4) (null (remove-if #'oddp digits)))
+    ((= k 5) (null (remove-if-not #'(lambda (x) (or (= 0 x) (= 5 x))) digits)))
+    ((= k 6) (or (early-stop 3 digits) (early-stop 2 digits)))
+    ((= k 8) (early-stop 2 digits))
+    ((= k 9) (> (rem (apply #'+ digits) 9) 0))
+    ((= k 10) (null (remove-if #'(lambda (x) (> x 0)) digits)))
+    (t nil)))
+
 (defun max-anagram-divisible-by (k digits)
   (defun find-anagram (anagram)
+    (format t "(find-anagram ~A) k=~A digits=~A~%" anagram k digits)
     (cond
       ((null anagram) nil)
-      ((and (evenp k) (null (remove-if #'oddp digits))) nil)
-      ((and (= (rem k 3) 0) (> (rem (apply #'+ digits) 3) 0)) nil)
+      ((= 1 k) anagram)
       ((equal anagram digits) (find-anagram (next-anagram anagram)))
       (t (if (divisible-by k anagram)
            anagram
-           (cond ((= k 3) nil)
-                  ((= k 6) nil)
-                  ((= k 9) nil)
-                  (t (find-anagram (next-anagram anagram))))))))
+           (find-anagram (next-anagram anagram))))))
 
-  (find-anagram (max-anagram digits)))
+  (if (early-stop k digits)
+    nil
+    (find-anagram (max-anagram digits))))
 
 (defun read-pair ()
   (handler-case
