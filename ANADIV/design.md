@@ -107,6 +107,48 @@ subtract 2d
         if b≥7 = 7(x+2)+(a-7)+(b-7)
     if a<7 = 7x-a
                  
+problem: if a large number has no digit = 5 or 0, and we want to determine if this number is divisible by 5, it will loop over all anagrams.
 
+given a large number, before looking for anything else, eliminate possiblities
+2 : if not digit is 0 or divisible by 2, no anagram will be divisible by 2
+3 : if sum of digits is not divsible by 3, no anagram will be divisible by 3
+00 04 08 12 16 20 24 28 32 36 40 
+
+problem: if a very large number has only one even digit, and that digit is up like 9998777555333111 then finding the first anagram divisible by 2 takes a long loop.
+
+987531
+987513
+987351
+987315
+987153
+987135
+985731
+985713
+985371
+985317
+985173
+985137
+983751
+983715
+983571
+983517
+983175
+983157
+981753
+981735
+981573
+981537
+981375
+981357
+978531
+978513
+978351
+978315
+978153
+978135
+975831
+975813
+975381
+975318
 
 
