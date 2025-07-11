@@ -201,18 +201,19 @@
     (t nil)))
 
 (defun max-anagram-divisible-by (k digits)
-  (defun find-anagram (anagram)
+  (defun find-anagram (anagram iter)
     (cond
       ((null anagram) nil)
+      ((> iter 200) nil)
       ((= 1 k) anagram)
-      ((equal anagram digits) (find-anagram (next-anagram anagram)))
+      ((equal anagram digits) (find-anagram (next-anagram anagram) (1+ iter)))
       (t (if (divisible-by k anagram)
            anagram
-           (find-anagram (next-anagram anagram))))))
+           (find-anagram (next-anagram anagram) (1+ iter))))))
 
   (if (early-stop k digits)
     nil
-    (find-anagram (max-anagram digits))))
+    (find-anagram (max-anagram digits) 0)))
 
 (defun read-pair ()
   (handler-case
