@@ -1,4 +1,8 @@
 (defparameter *limit* 10000)
+(defparameter *multiples-of-2* '((0) (2) (4) (6) (8)))
+(defparameter *multiples-of-4* (loop for x from 0 to 24 collect (multiple-value-bind (q r) (truncate (* x 4) 10) (cons r (cons q ())))))
+(defparameter *multiples-of-8* (loop for x from 0 to 124 collect (multiple-value-bind (cent rest) (truncate (* x 8) 100) (multiple-value-bind (tens units) (truncate rest 10) (cons units (cons tens (cons cent ())))))))
+
 (defun value (digits)
   (cond ((null digits) 0)
         ((> (car digits) 9) (error (format nil "value called with ~A~%" (car digits))))
@@ -186,6 +190,40 @@
     ((< (car digits) (car elements)) (minimal-common (cdr digits) elements))
     ((> (car digits) (car elements)) (minimal-common digits (cdr elements)))))
 
+; given a sorted list of digits and a  multiple (m1 m2 …mn)
+; returns digits minus (m1 m2…mn) if these could be extracted from digits
+; or nil if multiple cannot be extracted from digits
+(defun extract-multiple (digits multiple)
+
+  (defun extract-multiple-aux (digits multiple result)
+    (format t "(extract-multiple-aux ~A ~A ~A)~%" digits multiple result)
+    (cond
+      ((null multiple) (append result digits))
+      ((null digits) nil)
+      ((< (car digits) (car multiple))
+       (extract-multiple-aux (cdr digits) multiple (cons (car digits) result)))
+      ((> (car digits) (car multiple)) nil)
+      (t (extract-multiple-aux (remove (car multiple) digits :count 1) (cdr multiple) result))))
+
+  (extract-multiple-aux (sort digits #'<) (sort multiple #'<) ()))
+
+; given a list of digits and a list of multiples ((m1…mn) (n1…nn)…(z1…zn))
+; sorted by ascending order e.g '((0 0) (4 0) (8 0) (2 1) (6 1)…(6 9))
+; returns a pair ((x1…xn) prefix) such that
+; (x1…xn) is the lowest multiple that can be extracted from digits,
+; meaning x1 ∈ digits, x2 ∈ digits minus x1, xn ∈ digits minus (x1 x2…xm)
+; prefix = digits minus (x1 x2 xm…xn)
+; or nil if no multiple can be extracted
+(defun find-minimal-multiple (digits multiples)
+  (cond
+    ((null digits) nil)
+    ((null multiples) nil)
+    (t (let* ((multiple (car multiples))
+              (remaining (extract-multiple digits multiple)))
+         (if remaining
+           (cons multiple remaining)
+           (find-minimal-multiple digits (cdr multiples)))))))
+  
 (defun max-anagram-divisible-by-2 (digits)
   (cond
     ((null digits) nil)
@@ -193,6 +231,17 @@
     (t (let* ((maxa (max-anagram digits))
               (m (minimal-common maxa (list 0 2 4 6 8))))
          (cons m (remove m maxa :count 1))))))
+
+(defun max-anagram-divisible-by-3 (digits)
+  (cond
+    ((> (rem (apply #'+ digits) 3) 0) nil)
+    (t (max-anagram digits))))
+
+(defun max-anagram-divisible-by-4 (digits)
+  (cond
+    ((null digits) nil)
+    ((null (remove-if #'oddp digits)) nil)
+    (t nil)))
 
 (defun max-anagram-divisible-by-7 (digits)
 

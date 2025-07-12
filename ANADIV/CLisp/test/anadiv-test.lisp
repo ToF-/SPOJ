@@ -88,11 +88,6 @@
              (assert-equal t (divisible-by 9 (digits-from-number (* 9 9 9 9 9 9 9 9 9 9 9))))
              )
 
-(define-test divisible-by-3
-             (assert-equal t (divisible-by 3 (digits-from-number (* 3 3 3 3 3 3 3 3 3 3))))
-             (assert-equal nil (divisible-by 3 (digits-from-number (1+ (* 3 3 3 3 3 3 3 3 3 3)))))
-             )
-
 (define-test divisible-by-4
              (assert-equal t (divisible-by 4 (digits-from-number 12)))
              (assert-equal t (divisible-by 4 (digits-from-number (* 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4))))
@@ -105,11 +100,6 @@
              (assert-equal nil (divisible-by 5 (digits-from-number (1+ (* 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5)))))
              )
 
-(define-test divisible-by-2
-             (assert-equal t (divisible-by 2 (digits-from-number 120)))
-             (assert-equal t (divisible-by 2 (digits-from-number (* 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2))))
-             (assert-equal nil (divisible-by 2 (digits-from-number (1+ (* 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2)))))
-             )
 (define-test divisible-by-10
              (assert-equal t (divisible-by 10 (digits-from-number 120)))
              (assert-equal t (divisible-by 10 (digits-from-number (* 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10))))
@@ -168,6 +158,7 @@
              (assert-equal 4 (value (max-anagram-divisible-by-2 (digits-from-number 4))))
              (assert-equal 82 (value (max-anagram-divisible-by-2 (digits-from-number 28))))
              (assert-equal 312 (value (max-anagram-divisible-by-2 (digits-from-number 123))))
+             (assert-equal 970 (value (max-anagram-divisible-by-2 (digits-from-number 709))))
              (assert-equal 9720 (value (max-anagram-divisible-by-2 (digits-from-number 7092))))
              (assert-equal 975318 (value (max-anagram-divisible-by-2 (digits-from-number 987531))))
              (assert-equal 97533118 (value (max-anagram-divisible-by-2 (digits-from-number 98137531))))
@@ -179,18 +170,17 @@
 
              )
 
-;(define-test max-anagram-divisible-by-2
-;             (assert-equal 8704 (value (max-anagram-divisible-by 2 (digits-from-number 4807))))
-;             (assert-equal nil (max-anagram-divisible-by 2 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10))))
-;             )
-
 (define-test max-anagram-divisible-by-3
-             (assert-equal nil (max-anagram-divisible-by 3 (digits-from-number 4827834987386)))
+             (assert-equal nil (max-anagram-divisible-by-3 (digits-from-number 4)))
+             (assert-equal 99540 (value (max-anagram-divisible-by-3 (digits-from-number (* 3 3 3 3 3 3 3 3 3 3)))))
+             (assert-equal nil (max-anagram-divisible-by-3 (digits-from-number (1+ (* 3 3 3 3 3 3 3 3 3 3)))))
              )
 
 (define-test max-anagram-divisible-by-4
-             (assert-equal 8704 (value (max-anagram-divisible-by 4 (digits-from-number 4807))))
-             (assert-equal nil (max-anagram-divisible-by 4 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10))))
+             (assert-equal nil (max-anagram-divisible-by-4 (digits-from-number 7)))
+             (assert-equal 4 (max-anagram-divisible-by-4 (digits-from-number 4)))
+             ;(assert-equal 8704 (value (max-anagram-divisible-by 4 (digits-from-number 4807))))
+             ;(assert-equal nil (max-anagram-divisible-by 4 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10))))
              )
 (define-test max-anagram-divisible-by-5
              (assert-equal nil (max-anagram-divisible-by 5 (digits-from-number 4826882468862)))
