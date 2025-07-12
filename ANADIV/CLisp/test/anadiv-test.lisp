@@ -162,13 +162,27 @@
              (assert-equal 8624 (value (max-anagram-divisible-by 7 (digits-from-number 4826))))
              (assert-equal 99888614000 (value (max-anagram-divisible-by 7 (digits-from-number 96889010408))))
              )
-
 (define-test max-anagram-divisible-by-2
-             (assert-equal 8704 (value (max-anagram-divisible-by 2 (digits-from-number 4807))))
-             (assert-equal nil (max-anagram-divisible-by 2 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10))))
-             (assert-equal 975318 (value (max-anagram-divisible-by 2 (digits-from-number 987531))))
-             (assert-equal nil (max-anagram-divisible-by 2 (cons 8 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10)))))
+             (assert-equal nil (max-anagram-divisible-by-2 nil))
+             (assert-equal nil (max-anagram-divisible-by-2 (digits-from-number 1735)))
+             (assert-equal 4 (value (max-anagram-divisible-by-2 (digits-from-number 4))))
+             (assert-equal 82 (value (max-anagram-divisible-by-2 (digits-from-number 28))))
+             (assert-equal 312 (value (max-anagram-divisible-by-2 (digits-from-number 123))))
+             (assert-equal 9720 (value (max-anagram-divisible-by-2 (digits-from-number 7092))))
+             (assert-equal 975318 (value (max-anagram-divisible-by-2 (digits-from-number 987531))))
+             (assert-equal 97533118 (value (max-anagram-divisible-by-2 (digits-from-number 98137531))))
+             (assert-equal 
+               99999999999999999999777777777777777777775555555555555555555533333333333333333333111111111111111111118
+                           (value
+                             (max-anagram-divisible-by-2
+                               (cons 8 (loop for d from 1 to 100 collect (rem (1+ (* d 2)) 10))))))
+
              )
+
+;(define-test max-anagram-divisible-by-2
+;             (assert-equal 8704 (value (max-anagram-divisible-by 2 (digits-from-number 4807))))
+;             (assert-equal nil (max-anagram-divisible-by 2 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10))))
+;             )
 
 (define-test max-anagram-divisible-by-3
              (assert-equal nil (max-anagram-divisible-by 3 (digits-from-number 4827834987386)))

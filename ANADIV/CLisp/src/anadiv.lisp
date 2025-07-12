@@ -178,6 +178,22 @@
       (cons digits (all-anagrams-aux (next-anagram digits)))))
   (all-anagrams-aux (max-anagram digits)))
 
+(defun minimal-common (digits elements)
+  (cond
+    ((null digits) nil)
+    ((null elements) nil)
+    ((= (car digits) (car elements)) (car digits))
+    ((< (car digits) (car elements)) (minimal-common (cdr digits) elements))
+    ((> (car digits) (car elements)) (minimal-common digits (cdr elements)))))
+
+(defun max-anagram-divisible-by-2 (digits)
+  (cond
+    ((null digits) nil)
+    ((null (remove-if #'oddp digits)) nil)
+    (t (let* ((maxa (max-anagram digits))
+              (m (minimal-common maxa (list 0 2 4 6 8))))
+         (cons m (remove m maxa :count 1))))))
+
 (defun max-anagram-divisible-by-7 (digits)
 
   (defun find-anagram (anagram)
@@ -203,10 +219,9 @@
 
 (defun max-anagram-divisible-by (k digits)
   (defun find-anagram (anagram iter)
-    (format t "(find-anagram ~A)~%" iter)
     (cond
       ((null anagram) nil)
-      ((> iter *limit*) (format t "iter stop with ~A~%" (value anagram)))
+      ((> iter *limit*) nil)
       ((= 1 k) anagram)
       ((equal anagram digits) (find-anagram (next-anagram anagram) (1+ iter)))
       (t (if (divisible-by k anagram)
@@ -214,9 +229,7 @@
            (find-anagram (next-anagram anagram) (1+ iter))))))
 
   (if (early-stop k digits)
-    (progn
-      (format t "early stop for ~A ~A~%" k digits)
-      nil)
+    nil
     (find-anagram (max-anagram digits) 0)))
 
 (defun read-pair ()
