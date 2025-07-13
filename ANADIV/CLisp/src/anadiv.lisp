@@ -22,6 +22,9 @@
     ((> (car a) (car b)) nil)
     (t (list-< (cdr a) (cdr b)))))
 
+(defun list-sort (a)
+  (sort a #'list-<))
+
 (defparameter *limit* 10000)
 (defparameter *multiples-of-2* '((0) (2) (4) (6) (8)))
 (defparameter *multiples-of-4* 

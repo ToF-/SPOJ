@@ -21,6 +21,11 @@
              (assert-equal t (list-< '(0 1) '(0 1 2)))
              (assert-equal nil (list-< '(0 1 2) '(0 1)))
              )
+
+(define-test list-sort
+             (assert-equal '((0 1) (0 2) (1 0) (1 2)) (list-sort '((0 2) (1 2) (0 1) (1 0))))
+             )
+
 (define-test digits-from-number
              (assert-equal '(3) (digits-from-number 3))
              (assert-equal '(7) (digits-from-number 7))
