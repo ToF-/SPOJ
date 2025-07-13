@@ -1,7 +1,31 @@
+(defun compare-list (a b)
+
+  (defun compare-list-aux (a b)
+    (cond
+      ((and (null a) (null b)) nil)
+      ((null a) t)
+      ((< (car a) (car b)) t)
+      ((> (car a) (car b)) nil)
+      (t (compare-list-aux (cdr a) (cdr b)))))
+
+  (compare-list-aux (sort (car a) #'<) (sort (car b) #'<)))
+
 (defparameter *limit* 10000)
 (defparameter *multiples-of-2* '((0) (2) (4) (6) (8)))
-(defparameter *multiples-of-4* (loop for x from 0 to 24 collect (multiple-value-bind (q r) (truncate (* x 4) 10) (cons r (cons q ())))))
-(defparameter *multiples-of-8* (loop for x from 0 to 124 collect (multiple-value-bind (cent rest) (truncate (* x 8) 100) (multiple-value-bind (tens units) (truncate rest 10) (cons units (cons tens (cons cent ())))))))
+(defparameter *multiples-of-4* 
+  (sort (loop for x from 0 to 24 collect
+              (multiple-value-bind (q r) 
+                (truncate (* x 4) 10) 
+                (cons (cons r (cons q ())) (list (* x 4))))) 
+        #'compare-list))
+(defparameter *multiples-of-8*
+  (sort (loop for x from 0 to 124 collect 
+              (multiple-value-bind (cent rest)
+                (truncate (* x 8) 100) 
+                (multiple-value-bind (tens units) 
+                  (truncate rest 10) 
+                  (cons (cons units (cons tens (cons cent ())))(list (* x 8))))))
+        #'compare-list))
 
 (defun value (digits)
   (cond ((null digits) 0)
