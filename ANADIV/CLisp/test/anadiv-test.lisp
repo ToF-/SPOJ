@@ -69,14 +69,6 @@
                *multiples-of-8*)
              )
 
-(define-test extract-multiple
-             (assert-equal '((4 7 8) (0))
-                           (extract-multiple (max-anagram (digits-from-number 4807)) *multiples-of-2*))
-             (assert-equal '((7 8) (4 0))
-                           (extract-multiple
-                             (max-anagram (digits-from-number 4807)) *multiples-of-4*))
-             )
-
 ; ***************************
 
 (define-test subtract

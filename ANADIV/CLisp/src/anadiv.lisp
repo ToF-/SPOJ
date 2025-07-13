@@ -14,18 +14,6 @@
         nil)
       nil)))
 
-(defun compare-list (a b)
-
-  (defun compare-list-aux (a b)
-    (cond
-      ((and (null a) (null b)) nil)
-      ((null a) t)
-      ((< (car a) (car b)) t)
-      ((> (car a) (car b)) nil)
-      (t (compare-list-aux (cdr a) (cdr b)))))
-
-  (compare-list-aux (sort (car a) #'<) (sort (car b) #'<)))
-
 (defparameter *limit* 10000)
 (defparameter *multiples-of-2* '((0) (2) (4) (6) (8)))
 (defparameter *multiples-of-4* 
@@ -63,29 +51,6 @@
     (multiple-value-bind (quotient remainder)
       (truncate n 10)
       (cons remainder (digits-from-number quotient)))))
-
-(defun extract-multiple (digits multiples)
-
-  (defun compare-digits (a b)
-    (cond
-      ((null a) t)
-      ((< (car a) (car b)) t)
-      ((> (car a) (car b)) nil)
-      (t (compare-digits (cdr a) (cdr b)))))
-
-  (defun extract-multiples-aux (digits multiples result)
-    (if (null multiples)
-      result
-      (let ((extract (remove-list (car multiples) digits)))
-        (if extract
-          (extract-multiples-aux (cdr multiples) digits (cons (append extract (car multiples)) result))
-          (extract-multiples-aux (cdr multiples) digits result)))))
-
-  (let ((extract (extract-multiples-aux digits multiples ())))
-    (if (null extract)
-      nil
-      (car (sort extract #'compare-digits)))))
-
 
 (defun string-from-digits (digits)
   (concatenate 'string (loop for d in (reverse digits) collect (digit-char d))))
