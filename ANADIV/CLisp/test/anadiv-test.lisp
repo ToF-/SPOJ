@@ -4,6 +4,18 @@
 (setq *print-failures* t)
 (load "src/anadiv")
 
+(define-test remove-list
+             (assert-equal nil (remove-list '(d e) '(a b c)))
+             (assert-equal nil (remove-list '(d c) '(a b c)))
+             (assert-equal nil (remove-list '(a d c) '(a b c)))
+             (assert-equal nil (remove-list '(a a e) '(a b c)))
+             (assert-equal '(d c) (remove-list '(a b) '(a b d c)))
+             (assert-equal '(d c) (remove-list '(a a) '(d a a c)))
+             )
+
+(define-test extract-digits
+             (assert-equal '((0 7) (8 4)) (extract-digits (digits-from-number 48) (digits-from-number 4807)))
+             )
 (define-test number-pair-from-string
              (assert-equal (cons (digits-from-number 4807) (list 10)) (number-pair-from-string "4807 10"))
              )
@@ -178,7 +190,7 @@
 
 (define-test max-anagram-divisible-by-4
              (assert-equal nil (max-anagram-divisible-by-4 (digits-from-number 7)))
-             (assert-equal 4 (max-anagram-divisible-by-4 (digits-from-number 4)))
+             (assert-equal 4 (value (max-anagram-divisible-by-4 (digits-from-number 4))))
              ;(assert-equal 8704 (value (max-anagram-divisible-by 4 (digits-from-number 4807))))
              ;(assert-equal nil (max-anagram-divisible-by 4 (loop for d from 1 to 1000 collect (rem (1+ (* d 2)) 10))))
              )

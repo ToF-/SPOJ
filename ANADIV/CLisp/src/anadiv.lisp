@@ -1,3 +1,23 @@
+(defun remove-list (a b)
+  (defun remove-list-aux (a b)
+    (cond
+      ((null a) b)
+      ((null b) nil)
+      ((find (car a) b) (remove-list-aux (cdr a) (remove (car a) b :count 1)))
+      (t (remove-list-aux (cdr a) b))))
+  (let ((result (remove-list-aux a b)))
+    (if result
+      (if (= (length result) (- (length b) (length a)))
+        result
+        nil)
+      nil)))
+
+(defun extract-digits (a b)
+  (let ((result (remove-list a b)))
+    (if result
+      (cons (max-anagram result) (list a))
+      nil)))
+
 (defun compare-list (a b)
 
   (defun compare-list-aux (a b)
@@ -265,6 +285,7 @@
   (cond
     ((null digits) nil)
     ((null (remove-if #'oddp digits)) nil)
+    ((= 4 (car digits)) (list 4))
     (t nil)))
 
 (defun max-anagram-divisible-by-7 (digits)
