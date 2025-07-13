@@ -81,6 +81,25 @@
                *multiples-of-8*)
              )
 
+(define-test find-multiple-digits
+             (assert-equal nil (find-multiple-digits '(4 8 0 7) '(2)))
+             (assert-equal '((0) (4 8 7)) (find-multiple-digits '(4 8 0 7) '(0)))
+             (assert-equal '((0 4) (8 7)) (find-multiple-digits '(4 8 0 7) '(0 4)))
+             (assert-equal nil (find-multiple-digits '(4 8 0 7) '(8 4 2)))
+             (assert-equal '((2 3) (7 6 8)) (find-multiple-digits '(3 2 7 6 8) '(2 3)))
+             )
+
+(define-test find-largest-multiple-anagram
+             (assert-equal nil (find-largest-multiple-anagram '(5 3 1 7) *multiples-of-4*))
+             (assert-equal '(0 4 7 8) (find-largest-multiple-anagram '(4 8 0 7) *multiples-of-4*))
+             (assert-equal '(2 3 6 7 8) (find-largest-multiple-anagram '(3 2 7 6 8) *multiples-of-8*))
+             (assert-equal '(2 1 3 7) (find-largest-multiple-anagram '(2 3 1 7) *multiples-of-4*))
+             (assert-equal '(8 1 1 1 1 3 3 3 3 5 5 5 5 7 7 7 7 9 9 9)
+                           (find-largest-multiple-anagram (digits-from-number 99987777555533331111) *multiples-of-2*))
+             (assert-equal '(2 1 1 1 1 3 3 3 3 5 5 5 5 7 7 7 7 8 9 9 9)
+                           (find-largest-multiple-anagram (digits-from-number 999877277555533331111) *multiples-of-4*))
+            
+             )
 ; ***************************
 
 (define-test subtract

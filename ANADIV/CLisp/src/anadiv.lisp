@@ -66,6 +66,29 @@
 (defun string-from-digits (digits)
   (concatenate 'string (loop for d in (reverse digits) collect (digit-char d))))
 
+(defun find-multiple-digits (digits multiple)
+  (let ((result (remove-list multiple digits)))
+    (if result
+      (list multiple result)
+      nil)))
+
+(defun find-largest-multiple-anagram (digits multiples)
+  (defun find-multiple-anagrams (multiples result)
+    (if (null multiples)
+      result
+      (let ((found (find-multiple-digits digits (car multiples))))
+        (if found
+          (let ((a (append (car found) (sort (copy-list (cadr found)) #'<))))
+            (find-multiple-anagrams (cdr multiples)
+                                    (cons a result)))
+          (find-multiple-anagrams (cdr multiples) result)))))
+
+  (let ((anagrams (find-multiple-anagrams multiples ())))
+    (format t "anagrams: ~A~%" anagrams)
+    (if (null anagrams)
+      nil
+      (car (list-sort anagrams)))))
+
 (defun decrement (operand)
   (cond
     ((null operand) ())
