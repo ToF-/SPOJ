@@ -14,6 +14,14 @@
         nil)
       nil)))
 
+(defun list-< (a b)
+  (cond
+    ((null a) (not (null b)))
+    ((null b) nil)
+    ((< (car a) (car b)) t)
+    ((> (car a) (car b)) nil)
+    (t (list-< (cdr a) (cdr b)))))
+
 (defparameter *limit* 10000)
 (defparameter *multiples-of-2* '((0) (2) (4) (6) (8)))
 (defparameter *multiples-of-4* 
