@@ -1,21 +1,17 @@
 (defun remove-list (a b)
+
   (defun remove-list-aux (a b)
     (cond
       ((null a) b)
       ((null b) nil)
       ((find (car a) b) (remove-list-aux (cdr a) (remove (car a) b :count 1)))
       (t (remove-list-aux (cdr a) b))))
+
   (let ((result (remove-list-aux a b)))
     (if result
       (if (= (length result) (- (length b) (length a)))
         result
         nil)
-      nil)))
-
-(defun extract-digits (a b)
-  (let ((result (remove-list a b)))
-    (if result
-      (cons (max-anagram result) (list a))
       nil)))
 
 (defun compare-list (a b)
@@ -33,30 +29,28 @@
 (defparameter *limit* 10000)
 (defparameter *multiples-of-2* '((0) (2) (4) (6) (8)))
 (defparameter *multiples-of-4* 
-  (sort (loop for x from 0 to 24 collect
+  (loop for x from 0 to 24 collect
               (multiple-value-bind (q r) 
                 (truncate (* x 4) 10) 
-                (cons (cons r (cons q ())) (list (* x 4))))) 
-        #'compare-list))
+                (cons r (cons q ())))))
 (defparameter *multiples-of-8*
-  (sort (loop for x from 0 to 124 collect 
+  (loop for x from 0 to 124 collect 
               (multiple-value-bind (cent rest)
                 (truncate (* x 8) 100) 
                 (multiple-value-bind (tens units) 
                   (truncate rest 10) 
-                  (cons (cons units (cons tens (cons cent ())))(list (* x 8))))))
-        #'compare-list))
+                  (cons units (cons tens (cons cent ())))))))
 
-(defun value (digits)
+(defun number-from-digits (digits)
   (cond ((null digits) 0)
-        ((> (car digits) 9) (error (format nil "value called with ~A~%" (car digits))))
-        (t (+ (car digits) (* 10 (value (cdr digits)))))))
+        ((> (car digits) 9) (error (format nil "number-from-digits called with ~A~%" (car digits))))
+        (t (+ (car digits) (* 10 (number-from-digits (cdr digits)))))))
 
 (defun number-pair-from-string (input)
 
   (defun split-values (digits prefix)
     (if (null (car digits))
-      (cons prefix (list (value (reverse (cdr digits)))))
+      (cons prefix (list (number-from-digits (reverse (cdr digits)))))
       (split-values (cdr digits) (cons (car digits) prefix))))
 
   (let* ((all-digits (loop for c across input collect (digit-char-p c)))
@@ -69,6 +63,29 @@
     (multiple-value-bind (quotient remainder)
       (truncate n 10)
       (cons remainder (digits-from-number quotient)))))
+
+(defun extract-multiple (digits multiples)
+
+  (defun compare-digits (a b)
+    (cond
+      ((null a) t)
+      ((< (car a) (car b)) t)
+      ((> (car a) (car b)) nil)
+      (t (compare-digits (cdr a) (cdr b)))))
+
+  (defun extract-multiples-aux (digits multiples result)
+    (if (null multiples)
+      result
+      (let ((extract (remove-list (car multiples) digits)))
+        (if extract
+          (extract-multiples-aux (cdr multiples) digits (cons (append extract (car multiples)) result))
+          (extract-multiples-aux (cdr multiples) digits result)))))
+
+  (let ((extract (extract-multiples-aux digits multiples ())))
+    (if (null extract)
+      nil
+      (car (sort extract #'compare-digits)))))
+
 
 (defun string-from-digits (digits)
   (concatenate 'string (loop for d in (reverse digits) collect (digit-char d))))
@@ -131,7 +148,7 @@
 
 (defun divisible-by-8 (digits)
   (if (<= (length digits) 3)
-    (= (rem (value digits) 8) 0)
+    (= (rem (number-from-digits digits) 8) 0)
     (= (rem (+ (car digits) (* (cadr digits) 10) (* (caddr digits) 100)) 8) 0)))
 
 (defun divisible-by-9 (digits)
@@ -155,7 +172,7 @@
 
 (defun divisible-by-7 (digits)
   (cond
-    ((< (length digits) 4) (= (rem (value digits) 7) 0))
+    ((< (length digits) 4) (= (rem (number-from-digits digits) 7) 0))
     (t (let* ((last-digit (car digits))
               (tens (+ (cadr digits) (* (caddr digits) 10)))
               (remain (cdddr digits))
