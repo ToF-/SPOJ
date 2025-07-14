@@ -83,10 +83,14 @@
       (car (list-sort anagrams)))))
 
 (defun max-anagram-divisible-by-1 (digits)
-  (max-anagram digits))
+  (if (null digits)
+    nil
+    (max-anagram digits)))
 
 (defun max-anagram-divisible-by-2 (digits)
-  (find-largest-multiple-anagram digits *multiples-of-2*))
+  (if (null (remove-if #'oddp digits))
+    nil
+    (find-largest-multiple-anagram digits *multiples-of-2*)))
 
 (defun max-anagram-divisible-by-3 (digits)
   (cond
@@ -95,68 +99,89 @@
     (t (max-anagram digits))))
 
 (defun max-anagram-divisible-by-4 (digits)
-  (if (= (length digits) 1)
-    (if (= (rem (car digits) 4) 0)
-      (list (car digits))
-      nil)
-    (find-largest-multiple-anagram digits *multiples-of-4*)))
+  (if (null (remove-if #'oddp digits))
+    nil
+    (if (= (length digits) 1)
+      (if (= (rem (car digits) 4) 0)
+        (list (car digits))
+        nil)
+      (find-largest-multiple-anagram digits *multiples-of-4*))))
 
 (defun max-anagram-divisible-by-5 (digits)
-  (if (= (length digits) 1)
-    (if (= (rem (car digits) 5) 0)
-      (list (car digits))
-      nil)
-    (find-largest-multiple-anagram digits *multiples-of-5*)))
+  (if (and (not (find 0 digits)) (not (find 5 digits)))
+    nil
+    (if (= (length digits) 1)
+      (if (= (rem (car digits) 5) 0)
+        (list (car digits))
+        nil)
+      (find-largest-multiple-anagram digits *multiples-of-5*))))
 
 (defun max-anagram-divisible-by-6 (digits)
-  (if (= (length digits) 1)
-    (if (= (rem (car digits) 6) 0)
-      (list (car digits))
-      nil)
-    (if (> (rem (apply #'+ digits) 3) 0) 
-      nil
-      (find-largest-multiple-anagram digits *multiples-of-2*))))
+  (if (or
+        (null (remove-if #'oddp digits))
+        (> (rem (apply #'+ digits) 3) 0))
+    nil
+    (if (= (length digits) 1)
+      (if (= (rem (car digits) 6) 0)
+        (list (car digits))
+        nil)
+      (if (> (rem (apply #'+ digits) 3) 0) 
+        nil
+        (find-largest-multiple-anagram digits *multiples-of-2*)))))
 
-(defun max-anagram-divisible-by-8 (digits)
-  (if (< (length digits) 4)
-    (if (= (rem (number-from-digits digits) 8) 0)
-      digits
-      nil)
-    (find-largest-multiple-anagram digits *multiples-of-8*)))
+(defun largest-anagram-multiple (k anagrams)
+  (cond
+    ((null anagrams) nil)
+    ((> (rem (number-from-digits (car anagrams)) k) 0) (largest-anagram-multiple k (cdr anagrams)))
+    (t (car anagrams))))
 
-; ****************************
 (defun decrement (operand)
   (cond
     ((null operand) ())
     ((> (car operand) 0) (cons (- (car operand) 1) (cdr operand)))
     (t (cons 9 (decrement (cdr operand))))))
 
-(defun subtract (minuend subtrahend)
+(defun divisible-by-7 (digits)
+  (cond
+    ((< (length digits) 4) (= (rem (number-from-digits digits) 7) 0))
+    (t (let* ((last-digit (car digits))
+              (tens (+ (cadr digits) (* (caddr digits) 10)))
+              (remain (cdddr digits))
+              (x (- tens (* last-digit 2)))
+              (y (if (< x 0) (+ 100 x) x))
+              (adjusted-remain (if (< x 0) (decrement remain) remain)))
+         (divisible-by-7 
+           (multiple-value-bind (quotient remainder)
+             (truncate x 10)
+             (cons remainder (cons quotient adjusted-remain))))))))
 
-  (defun calibrate (operand)
-    (defun calibrate-aux (operand)
-      (cond ((null operand) ())
-            ((= (car operand) 0) (calibrate-aux (cdr operand)))
-            (t operand)))
-    (reverse (calibrate-aux (reverse operand))))
+(defun max-anagram-divisible-by-7 (digits)
 
-  (if (null subtrahend)
-    (calibrate minuend)
-    (let ((m (car minuend))
-          (s (car subtrahend))
-          (ms (cdr minuend))
-          (ss (cdr subtrahend)))
-      (if (>= m s)
-        (cons (- m s) (subtract ms ss))
-        (cons (- (+ m 10) s) (subtract (decrement ms) ss))))))
 
-(defun multiple (operand m)
-  (if (= (length operand) 1)
-    (if (>= (car operand) m)
-      (multiple (list (- (car operand) m)) m)
-      (= (car operand) 0))
-    (multiple (subtract operand (list m)) m)))
+  (defun largest-anagram-multiple-of-7 (anagram)
+    (cond
+      ((null anagram) nil)
+      ((divisible-by-7 anagram) anagram)
+      (t (largest-anagram-multiple-of-7 (next-anagram anagram)))))
 
+  (largest-anagram-multiple-of-7 (max-anagram digits)))
+
+(defun max-anagram-divisible-by-8 (digits)
+  (if (< (length digits) 4)
+    (largest-anagram-multiple 8 (list-sort (all-anagrams digits)))
+    (find-largest-multiple-anagram digits *multiples-of-8*)))
+
+(defun max-anagram-divisible-by-9 (digits)
+  (if (> (rem (apply #'+ digits) 9) 0)
+    nil
+    (max-anagram digits)))
+
+(defun max-anagram-divisible-by-10 (digits)
+  (if (find 0 digits)
+    (max-anagram digits)
+    nil))
+
+; ****************************
 (defun add (operand addend)
 
   (defun increment (operand)
@@ -186,9 +211,6 @@
     (= (rem (number-from-digits digits) 8) 0)
     (= (rem (+ (car digits) (* (cadr digits) 10) (* (caddr digits) 100)) 8) 0)))
 
-(defun divisible-by-9 (digits)
-  (multiple (sum-digits digits) 9))
-
 (defun divisible-by-3 (digits)
   (= (rem (apply #'+ digits) 3) 0))
 
@@ -205,20 +227,6 @@
 (defun divisible-by-2 (digits)
   (evenp (car digits)))
 
-(defun divisible-by-7 (digits)
-  (cond
-    ((< (length digits) 4) (= (rem (number-from-digits digits) 7) 0))
-    (t (let* ((last-digit (car digits))
-              (tens (+ (cadr digits) (* (caddr digits) 10)))
-              (remain (cdddr digits))
-              (x (- tens (* last-digit 2)))
-              (y (if (< x 0) (+ 100 x) x))
-              (adjusted-remain (if (< x 0) (decrement remain) remain)))
-         (divisible-by-7 
-           (multiple-value-bind (quotient remainder)
-             (truncate x 10)
-             (cons remainder (cons quotient adjusted-remain))))))))
-
 (defun divisible-by-10 (digits)
   (= (car digits) 0))
 
@@ -229,21 +237,6 @@
   (and (divisible-by-3 digits)
        (divisible-by-2 digits)))
 
-(defparameter divisible-functions
-  (list nil
-        #'divisible-by-1
-        #'divisible-by-2
-        #'divisible-by-3
-        #'divisible-by-4
-        #'divisible-by-5
-        #'divisible-by-6
-        #'divisible-by-7
-        #'divisible-by-8
-        #'divisible-by-9
-        #'divisible-by-10))
-
-(defun divisible-by (k digits)
-  (funcall (nth k divisible-functions) digits))
 
 (defun max-anagram (digits)
   (sort digits #'<))
@@ -320,16 +313,6 @@
            (find-minimal-multiple digits (cdr multiples)))))))
   
 
-(defun max-anagram-divisible-by-7 (digits)
-
-  (defun find-anagram (anagram)
-    (cond
-      ((null anagram) nil)
-      ((divisible-by-7 anagram) anagram)
-      (t (find-anagram (next-anagram anagram)))))
-
-  (find-anagram (max-anagram digits)))
-
 (defun early-stop (k digits)
   (cond
     ((null digits) t)
@@ -344,19 +327,18 @@
     (t nil)))
 
 (defun max-anagram-divisible-by (k digits)
-  (defun find-anagram (anagram iter)
-    (cond
-      ((null anagram) nil)
-      ((> iter *limit*) nil)
-      ((= 1 k) anagram)
-      ((equal anagram digits) (find-anagram (next-anagram anagram) (1+ iter)))
-      (t (if (divisible-by k anagram)
-           anagram
-           (find-anagram (next-anagram anagram) (1+ iter))))))
-
-  (if (early-stop k digits)
-    nil
-    (find-anagram (max-anagram digits) 0)))
+  (cond
+    ((= k 1) (max-anagram-divisible-by-1 digits))
+    ((= k 2) (max-anagram-divisible-by-2 digits))
+    ((= k 3) (max-anagram-divisible-by-3 digits))
+    ((= k 4) (max-anagram-divisible-by-4 digits))
+    ((= k 5) (max-anagram-divisible-by-5 digits))
+    ((= k 6) (max-anagram-divisible-by-6 digits))
+    ((= k 7) (max-anagram-divisible-by-7 digits))
+    ((= k 8) (max-anagram-divisible-by-8 digits))
+    ((= k 9) (max-anagram-divisible-by-9 digits))
+    ((= k 10) (max-anagram-divisible-by-10 digits))
+    ))
 
 (defun read-pair ()
   (handler-case
