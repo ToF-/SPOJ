@@ -1,18 +1,9 @@
 (defun remove-list (a b)
-
-  (defun remove-list-aux (a b)
-    (cond
-      ((null a) b)
-      ((null b) nil)
-      ((find (car a) b) (remove-list-aux (cdr a) (remove (car a) b :count 1)))
-      (t (remove-list-aux (cdr a) b))))
-
-  (let ((result (remove-list-aux a b)))
-    (if result
-      (if (= (length result) (- (length b) (length a)))
-        result
-        nil)
-      nil)))
+  (if (null a)
+    b
+    (if (find (car a) b)
+      (remove-list (cdr a) (remove (car a) b :count 1))
+      'NONE)))
 
 (defun list-< (a b)
   (cond
@@ -68,26 +59,39 @@
 
 (defun find-multiple-digits (digits multiple)
   (let ((result (remove-list multiple digits)))
-    (if result
-      (list multiple result)
-      nil)))
+    (cond
+      ((not result) (list multiple ()))
+      ((equal 'NONE result) 'NONE)
+      (t (list multiple result)))))
 
 (defun find-largest-multiple-anagram (digits multiples)
+
   (defun find-multiple-anagrams (multiples result)
     (if (null multiples)
       result
       (let ((found (find-multiple-digits digits (car multiples))))
-        (if found
-          (let ((a (append (car found) (sort (copy-list (cadr found)) #'<))))
-            (find-multiple-anagrams (cdr multiples)
-                                    (cons a result)))
-          (find-multiple-anagrams (cdr multiples) result)))))
+        (cond ((equal 'NONE found) (find-multiple-anagrams (cdr multiples) result))
+              ((null (cadr found)) (cons (car found) result))
+              (t (let ((a (append (car found) (sort (copy-list (cadr found)) #'<))))
+                    (find-multiple-anagrams (cdr multiples)
+                                            (cons a result))))))))
 
   (let ((anagrams (find-multiple-anagrams multiples ())))
-    (format t "anagrams: ~A~%" anagrams)
     (if (null anagrams)
       nil
       (car (list-sort anagrams)))))
+
+(defun max-anagram-divisible-by-2 (digits)
+  (find-largest-multiple-anagram digits *multiples-of-2*))
+
+(defun max-anagram-divisible-by-4 (digits)
+  (if (= (length digits) 1)
+    (if (rem (car digits) 4)
+      (list (car digits))
+      nil)
+    (find-largest-multiple-anagram digits *multiples-of-4*)))
+
+; ****************************
 
 (defun decrement (operand)
   (cond
@@ -256,7 +260,6 @@
 (defun extract-multiple (digits multiple)
 
   (defun extract-multiple-aux (digits multiple result)
-    (format t "(extract-multiple-aux ~A ~A ~A)~%" digits multiple result)
     (cond
       ((null multiple) (append result digits))
       ((null digits) nil)
@@ -284,25 +287,10 @@
            (cons multiple remaining)
            (find-minimal-multiple digits (cdr multiples)))))))
   
-(defun max-anagram-divisible-by-2 (digits)
-  (cond
-    ((null digits) nil)
-    ((null (remove-if #'oddp digits)) nil)
-    (t (let* ((maxa (max-anagram digits))
-              (m (minimal-common maxa (list 0 2 4 6 8))))
-         (cons m (remove m maxa :count 1))))))
-
 (defun max-anagram-divisible-by-3 (digits)
   (cond
     ((> (rem (apply #'+ digits) 3) 0) nil)
     (t (max-anagram digits))))
-
-(defun max-anagram-divisible-by-4 (digits)
-  (cond
-    ((null digits) nil)
-    ((null (remove-if #'oddp digits)) nil)
-    ((= 4 (car digits)) (list 4))
-    (t nil)))
 
 (defun max-anagram-divisible-by-7 (digits)
 
