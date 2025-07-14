@@ -23,6 +23,7 @@
               (multiple-value-bind (q r) 
                 (truncate (* x 4) 10) 
                 (cons r (cons q ())))))
+(defparameter *multiples-of-5* '((0) (5)))
 (defparameter *multiples-of-8*
   (loop for x from 0 to 124 collect 
               (multiple-value-bind (cent rest)
@@ -81,18 +82,49 @@
       nil
       (car (list-sort anagrams)))))
 
+(defun max-anagram-divisible-by-1 (digits)
+  (max-anagram digits))
+
 (defun max-anagram-divisible-by-2 (digits)
   (find-largest-multiple-anagram digits *multiples-of-2*))
 
+(defun max-anagram-divisible-by-3 (digits)
+  (cond
+    ((null digits) nil)
+    ((> (rem (apply #'+ digits) 3) 0) nil)
+    (t (max-anagram digits))))
+
 (defun max-anagram-divisible-by-4 (digits)
   (if (= (length digits) 1)
-    (if (rem (car digits) 4)
+    (if (= (rem (car digits) 4) 0)
       (list (car digits))
       nil)
     (find-largest-multiple-anagram digits *multiples-of-4*)))
 
-; ****************************
+(defun max-anagram-divisible-by-5 (digits)
+  (if (= (length digits) 1)
+    (if (= (rem (car digits) 5) 0)
+      (list (car digits))
+      nil)
+    (find-largest-multiple-anagram digits *multiples-of-5*)))
 
+(defun max-anagram-divisible-by-6 (digits)
+  (if (= (length digits) 1)
+    (if (= (rem (car digits) 6) 0)
+      (list (car digits))
+      nil)
+    (if (> (rem (apply #'+ digits) 3) 0) 
+      nil
+      (find-largest-multiple-anagram digits *multiples-of-2*))))
+
+(defun max-anagram-divisible-by-8 (digits)
+  (if (< (length digits) 4)
+    (if (= (rem (number-from-digits digits) 8) 0)
+      digits
+      nil)
+    (find-largest-multiple-anagram digits *multiples-of-8*)))
+
+; ****************************
 (defun decrement (operand)
   (cond
     ((null operand) ())
@@ -287,10 +319,6 @@
            (cons multiple remaining)
            (find-minimal-multiple digits (cdr multiples)))))))
   
-(defun max-anagram-divisible-by-3 (digits)
-  (cond
-    ((> (rem (apply #'+ digits) 3) 0) nil)
-    (t (max-anagram digits))))
 
 (defun max-anagram-divisible-by-7 (digits)
 

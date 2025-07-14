@@ -62,6 +62,7 @@
                        (4 6) (8 6) (2 7) (6 7) (0 8)
                        (4 8) (8 8) (2 9) (6 9)) 
                *multiples-of-4*)
+             (assert-equal '((0) (5)) *multiples-of-5*)
              (assert-equal
                '((0 0 0) (8 0 0) (6 1 0) (4 2 0) (2 3 0) (0 4 0) (8 4 0) (6 5 0)
                          (4 6 0) (2 7 0) (0 8 0) (8 8 0) (6 9 0) (4 0 1) (2 1 1) (0 2 1)
@@ -104,6 +105,10 @@
             
              )
 
+(define-test find-largest-multiple-of-1-anagram
+             (assert-equal 8740 (number-from-digits (max-anagram-divisible-by-1 (digits-from-number 4807))))
+             )
+
 (define-test find-largest-multiple-of-2-anagram
              (assert-equal nil (max-anagram-divisible-by-2 nil))
              (assert-equal nil (max-anagram-divisible-by-2 (digits-from-number 1735)))
@@ -121,6 +126,12 @@
                                (cons 8 (loop for d from 1 to 100 collect (rem (1+ (* d 2)) 10))))))
 
              )
+(define-test find-largest-multiple-of-3-anagram
+             (assert-equal nil (max-anagram-divisible-by-3 nil))
+             (assert-equal 87 (number-from-digits (max-anagram-divisible-by-3 (digits-from-number (+ 6 (* 3 3 3 3))))))
+             (assert-equal nil (max-anagram-divisible-by-3 (digits-from-number (+ 7 (* 3 3 3 3)))))
+             )
+
 (define-test find-largest-multiple-of-4-anagram
              (assert-equal nil (max-anagram-divisible-by-4 nil))
              (assert-equal nil (max-anagram-divisible-by-4 (digits-from-number 1735)))
@@ -128,6 +139,31 @@
              (assert-equal 16 (number-from-digits (max-anagram-divisible-by-4 (digits-from-number 61))))
              (assert-equal 4120 (number-from-digits (max-anagram-divisible-by-4 (digits-from-number (* 4 4 4 4 4)))))
              (assert-equal 5120 (number-from-digits (max-anagram-divisible-by-4 (digits-from-number (1+ (* 4 4 4 4 4))))))
+             )
+
+(define-test find-largest-multiple-of-5-anagram
+             (assert-equal nil (max-anagram-divisible-by-5 nil))
+             (assert-equal 5 (number-from-digits (max-anagram-divisible-by-5 (digits-from-number 5))))
+             (assert-equal 99977325 (number-from-digits (max-anagram-divisible-by-5 (digits-from-number 23799975))))
+             (assert-equal 999775320 (number-from-digits (max-anagram-divisible-by-5 (digits-from-number 230799975))))
+             )
+
+(define-test find-largest-multiple-of-6-anagram
+             (assert-equal nil (max-anagram-divisible-by-6 nil))
+             (assert-equal 6 (number-from-digits (max-anagram-divisible-by-6 (digits-from-number 6))))
+             (assert-equal 7776 (number-from-digits (max-anagram-divisible-by-6 (digits-from-number (* 6 6 6 6 6)))))
+             (assert-equal nil (max-anagram-divisible-by-6 (digits-from-number (1+ (* 6 6 6 6 6)))))
+             )
+(define-test find-largest-multiple-of-8-anagram
+             (assert-equal nil (max-anagram-divisible-by-8 nil))
+             (assert-equal nil (max-anagram-divisible-by-8 (digits-from-number 1735)))
+             (assert-equal 40 (number-from-digits (max-anagram-divisible-by-8 (digits-from-number 40))))
+             (assert-equal 24 (number-from-digits (max-anagram-divisible-by-8 (digits-from-number 24))))
+             (assert-equal 840 (number-from-digits (max-anagram-divisible-by-8 (digits-from-number 840))))
+             (assert-equal 970 (number-from-digits (max-anagram-divisible-by-8 (digits-from-number 709))))
+             ; (assert-equal 9720 (number-from-digits (max-anagram-divisible-by-8 (digits-from-number 7092))))
+             ; (assert-equal 975318 (number-from-digits (max-anagram-divisible-by-8 (digits-from-number 987531))))
+             ; (assert-equal 97533118 (number-from-digits (max-anagram-divisible-by-8 (digits-from-number 98137531))))
              )
 ; ***************************
 
