@@ -87,14 +87,32 @@
     nil
     (max-anagram digits)))
 
-(defun max-anagram-divisible-by-2 (digits)
-  (defun even-first (digits prefix)
+(defun max-anagram-starting-with-digit (digit digits prefix)
     (cond
       ((null digits) nil)
-      ((evenp (car digits)) (append (cons (car digits) (reverse prefix)) (cdr digits)))
-      (t (even-first (cdr digits) (cons (car digits) prefix)))))
+      ((= digit (car digits)) (append (cons (car digits) (reverse prefix)) (cdr digits)))
+      (t (max-anagram-starting-with-digit digit (cdr digits) (cons (car digits) prefix)))))
 
-  (even-first (max-anagram digits) ()))
+(defun max-anagram-starting-with-multiple (multiple digits prefix)
+  (if (null multiple)
+    (append (reverse prefix) digits)
+    (let ((result (max-anagram-starting-with-digit (car multiple) digits ())))
+      (if result
+        (max-anagram-starting-with-multiple (cdr multiple) (cdr result) (cons (car result) prefix))
+        nil))))
+
+(defun max-anagram-starting-with-one-of-multiples (multiples digits accum)
+  (if (null multiples)
+    accum
+    (let ((result (max-anagram-starting-with-multiple (car multiples) digits ())))
+      (cond
+        ((not result) (max-anagram-starting-with-one-of-multiples (cdr multiples) digits accum))
+        ((not accum) (max-anagram-starting-with-one-of-multiples (cdr multiples) digits result))
+        ((list-< result accum) (max-anagram-starting-with-one-of-multiples (cdr multiples) digits result))
+        (t (max-anagram-starting-with-one-of-multiples (cdr multiples) digits accum))))))
+
+(defun max-anagram-divisible-by-2 (digits)
+  (max-anagram-starting-with-one-of-multiples *multiples-of-2* (max-anagram digits) nil))
 
 (defun max-anagram-divisible-by-3 (digits)
   (cond
@@ -103,13 +121,12 @@
     (t (max-anagram digits))))
 
 (defun max-anagram-divisible-by-4 (digits)
-  (if (null (remove-if #'oddp digits))
-    nil
-    (if (= (length digits) 1)
-      (if (= (rem (car digits) 4) 0)
-        (list (car digits))
-        nil)
-      (find-largest-multiple-anagram digits *multiples-of-4*))))
+  (cond
+    ((< (length digits) 2)
+     (if (= (rem (number-from-digits digits) 4) 0)
+       digits
+       nil))
+     (t (max-anagram-starting-with-one-of-multiples *multiples-of-4* (max-anagram digits) nil))))
 
 (defun max-anagram-divisible-by-5 (digits)
   (if (and (not (find 0 digits)) (not (find 5 digits)))
