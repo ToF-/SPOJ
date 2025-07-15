@@ -152,6 +152,40 @@ problem: if a very large number has only one even digit, and that digit is up li
 975318
 
 
+divisibility by 7:
+
+
+        -1000 mod n  = 1
+      1000000 mod n  = 1
+   -100000000 mod n  = 1
+   
+thus
+    let N = d⁹d⁸d⁷d⁶d⁵d⁴d³d²d¹d⁰
+    N = (d²d¹d⁰) + (d⁵d⁴d³) * 1000 + (d⁸d⁷d⁶) * 1000000 + (00d⁹) * 1000000000
+
+    a≡b (mod 7) iff (a-b) = 7k
+
+    1000 mod 7 = -1 mod 7 = 6
+
+    1000≡-1 (mod 7) since (1001) = 7 * 143
+
+    hence
+    
+    (x.1000) mod 7 = (-x) mod 7
+    e.g 25000 mod 7 = -25 mod 7
+
+    let x = N mod 1000
+    let y = N div 1000
+
+    N mod 7 = ((x mod 7) + (-y mod 7)) mod 7
+
+    e.g 25873 mod 7 = (873 - 25) mod 7 = 1
+
+    e.g 7007  mod 7 = (007 - 7) mod 7 = 0
+
+    
+
+
 The given number n can be written as a sum of powers of 1000 as follows. 
 n= (a2 a1 a0) + (a5 a4 a3)*1000 + (a8 a7 a6)*(1000*1000) +.... 
 As 1000 = (-1)(mod 7), 1000 as per congruence relation. 
