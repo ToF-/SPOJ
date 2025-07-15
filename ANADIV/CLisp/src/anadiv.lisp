@@ -88,9 +88,13 @@
     (max-anagram digits)))
 
 (defun max-anagram-divisible-by-2 (digits)
-  (if (null (remove-if #'oddp digits))
-    nil
-    (find-largest-multiple-anagram digits *multiples-of-2*)))
+  (defun even-first (digits prefix)
+    (cond
+      ((null digits) nil)
+      ((evenp (car digits)) (append (cons (car digits) (reverse prefix)) (cdr digits)))
+      (t (even-first (cdr digits) (cons (car digits) prefix)))))
+
+  (even-first (max-anagram digits) ()))
 
 (defun max-anagram-divisible-by-3 (digits)
   (cond
