@@ -161,7 +161,7 @@
              (assert-equal 3220 (number-from-digits (max-anagram-divisible-by-7 (digits-from-number 2023))))
              (assert-equal 8624 (number-from-digits (max-anagram-divisible-by-7 (digits-from-number 4826))))
              (assert-equal 99888614000 (number-from-digits (max-anagram-divisible-by-7 (digits-from-number 96889010408))))
-             (assert-equal 9999999999998888888888887777777777444433333333322222222211211 (number-from-digits (max-anagram-divisible-by-7 (digits-from-number 1112287898731298793423987899879239873298732987342987342987342))))
+             (assert-equal 9999999999998888888888887777777777444433333333322222222122111 (number-from-digits (max-anagram-divisible-by-7 (digits-from-number 1112287898731298793423987899879239873298732987342987342987342))))
              )
 (define-test find-largest-multiple-of-8-anagram
              (assert-equal nil (max-anagram-divisible-by-8 nil))

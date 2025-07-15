@@ -178,6 +178,21 @@
 
 (defun max-anagram-divisible-by-7 (digits)
 
+  (defun accum-factors (digits plus len)
+    (cond
+      ((= len 0) 0)
+      ((>= len 3)
+       (let ((factor (+ (car digits) (* 10 (cadr digits)) (* 100 (caddr digits)))))
+         (+ (* plus factor) (accum-factors (cdddr digits) (- plus) (- len 3)))))
+      ((= len 2)
+       (let ((factor (+ (car digits) (* 10 (cadr digits)))))
+         (* plus factor)))
+      ((= len 1)
+       (* plus (car digits)))))
+       
+  (defun divisible-by-7 (digits)
+    (let ((accum (accum-factors digits 1 (length digits))))
+      (= (rem accum 7) 0)))
 
   (defun largest-anagram-multiple-of-7 (anagram)
     (cond
