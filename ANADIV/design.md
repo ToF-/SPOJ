@@ -1,18 +1,20 @@
+### What is an anagram of a number ?
 
+An anagram M of number N = d₀d₁…dn is the number formed by a permutation of the digits d₀,d₁,…dn such that M <> N.
 
-How to represent large numbers ?
+### How to represent large numbers ?
 
 Use arrays of digits (AD). A digit is a number between 0 and 9. Store units on location 0, tens on location 1 and so on.
 The value of the AD is AD[0] + AD[1] * 10 + … + AD[L-1] * 10^(L-1) where L = number of digits in the number.
 
-How to represent the maximum anagram ?
+### How to represent the maximum anagram ?
 
 Sort the AD in increasing order.
 Let M = d₀ + d₁.10 + … + dl.10^(l-1)
 
 Since di ≤ di+1 and 10^p < 10^(p+1), M is the largest number that can be created with d₀d₁…
 
-Given an AD N, how to obtain M the next largest anagram of N such that M < N
+### Given an AD N, how to obtain M the next largest anagram of N such that M < N ?
 
 Starting from the left (unit, then tens, etc), deterrmine the longest descencding subsequence LDS, such d₀ ≥ d₁ ≥ … dp
 
@@ -28,6 +30,52 @@ sort LDS in decreasing order
 
 e.g. 1798;  LDS = 8; D = 9; G = 8; S = 1789
 e.g. 34005;  LDS = 5|0|0; D = 4; G = 0; S = 30540
+
+### How to determine if a very large number is divisible by 1 ?
+
+It's always true.
+
+### How to determine if a very large number is divisible by 2 ?
+
+It's last digit modulo 2 is 0.
+
+### How to determine if a very large number is divisible by 3 ?
+
+The sum of all digits modulo 3 is 0.
+
+### How to determine if a very large number is divisible by 4 ?
+
+The number formed by the last and before last digits modulo 4 = 0.
+
+### How to determine if a very large number is divisible by 5 ?
+
+The last digit is either 5 or 0.
+
+### How to determine if a very large number is divisible by 6 ?
+
+The sum of all digits modulo 3 is 0 and the last digit modulo 2 is 0.
+
+### How to determine if a very large number is divisible by 7 ?
+
+Group the digits by 3 : T1 = N mod 1000, T2 = ⌊ N / 1000 ⌋ mod 1000, T3 = ⌊ N / 1000000 ⌋ mod 1000, etc
+Compute the sum S = T1 - T2 + T3 - T4 …
+S mod 7 = 0.
+
+### How to determine if a very large number is divisible by 8 ?
+
+The number formed by the last 3 digits modulo 8 = 0.
+
+### How to determine if a very large number is divisible by 9 ?
+
+The sum of all digits modulo 9 is 0.
+
+### How to determine if a very large number is divisible by 10 ?
+
+The last digit is 0.
+
+
+
+
 
 △
 
