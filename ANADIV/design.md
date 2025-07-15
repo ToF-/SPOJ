@@ -2,15 +2,53 @@
 
 How to represent large numbers ?
 
-Use arrays of digits (AD). A digit is a number between 0 and 9.
+Use arrays of digits (AD). A digit is a number between 0 and 9. Store units on location 0, tens on location 1 and so on.
+The value of the AD is AD[0] + AD[1] * 10 + … + AD[L-1] * 10^(L-1) where L = number of digits in the number.
 
 How to represent the maximum anagram ?
 
-Sort the AD in decreasing order.
-Let M = d₀.10^(n-1) + d₁.10^(n-2) + … + d₀.10^0
-Since d₀ ≥ d₁ and 10^(n-1) > 10^(n-2), M is the largest number that can be created with d₀d₁…
+Sort the AD in increasing order.
+Let M = d₀ + d₁.10 + … + dl.10^(l-1)
+
+Since di ≤ di+1 and 10^p < 10^(p+1), M is the largest number that can be created with d₀d₁…
 
 Given an AD N, how to obtain M the next largest anagram of N such that M < N
+
+34870 → 34870 
+           ^^
+      ←    07
+34807 → 3480|7
+           . .
+        3480
+          ^^
+        3408
+        34087
+      ←   7  8
+347!08 → 34780
+34780 →  34780
+            ^^
+      ←     08
+34708 →  3470|8
+              .
+
+
+
+   --
+34807 → 3580 → 3508 
+          --
+    
+
+e.g. 34870 = 0|7|8|4|3 → swap 0 and 7, 7|0|8|4|3 = 34807
+
+34809
+9|0|8|4|3   9 cannot be permuted to lower, so swap 8 with the top digit < 8 = 0 ⇒ 9|8 0|4|3, then max anagram of this prefix : 8|9|0|4|3| → 34098
+34098
+8|9|0|4|3   98 
+e.g. 400 = 0|0|4 → swap 0 and 4, 0|4|0 = 040
+e.g. 401 = 1|0|4 
+
+
+
 
 Let N = |d₀d₁…dz|
 
