@@ -1,5 +1,34 @@
 
-example:
+
+How to represent large numbers ?
+
+Use arrays of digits (AD). A digit is a number between 0 and 9.
+
+How to represent the maximum anagram ?
+
+Sort the AD in decreasing order.
+Let M = d₀.10^(n-1) + d₁.10^(n-2) + … + d₀.10^0
+Since d₀ ≥ d₁ and 10^(n-1) > 10^(n-2), M is the largest number that can be created with d₀d₁…
+
+Given an AD N, how to obtain M the next largest anagram of N such that M < N
+
+Let N = |d₀d₁…dz|
+
+if d₀ ≤ d₁ ≤ … dz then there is no anagram of N < N, S = ∅
+
+split the AD into two P and Q
+
+P = |d₀d₁…dp| such that d₀ > d₁ > … dp
+Q = |dqdr…dz| such that dq ≥ dp
+if Q ≠ ∅ then find R = max anagram of Q
+if Q = ∅ meaning dp is the last digit of N, then
+    P' = |d₀d₁…do|
+    Q' = |dp|
+    find dx in Q' such that dx = max { Q' }, dx < dp
+    replace dp with dx in P' : P = |d₀d₁…dx|
+    replace dx with dp in Q' : Q' = |di…dx…dz|
+    find R = max anagram of Q'
+    S = P ++ R
 
 4807 7 
 
