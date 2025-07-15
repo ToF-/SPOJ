@@ -14,61 +14,22 @@ Since di ≤ di+1 and 10^p < 10^(p+1), M is the largest number that can be creat
 
 Given an AD N, how to obtain M the next largest anagram of N such that M < N
 
-34870 → 34870 
-           ^^
-      ←    07
-34807 → 3480|7
-           . .
-        3480
-          ^^
-        3408
-        34087
-      ←   7  8
-347!08 → 34780
-34780 →  34780
-            ^^
-      ←     08
-34708 →  3470|8
-              .
+Starting from the left (unit, then tens, etc), deterrmine the longest descencding subsequence LDS, such d₀ ≥ d₁ ≥ … dp
 
+if length of LDS = length of N, there is no smaller anagram of N.
 
+e.g. 1789; LDS = 9|8|7|1 
 
-   --
-34807 → 3580 → 3508 
-          --
-    
+if length of LDS < length of N, let D the digit next, D < dp
+find G, G = max { d₀,d₁…,dp | di < D }
+replace D with G
+replace G with D
+sort LDS in decreasing order
 
-e.g. 34870 = 0|7|8|4|3 → swap 0 and 7, 7|0|8|4|3 = 34807
+e.g. 1798;  LDS = 8; D = 9; G = 8; S = 1789
+e.g. 34005;  LDS = 5|0|0; D = 4; G = 0; S = 30540
 
-34809
-9|0|8|4|3   9 cannot be permuted to lower, so swap 8 with the top digit < 8 = 0 ⇒ 9|8 0|4|3, then max anagram of this prefix : 8|9|0|4|3| → 34098
-34098
-8|9|0|4|3   98 
-e.g. 400 = 0|0|4 → swap 0 and 4, 0|4|0 = 040
-e.g. 401 = 1|0|4 
-
-
-
-
-Let N = |d₀d₁…dz|
-
-if d₀ ≤ d₁ ≤ … dz then there is no anagram of N < N, S = ∅
-
-split the AD into two P and Q
-
-P = |d₀d₁…dp| such that d₀ > d₁ > … dp
-Q = |dqdr…dz| such that dq ≥ dp
-if Q ≠ ∅ then find R = max anagram of Q
-if Q = ∅ meaning dp is the last digit of N, then
-    P' = |d₀d₁…do|
-    Q' = |dp|
-    find dx in Q' such that dx = max { Q' }, dx < dp
-    replace dp with dx in P' : P = |d₀d₁…dx|
-    replace dx with dp in Q' : Q' = |di…dx…dz|
-    find R = max anagram of Q'
-    S = P ++ R
-
-4807 7 
+△
 
 anagrams of 4807 : { 8740, 8704, 8470, 8407, 7840, 7804, 7480, 7408, 4870, 4807, 4780, 4708, 4087, 4078, 0874, 0847, 0784, 0748, 0487, 0478 }
 
