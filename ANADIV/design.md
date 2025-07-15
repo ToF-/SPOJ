@@ -152,3 +152,37 @@ problem: if a very large number has only one even digit, and that digit is up li
 975318
 
 
+The given number n can be written as a sum of powers of 1000 as follows. 
+n= (a2 a1 a0) + (a5 a4 a3)*1000 + (a8 a7 a6)*(1000*1000) +.... 
+As 1000 = (-1)(mod 7), 1000 as per congruence relation. 
+
+For a positive integer n, two numbers a and b are said to be congruent modulo n, if their difference 
+(a - b) is an integer multiple of n (that is, if there is an integer k such that a - b = kn). This congruence relation is typically considered when a and b are integers, and is denoted 
+
+a≡b(modn).                                                   
+Hence we can write: 
+n = { (a2a1a0) + (a5a4a3)* (-1) + (a8a7a6)* (-1)*(-1)+.....}(mod 7), 
+
+Thus n is divisible by 7 if and if only if the series is divisible by 7. 
+
+Input : 8955795758
+Output : Divisible by 7
+       Explanation:
+       We express the number in terms of triplets
+       of digits as follows.
+                (008)(955)(795)(758)
+       Now, 758- 795 + 955 - 8 = 910, which is
+       divisible by 7
+Input : 100000000000
+Output : Not Divisible by 7
+       Explanation:
+       We express the number in terms of triplets
+       of digits as follows.
+                (100)(000)(000)(000)
+       Now, 000- 000 + 000 - 100 = -100, which is
+       not divisible by 7
+
+e.g
+    282475249
+    (249) - (475) + (282)
+
