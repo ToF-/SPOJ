@@ -58,3 +58,13 @@ int int_compare(const void *arg_a, const void *arg_b) {
 void max_anagram(struct number *number) {
     qsort(number->digits, number->length, sizeof(int), int_compare);
 }
+
+void swap(int *a, int *b) {
+    int temp;
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+void next_anagram(struct number *number) {
+    swap(&number->digits[0],&number->digits[1]);
+}
