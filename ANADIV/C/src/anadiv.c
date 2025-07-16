@@ -31,3 +31,14 @@ int scan_number_and_divisor(char *srce, struct number *number) {
     reverse_number(number);
     return result;
 }
+
+void print_number(struct number *number) {
+    struct number output;
+    for(int i=0; i < number->length; i++)
+        output.digits[i] = number->digits[i];
+    output.length = number->length;
+    reverse_number(&output);
+    for(int i=0; i < output.length; i++)
+        printf("%c", output.digits[i] + '0');
+    printf("\n");
+}
