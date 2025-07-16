@@ -72,6 +72,19 @@ The sum of all digits modulo 9 is 0.
 
 The last digit is 0.
 
+### How to find the largest anagram of a very large number which is divisible by 2 ?
+
+If the number contains only even digits, go for max anagram.
+If the number contains some even digits, search the max anagram for the first position where an even digit is, collecting the set of even digits and their first position,  e.g. { 0:Ø, 2:17, 4:Ø,  6:Ø, 8:482 }
+for each of the even digits positions E in the set,
+    swap digits in position 0 and E
+    sort digits from 1 to length computing the max anagram of the number without the even digit
+There will be 1 max anagram per even digit, and S = the maximum of anagrams found that way
+
+Collect even digits from the max anagram into a set, with their first position , e.g { 2, 6, 8 }
+
+If the number contains a 0, the max anagram will be the one having a zero in digit[0], if it's not the input number, it's the solution.
+
 
 
 
