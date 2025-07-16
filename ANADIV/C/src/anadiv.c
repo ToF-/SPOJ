@@ -14,6 +14,13 @@ void reverse_number(struct number *number) {
     }
 }
 
+void copy_number(struct number *srce, struct number *dest) {
+    for(int i = 0; i < srce->length; i++) {
+        dest->digits[i] = srce->digits[i];
+    }
+    dest->length = srce->length;
+}
+
 int scan_number_and_divisor(char *srce, struct number *number) {
     number->length = 0;
     char *s = srce;
@@ -34,11 +41,10 @@ int scan_number_and_divisor(char *srce, struct number *number) {
 
 void print_number(struct number *number) {
     struct number output;
-    for(int i=0; i < number->length; i++)
-        output.digits[i] = number->digits[i];
-    output.length = number->length;
+    copy_number(number, &output);
     reverse_number(&output);
-    for(int i=0; i < output.length; i++)
+    for(int i=0; i < output.length; i++) {
         printf("%c", output.digits[i] + '0');
+    }
     printf("\n");
 }
