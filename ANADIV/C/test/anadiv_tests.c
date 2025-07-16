@@ -2,17 +2,26 @@
 #include "unity_fixture.h"
 #include "unity_memory.h"
 #include "anadiv.h"
+#include <stdlib.h>
+
 TEST_GROUP(anadiv);
 
-TEST_SETUP(anadiv) { }
-TEST_TEAR_DOWN(anadiv) { }
+struct number *Number;
+
+TEST_SETUP(anadiv) {
+    Number = (struct number *)malloc(sizeof(struct number));
+}
+
+TEST_TEAR_DOWN(anadiv) {
+    free(Number);
+}
 
 TEST(anadiv, scan_number_and_k) {
-    int k = scan_number_and_divisor("4807 10");
+    int k = scan_number_and_divisor("4807 10", Number);
     TEST_ASSERT_EQUAL(10, k);
-    TEST_ASSERT_EQUAL(4, Length);
-    TEST_ASSERT_EQUAL(7, Number[0]);
-    TEST_ASSERT_EQUAL(0, Number[1]);
-    TEST_ASSERT_EQUAL(8, Number[2]);
-    TEST_ASSERT_EQUAL(4, Number[3]);
+    TEST_ASSERT_EQUAL(4, Number->length);
+    TEST_ASSERT_EQUAL(7, Number->digits[0]);
+    TEST_ASSERT_EQUAL(0, Number->digits[1]);
+    TEST_ASSERT_EQUAL(8, Number->digits[2]);
+    TEST_ASSERT_EQUAL(4, Number->digits[3]);
 }

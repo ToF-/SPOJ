@@ -2,24 +2,24 @@
 #include <stdio.h>
 #include "anadiv.h"
 
-void reverse_number() {
+void reverse_number(struct number *number) {
     int start = 0;
-    int end = Length-1;
+    int end = number->length-1;
     while (start < end) {
-        int temp = Number[start];
-        Number[start] = Number[end];
-        Number[end] = temp;
+        int temp = number->digits[start];
+        number->digits[start] = number->digits[end];
+        number->digits[end] = temp;
         start++;
         end--;
     }
 }
 
-int scan_number_and_divisor(char *srce) {
-    Length = 0;
+int scan_number_and_divisor(char *srce, struct number *number) {
+    number->length = 0;
     char *s = srce;
-    while (*s != ' ' && Length < MAX_DIGITS) {
-        Number[Length] = *s - '0';
-        Length++;
+    while (*s != ' ' && number->length < MAX_DIGITS) {
+        number->digits[number->length] = *s - '0';
+        number->length++;
         s++;
     }
     while (*s == ' ') s++;
@@ -28,6 +28,6 @@ int scan_number_and_divisor(char *srce) {
         result = result * 10 + *s - '0';
         s++;
     }
-    reverse_number();
+    reverse_number(number);
     return result;
 }

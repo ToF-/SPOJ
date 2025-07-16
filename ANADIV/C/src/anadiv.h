@@ -1,6 +1,8 @@
 #define MAX_DIGITS 1024
 
-int Number[MAX_DIGITS];
-int Length;
+struct number {
+    int digits[MAX_DIGITS];
+    int length;
+};
 
-int scan_number_and_divisor(char *);
+int scan_number_and_divisor(char *, struct number *);
