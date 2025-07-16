@@ -2,4 +2,5 @@
 
 TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, scan_number_and_k);
+    RUN_TEST_CASE(anadiv, max_anagram);
 }

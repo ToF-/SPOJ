@@ -48,3 +48,13 @@ void print_number(struct number *number) {
     }
     printf("\n");
 }
+
+int int_compare(const void *arg_a, const void *arg_b) {
+    int a = * (const int *)arg_a;
+    int b = * (const int *)arg_b;
+    return a - b;
+}
+
+void max_anagram(struct number *number) {
+    qsort(number->digits, number->length, sizeof(int), int_compare);
+}
