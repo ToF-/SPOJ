@@ -104,3 +104,10 @@ bool next_anagram(struct number *number) {
     sort_number_subsequence(number, len_prefix);
     return true;
 }
+
+void print_all_anagrams(struct number *number) {
+    max_anagram(number);
+    do {
+        print_number(number);
+    } while(next_anagram(number));
+}

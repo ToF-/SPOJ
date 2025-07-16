@@ -81,3 +81,4 @@ TEST(anadiv, anagram_with_repeated_digits) {
     TEST_ASSERT(next_anagram(Number)); TEST_ASSERT_EQUAL(90559, number_value(Number));
     TEST_ASSERT(next_anagram(Number)); TEST_ASSERT_EQUAL(59950, number_value(Number));
 }
+
