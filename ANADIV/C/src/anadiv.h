@@ -12,3 +12,4 @@ void max_anagram(struct number *);
 bool next_anagram(struct number *);
 void print_all_anagrams(struct number *);
 bool equal_numbers(struct number *, struct number *);
+bool largest_multiple(struct number *, int);

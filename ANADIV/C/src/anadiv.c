@@ -119,3 +119,57 @@ bool equal_numbers(struct number *number, struct number *other) {
     }
     return true;
 }
+
+bool number_contains(struct number *number, bool (*predicate)(int)) {
+    for(int i = 0; i < number->length; i++) {
+        if (predicate(number->digits[i]))
+            return true;
+    }
+    return false;
+}
+
+bool is_even(int digit) {
+    return (!(digit & 1));
+}
+
+bool is_multiple_of_2(struct number *number) {
+    return (is_even(number->digits[0]));
+}
+
+bool is_multiple_of(int k, struct number *number) {
+    switch(k) {
+        case 1:
+            return true;
+        case 2:
+            return is_multiple_of_2(number);
+        default:
+            return false;
+    }
+    return false;
+}
+
+bool early_stop(struct number *number, int k) {
+    switch(k) {
+        case 1:
+            return false;
+        case 2:
+            return(!number_contains(number, &is_even));
+        default:
+            return false;
+    }
+    return false;
+}
+bool largest_multiple(struct number *number, int k) {
+    if (early_stop(number, k)) {
+        return false;
+    }
+    struct number original;
+    copy_number(number, &original);
+    max_anagram(number);
+    do {
+        print_number(number);
+        if(is_multiple_of(k, number) && ! equal_numbers(number, &original))
+            return true;
+    } while(next_anagram(number));
+    return false;
+}
