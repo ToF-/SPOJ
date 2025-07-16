@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "anadiv.h"
+#include <stdbool.h>
 
 void reverse_number(struct number *number) {
     int start = 0;
@@ -49,14 +50,18 @@ void print_number(struct number *number) {
     printf("\n");
 }
 
-int int_compare(const void *arg_a, const void *arg_b) {
+int int_compare_ascending(const void *arg_a, const void *arg_b) {
     int a = * (const int *)arg_a;
     int b = * (const int *)arg_b;
     return a - b;
 }
 
+void sort_number_subsequence(struct number *number, int length) {
+    qsort(number->digits, length, sizeof(int), int_compare_ascending);
+}
+
 void max_anagram(struct number *number) {
-    qsort(number->digits, number->length, sizeof(int), int_compare);
+    sort_number_subsequence(number, number->length);
 }
 
 void swap(int *a, int *b) {
@@ -65,6 +70,37 @@ void swap(int *a, int *b) {
     *a = *b;
     *b = temp;
 }
-void next_anagram(struct number *number) {
-    swap(&number->digits[0],&number->digits[1]);
+
+int longest_descending_sequence(struct number *number) {
+    if(number->length == 1)
+        return 1;
+    int i = 1;
+    while(i < number->length
+            && number->digits[i] <= number->digits[i-1]) {
+        i++;
+    }
+    return i;
+}
+
+int greater_digit_smaller_than(struct number *number, int len_prefix) {
+    int result = len_prefix-1;
+    int next_digit = number->digits[len_prefix];
+    for(int i=len_prefix-1; i >= 0; i--) {
+        int digit = number->digits[i];
+        if (digit < next_digit && digit >= number->digits[result]) {
+            result = i;
+        }
+    }
+    return result;
+}
+
+bool next_anagram(struct number *number) {
+    int len_prefix = longest_descending_sequence(number);
+    if (len_prefix == number->length) {
+        return false;
+    }
+    int new_digit_pos = greater_digit_smaller_than(number, len_prefix);
+    swap(&number->digits[len_prefix],&number->digits[new_digit_pos]);
+    sort_number_subsequence(number, len_prefix);
+    return true;
 }
