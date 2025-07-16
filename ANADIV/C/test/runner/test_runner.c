@@ -5,5 +5,5 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, max_anagram);
     RUN_TEST_CASE(anadiv, next_anagram);
     RUN_TEST_CASE(anadiv, anagram_with_repeated_digits);
-    RUN_TEST_CASE(anadiv, print_all_anagrams);
+    RUN_TEST_CASE(anadiv, compare_number);
 }

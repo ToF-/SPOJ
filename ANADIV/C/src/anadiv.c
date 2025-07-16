@@ -111,3 +111,11 @@ void print_all_anagrams(struct number *number) {
         print_number(number);
     } while(next_anagram(number));
 }
+
+bool equal_numbers(struct number *number, struct number *other) {
+    for(int i = 0; i < number->length; i++) {
+        if (number->digits[i] != other->digits[i])
+            return false;
+    }
+    return true;
+}
