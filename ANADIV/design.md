@@ -16,16 +16,15 @@ Since di ≤ di+1 and 10^p < 10^(p+1), M is the largest number that can be creat
 
 ### Given an AD N, how to obtain M the next largest anagram of N such that M < N ?
 
-Starting from the left (unit, then tens, etc), deterrmine the longest descencding subsequence LDS, such d₀ ≥ d₁ ≥ … dp
+Starting from the left of the AD (unit, then tens, etc), deterrmine the longest descencding subsequence LDS, such d₀ ≥ d₁ ≥ … dp
 
 if length of LDS = length of N, there is no smaller anagram of N.
 
 e.g. 1789; LDS = 9|8|7|1 
 
-if length of LDS < length of N, let D the digit next, D < dp
+if length of LDS < length of N, let D the digit next, D > dp
 find G, G = max { d₀,d₁…,dp | di < D }
-replace D with G
-replace G with D
+swap G and D
 sort LDS in decreasing order
 
 e.g. 1798;  LDS = 8; D = 9; G = 8; S = 1789
