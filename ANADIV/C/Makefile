@@ -41,7 +41,14 @@ tests: spoj
 	bin/spoj
 
 
+spike: src/spike.c
+	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) src/spike.c -o bin/spike
+	bin/spike
+
 clean:
 	rm build/
 	rm bin/*
+
+tags: src/anadiv.c src/anadiv.h test/anadiv_tests.c
+	ctags --recurse
 

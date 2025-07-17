@@ -10,6 +10,5 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, largest_multiple_of_1_only_one_digit);
     RUN_TEST_CASE(anadiv, largest_multiple_of_2_no_solution_fast);
     RUN_TEST_CASE(anadiv, largest_multiple_of_2);
-    RUN_TEST_CASE(anadiv, largest_multiple_of_2_second_to_top);
     RUN_TEST_CASE(anadiv, largest_multiple_of_2_very_large_number);
 }

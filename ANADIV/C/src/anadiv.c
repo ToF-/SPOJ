@@ -56,12 +56,16 @@ int int_compare_ascending(const void *arg_a, const void *arg_b) {
     return a - b;
 }
 
-void sort_number_subsequence(struct number *number, int length) {
-    qsort(number->digits, length, sizeof(int), int_compare_ascending);
+void sort_number_subsequence(struct number *number, int start_position, int length) {
+    qsort(&number->digits[start_position], length, sizeof(int), int_compare_ascending);
+}
+
+void max_anagram_from(struct number *number, int start_position) {
+    sort_number_subsequence(number, start_position, number->length - start_position);
 }
 
 void max_anagram(struct number *number) {
-    sort_number_subsequence(number, number->length);
+    max_anagram_from(number, 0);
 }
 
 void swap(int *a, int *b) {
@@ -101,7 +105,7 @@ bool next_anagram(struct number *number) {
     }
     int new_digit_pos = greater_digit_smaller_than(number, len_prefix);
     swap(&number->digits[len_prefix],&number->digits[new_digit_pos]);
-    sort_number_subsequence(number, len_prefix);
+    sort_number_subsequence(number, 0, len_prefix);
     return true;
 }
 
@@ -132,44 +136,74 @@ bool is_even(int digit) {
     return (!(digit & 1));
 }
 
-bool is_multiple_of_2(struct number *number) {
-    return (is_even(number->digits[0]));
-}
-
-bool is_multiple_of(int k, struct number *number) {
-    switch(k) {
-        case 1:
+bool find_digit_equal_to(struct number *number, int target, int *position) {
+    for(int i = 0; i < number->length; i++) {
+        if (number->digits[i] == target) {
+            *position = i;
             return true;
-        case 2:
-            return is_multiple_of_2(number);
-        default:
-            return false;
+        }
     }
     return false;
 }
 
-bool early_stop(struct number *number, int k) {
-    switch(k) {
-        case 1:
-            return false;
-        case 2:
-            return(!number_contains(number, &is_even));
-        default:
-            return false;
+int compare_numbers(struct number *a, struct number *b) {
+    for(int i = 0; i < a->length; i++) {
+        int result = a->digits[i] - b->digits[i];
+        if (result != 0)
+            return result;
     }
-    return false;
+    return 0;
 }
-bool largest_multiple(struct number *number, int k) {
-    if (early_stop(number, k)) {
-        return false;
-    }
-    struct number original;
-    copy_number(number, &original);
+
+bool find_largest_multiple_of_1(struct number *number) {
+    struct number source;
+    copy_number(number, &source);
     max_anagram(number);
-    do {
-        print_number(number);
-        if(is_multiple_of(k, number) && ! equal_numbers(number, &original))
-            return true;
-    } while(next_anagram(number));
+    if(equal_numbers(number, &source)) {
+        return next_anagram(number);
+    }
+    return true;
+}
+
+bool find_largest_multiple_of_2(struct number *number) {
+    struct number source;
+    struct number candidate;
+    struct number buffer;
+
+    copy_number(number, &source);
+    if(!number_contains(number, &is_even))
+        return false;
+
+    copy_number(number, &candidate);
+    for(int even_digit = 0; even_digit < 10; even_digit+=2) {
+        int pos;
+        max_anagram(number);
+        if (find_digit_equal_to(number, even_digit, &pos)) {
+            if(pos == 0) {
+                return true;
+            }
+            swap(&number->digits[0], &number->digits[pos]);
+            max_anagram_from(number, 1);
+            if (equal_numbers(number, &source))
+                continue;
+            if (compare_numbers(number, &candidate) > 0) {
+                copy_number(number, &candidate);
+            }
+        }
+    }
+    copy_number(&candidate, number);
+    return true;
+}
+
+bool largest_multiple(struct number *number, int k) {
+    switch(k) {
+        case 1:
+            return find_largest_multiple_of_1(number);
+        case 2:
+            return find_largest_multiple_of_2(number);
+        default:
+            return false;
+    }
     return false;
 }
+
