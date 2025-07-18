@@ -28,3 +28,11 @@ void print_number(struct number *n) {
         putchar(n->digits[i] + '0');
 }
 
+int cmp_char_desc(const void *arg_a, const void *arg_b) {
+    char a = * (const char *)arg_a;
+    char b = * (const char *)arg_b;
+    return b - a;
+}
+void greatest_permutation(struct number *n) {
+    qsort(n->digits, n->length, sizeof(char), cmp_char_desc);
+}
