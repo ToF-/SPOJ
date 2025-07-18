@@ -17,6 +17,21 @@ TEST_TEAR_DOWN(anadiv) {
     free(n);
 }
 
+void check_largest_anagram(long long input, int factor, long long expected) {
+    char line[MAX_DIGITS+3];
+    sprintf(line, "%lld %d", input, factor);
+    scan_input(line, n, &k);
+    TEST_ASSERT_TRUE(largest_anagram(n, k));
+    TEST_ASSERT_EQUAL(expected, number_value(n));
+}
+
+void check_no_solution(long long input, int factor) {
+    char line[MAX_DIGITS+3];
+    sprintf(line, "%lld %d", input, factor);
+    scan_input(line, n, &k);
+    TEST_ASSERT_FALSE(largest_anagram(n, k));
+}
+
 TEST(anadiv, scan_number_and_factor) {
     TEST_ASSERT_TRUE(scan_input("4807 7", n, &k));
     TEST_ASSERT_EQUAL(7, k);
@@ -41,34 +56,18 @@ TEST(anadiv, comparing_numbers) {
 }
 
 TEST(anadiv, largest_multiple_of_1) {
-    scan_input("4807 1", n, &k);
-    TEST_ASSERT_TRUE(largest_anagram(n, k));
-    TEST_ASSERT_EQUAL(8740, number_value(n));
+    check_largest_anagram(4807, 1, 8740);
 }
 
 TEST(anadiv, largest_multiple_of_1_different_from_N) {
-    scan_input("8740 1", n, &k);
-    TEST_ASSERT_TRUE(largest_anagram(n, k));
-    TEST_ASSERT_EQUAL(8704, number_value(n));
-
-    scan_input("7321 1", n, &k);
-    TEST_ASSERT_TRUE(largest_anagram(n, k));
-    TEST_ASSERT_EQUAL(7312, number_value(n));
-
-    scan_input("7311 1", n, &k);
-    TEST_ASSERT_TRUE(largest_anagram(n, k));
-    TEST_ASSERT_EQUAL(7131, number_value(n));
-
-    scan_input("7531111 1", n, &k);
-    TEST_ASSERT_TRUE(largest_anagram(n, k));
-    TEST_ASSERT_EQUAL(7513111, number_value(n));
+    check_largest_anagram(8740, 1, 8704);
+    check_largest_anagram(7321, 1, 7312);
+    check_largest_anagram(7311, 1, 7131);
+    check_largest_anagram(7531111, 1, 7513111);
 }
 
 TEST(anadiv, largest_multiple_of_1_impossible) {
-    scan_input("7777 1", n, &k);
-    TEST_ASSERT_FALSE(largest_anagram(n, k));
-
-    scan_input("1 1", n, &k);
-    TEST_ASSERT_FALSE(largest_anagram(n, k));
+    check_no_solution(7777, 1);
+    check_no_solution(1,1);
 }
 
