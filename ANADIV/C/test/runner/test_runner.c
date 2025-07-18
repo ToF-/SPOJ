@@ -12,4 +12,8 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, largest_multiple_of_2_look_for_first_even);
     RUN_TEST_CASE(anadiv, largest_multiple_of_2_different_from_n);
     RUN_TEST_CASE(anadiv, largest_multiple_of_2_no_solution);
+    RUN_TEST_CASE(anadiv, largest_multiple_of_2_no_solution_different_from_n);
+    RUN_TEST_CASE(anadiv, largest_multiple_of_3_no_solution);
+    RUN_TEST_CASE(anadiv, largest_multiple_of_3_obvious_solution);
+    RUN_TEST_CASE(anadiv, largest_multiple_of_3_no_solution_different_from_n);
 }

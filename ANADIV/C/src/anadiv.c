@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "anadiv.h"
 #include <stdbool.h>
 #include <ctype.h>
@@ -6,10 +7,12 @@
 
 void copy_numbers(struct number *, struct number *);
 void swap_digits(struct number *, int, int);
+bool uniform(struct number *);
 bool next_anagram(struct number *);
 int longest_descending_subsequence(struct number *, int);
 void sort_subsequence(struct number *, int, int);
 bool largest_anagram_multiple_of_1(struct number *, struct number *);
+bool largest_anagram_multiple_of_2(struct number *, struct number *);
 bool largest_anagram_multiple_of_2(struct number *, struct number *);
 bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
 bool is_even(char);
@@ -39,6 +42,17 @@ void print_number(struct number *n) {
         putchar(n->digits[i] + '0');
 }
 
+bool uniform(struct number *n) {
+    if (n->length == 1)
+        return true;
+    char digit = n->digits[0];
+    for(int i = 1; i < n->length; i++) {
+        if (n->digits[i] != digit)
+            return false;
+    }
+    return true;
+}
+
 int cmp_char_desc(const void *arg_a, const void *arg_b) {
     char a = * (const char *)arg_a;
     char b = * (const char *)arg_b;
@@ -53,6 +67,7 @@ void greatest_permutation(struct number *n) {
 }
 
 int cmp_numbers(struct number *a, struct number *b) {
+    assert(a->length == b->length);
     for (int i = 0; i < a->length; i++) {
         int cmp = a->digits[i] - b->digits[i];
         if (cmp)
@@ -133,8 +148,21 @@ bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     return true;
 }
 
+bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
+    int sum_digits = 0;
+    for (int i = 0; i < n->length; i++)
+        sum_digits += n->digits[i];
+    if (sum_digits % 3 > 0)
+        return false;
+    greatest_permutation(n);
+
+    return true;
+}
+
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
+    if (uniform(n))
+        return false;
     struct number *original = (struct number *)malloc(sizeof(struct number));
     copy_numbers(n, original);
     switch(k) {
@@ -143,6 +171,9 @@ bool largest_anagram(struct number *n, int k) {
             break;
         case 2:
             result = largest_anagram_multiple_of_2(n, original);
+            break;
+        case 3:
+            result = largest_anagram_multiple_of_3(n, original);
             break;
     }
     free(original);

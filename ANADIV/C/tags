@@ -79,6 +79,16 @@ TEST	test/anadiv_tests.c	/^TEST(anadiv, comparing_numbers) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, greatest_permutation) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1_different_from_N) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1_impossible) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_different_from_n) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_look_for_first_even) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_no_even_digit) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_no_solution) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_no_solution_different_from_n) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_obvious_solution) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_3_no_solution) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_3_no_solution_different_from_n) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_3_obvious_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, scan_number_and_factor) {$/;"	f
 TEST	unity/extras/fixture/src/unity_fixture.h	/^#define TEST(/;"	d
 TEST	unity/extras/fixture/test/template_fixture_tests.c	/^TEST(mygroup, test1)$/;"	f
@@ -1036,6 +1046,8 @@ announceTestRun	unity/extras/fixture/src/unity_fixture.c	/^static void announceT
 buffer	unity/extras/memory/test/unity_output_Spy.c	/^static char* buffer;$/;"	v	file:
 calloc	unity/extras/memory/src/unity_memory.c	/^#undef calloc$/;"	d	file:
 calloc	unity/extras/memory/src/unity_memory.h	/^#define calloc /;"	d
+check_largest_anagram	test/anadiv_tests.c	/^void check_largest_anagram(long long input, int factor, long long expected) {$/;"	f
+check_no_solution	test/anadiv_tests.c	/^void check_no_solution(long long input, int factor) {$/;"	f
 cmp_char_desc	src/anadiv.c	/^int cmp_char_desc(const void *arg_a, const void *arg_b) {$/;"	f
 cmp_numbers	src/anadiv.c	/^int cmp_numbers(struct number *a, struct number *b) {$/;"	f
 compare_numbers	src/temp_scratch.c	/^int compare_numbers(struct number *a, struct number *b) {$/;"	f
@@ -1052,6 +1064,7 @@ end	unity/extras/memory/src/unity_memory.c	/^static const char end[] = "END";$/;
 equal_numbers	src/temp_scratch.c	/^bool equal_numbers(struct number *number, struct number *other) {$/;"	f
 f	unity/src/unity.c	/^    float f;$/;"	m	union:__anon1	file:
 find_digit_equal_to	src/temp_scratch.c	/^bool find_digit_equal_to(struct number *number, int target, int *position) {$/;"	f
+find_digit_with_predicate	src/anadiv.c	/^bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(char), int *pos) {$/;"	f
 find_largest_multiple_of_1	src/temp_scratch.c	/^bool find_largest_multiple_of_1(struct number *number) {$/;"	f
 find_largest_multiple_of_2	src/temp_scratch.c	/^bool find_largest_multiple_of_2(struct number *number) {$/;"	f
 free	unity/extras/memory/src/unity_memory.c	/^#undef free$/;"	d	file:
@@ -1072,11 +1085,15 @@ int3	unity/extras/fixture/test/unity_fixture_Test.c	/^static int int3;$/;"	v	fil
 int4	unity/extras/fixture/test/unity_fixture_Test.c	/^static int int4;$/;"	v	file:
 int_compare_ascending	src/temp_scratch.c	/^int int_compare_ascending(const void *arg_a, const void *arg_b) {$/;"	f
 isOverrun	unity/extras/memory/src/unity_memory.c	/^static int isOverrun(void* mem)$/;"	f	file:
+is_even	src/anadiv.c	/^bool is_even(char c) {$/;"	f
 is_even	src/temp_scratch.c	/^bool is_even(int digit) {$/;"	f
 isinf	unity/src/unity_internals.h	/^#define isinf(/;"	d
 isnan	unity/src/unity_internals.h	/^#define isnan(/;"	d
 k	test/anadiv_tests.c	/^int k;$/;"	v
 largest_anagram	src/anadiv.c	/^bool largest_anagram(struct number *n, int k) {$/;"	f
+largest_anagram_multiple_of_1	src/anadiv.c	/^bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_2	src/anadiv.c	/^bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_3	src/anadiv.c	/^bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {$/;"	f
 largest_multiple	src/temp_scratch.c	/^bool largest_multiple(struct number *number, int k) {$/;"	f
 length	src/anadiv.h	/^    int length;$/;"	m	struct:number
 length	src/temp_scratch.c	/^    int length;$/;"	m	struct:number	file:
@@ -1161,6 +1178,7 @@ test_ReallocNullPointerIsLikeMalloc	unity/extras/memory/test/unity_memory_Test.c
 test_ReallocSameIsUnchanged	unity/extras/memory/test/unity_memory_Test.c	/^void test_ReallocSameIsUnchanged(void)$/;"	f
 test_ReallocSizeZeroFreesMemAndReturnsNullPointer	unity/extras/memory/test/unity_memory_Test.c	/^void test_ReallocSizeZeroFreesMemAndReturnsNullPointer(void)$/;"	f
 test_ReallocSmallerIsUnchanged	unity/extras/memory/test/unity_memory_Test.c	/^void test_ReallocSmallerIsUnchanged(void)$/;"	f
+uniform	src/anadiv.c	/^bool uniform(struct number *n) {$/;"	f
 unity_calloc	unity/extras/memory/src/unity_memory.c	/^void* unity_calloc(size_t num, size_t size)$/;"	f
 unity_free	unity/extras/memory/src/unity_memory.c	/^void unity_free(void* mem)$/;"	f
 unity_heap	unity/extras/memory/src/unity_memory.c	/^static unsigned char unity_heap[UNITY_INTERNAL_HEAP_SIZE_BYTES];$/;"	v	file:

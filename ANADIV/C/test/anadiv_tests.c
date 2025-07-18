@@ -82,6 +82,7 @@ TEST(anadiv, largest_multiple_of_2_no_even_digit) {
 TEST(anadiv, largest_multiple_of_2_look_for_first_even) {
     check_largest_anagram(32791, 2, 97312);
     check_largest_anagram(32741, 2, 74312);
+    check_largest_anagram(4287189787312, 2, 9888777432112);
 }
 
 TEST(anadiv, largest_multiple_of_2_different_from_n) {
@@ -92,4 +93,21 @@ TEST(anadiv, largest_multiple_of_2_different_from_n) {
 TEST(anadiv, largest_multiple_of_2_no_solution) {
     check_no_solution(97510, 2);
     check_no_solution(9758, 2);
+}
+TEST(anadiv, largest_multiple_of_2_no_solution_different_from_n) {
+    check_no_solution(44, 2);
+
+}
+
+TEST(anadiv, largest_multiple_of_3_no_solution) {
+    check_no_solution(4280, 3);
+    check_no_solution(1111111111, 3);
+}
+
+TEST(anadiv, largest_multiple_of_3_obvious_solution) {
+    check_largest_anagram(3273, 3, 7332);
+}
+
+TEST(anadiv, largest_multiple_of_3_no_solution_different_from_n) {
+    check_no_solution(333, 3);
 }
