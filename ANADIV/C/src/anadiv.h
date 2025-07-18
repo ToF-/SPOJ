@@ -10,3 +10,5 @@ bool scan_input(char *, struct number *, int *);
 long long number_value(struct number *);
 void print_number(struct number *);
 void greatest_permutation(struct number *);
+int cmp_numbers(struct number *, struct number *);
+bool largest_anagram(struct number *, int k);

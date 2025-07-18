@@ -44,8 +44,9 @@ IsStringInBiggerString	unity/src/unity.c	/^int IsStringInBiggerString(const char
 LONGS_EQUAL	unity/extras/fixture/src/unity_fixture.h	/^#define LONGS_EQUAL(/;"	d
 MALLOC_DONT_FAIL	unity/extras/memory/src/unity_memory.c	/^#define MALLOC_DONT_FAIL /;"	d	file:
 MAX_DIGITS	src/anadiv.h	/^#define MAX_DIGITS /;"	d
+MAX_DIGITS	src/temp_scratch.c	/^#define MAX_DIGITS /;"	d	file:
 NameFilter	unity/extras/fixture/src/unity_fixture_internals.h	/^    const char* NameFilter;$/;"	m	struct:UNITY_FIXTURE_T
-Number	test/anadiv_tests.c	/^struct number *Number;$/;"	v	typeref:struct:number
+Number	src/temp_scratch.c	/^struct number *Number;$/;"	v	typeref:struct:number
 NumberOfTests	unity/src/unity_internals.h	/^    UNITY_COUNTER_TYPE NumberOfTests;$/;"	m	struct:UNITY_STORAGE_T
 PROGMEM	unity/src/unity.c	/^#define PROGMEM$/;"	d	file:
 PointerPair	unity/extras/fixture/src/unity_fixture.c	/^struct PointerPair$/;"	s	file:
@@ -64,17 +65,21 @@ STRCMP_EQUAL	unity/extras/fixture/src/unity_fixture.h	/^#define STRCMP_EQUAL(/;"
 Silent	unity/extras/fixture/src/unity_fixture_internals.h	/^    int Silent;$/;"	m	struct:UNITY_FIXTURE_T
 TARGET	unity/extras/fixture/test/Makefile	/^TARGET = ..\/build\/fixture_tests.exe$/;"	m
 TARGET	unity/extras/memory/test/Makefile	/^TARGET = ..\/build\/memory_tests.exe$/;"	m
-TEST	test/anadiv_tests.c	/^TEST(anadiv, anagram_with_repeated_digits) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, compare_number) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1_only_one_digit) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1_second_to_top) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_no_solution_fast) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_second_to_top) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_very_large_number) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, max_anagram) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, next_anagram) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, scan_number_and_k) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, anagram_with_repeated_digits) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, compare_number) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, largest_multiple_of_1_only_one_digit) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, largest_multiple_of_1_second_to_top) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, largest_multiple_of_2) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, largest_multiple_of_2_no_solution_fast) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, largest_multiple_of_2_very_large_number) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, max_anagram) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, next_anagram) {$/;"	f
+TEST	src/temp_scratch.c	/^TEST(anadiv, scan_number_and_k) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, comparing_numbers) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, greatest_permutation) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1_different_from_N) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, scan_number_and_factor) {$/;"	f
 TEST	unity/extras/fixture/src/unity_fixture.h	/^#define TEST(/;"	d
 TEST	unity/extras/fixture/test/template_fixture_tests.c	/^TEST(mygroup, test1)$/;"	f
 TEST	unity/extras/fixture/test/template_fixture_tests.c	/^TEST(mygroup, test2)$/;"	f
@@ -553,12 +558,14 @@ TEST_PASS	unity/src/unity.h	/^#define TEST_PASS(/;"	d
 TEST_PASS_MESSAGE	unity/src/unity.h	/^#define TEST_PASS_MESSAGE(/;"	d
 TEST_PRINTF	unity/src/unity.h	/^#define TEST_PRINTF(/;"	d
 TEST_PROTECT	unity/src/unity_internals.h	/^#define TEST_PROTECT(/;"	d
+TEST_SETUP	src/temp_scratch.c	/^TEST_SETUP(anadiv) {$/;"	f
 TEST_SETUP	test/anadiv_tests.c	/^TEST_SETUP(anadiv) {$/;"	f
 TEST_SETUP	unity/extras/fixture/src/unity_fixture.h	/^#define TEST_SETUP(/;"	d
 TEST_SETUP	unity/extras/fixture/test/template_fixture_tests.c	/^TEST_SETUP(mygroup)$/;"	f
 TEST_SETUP	unity/extras/fixture/test/unity_fixture_Test.c	/^TEST_SETUP(UnityCommandOptions)$/;"	f
 TEST_SETUP	unity/extras/fixture/test/unity_fixture_Test.c	/^TEST_SETUP(UnityFixture)$/;"	f
 TEST_TARGET	Makefile	/^TEST_TARGET=bin\/run_test$/;"	m
+TEST_TEAR_DOWN	src/temp_scratch.c	/^TEST_TEAR_DOWN(anadiv) {$/;"	f
 TEST_TEAR_DOWN	test/anadiv_tests.c	/^TEST_TEAR_DOWN(anadiv) {$/;"	f
 TEST_TEAR_DOWN	unity/extras/fixture/src/unity_fixture.h	/^#define TEST_TEAR_DOWN(/;"	d
 TEST_TEAR_DOWN	unity/extras/fixture/test/template_fixture_tests.c	/^TEST_TEAR_DOWN(mygroup)$/;"	f
@@ -1023,28 +1030,34 @@ UnityTestRunner	unity/extras/fixture/src/unity_fixture.c	/^void UnityTestRunner(
 UnityVerbosity	unity/src/unity.c	/^int UnityVerbosity            = 1;$/;"	v
 VAL_UnityOutputCharSpy_OutputChar	unity/extras/memory/test/unity_memory_Test.c	/^#define VAL_UnityOutputCharSpy_OutputChar /;"	d	file:
 Verbose	unity/extras/fixture/src/unity_fixture_internals.h	/^    int Verbose;$/;"	m	struct:UNITY_FIXTURE_T
+anadiv	src/temp_scratch.c	/^TEST_GROUP(anadiv);$/;"	v
 anadiv	test/anadiv_tests.c	/^TEST_GROUP(anadiv);$/;"	v
 announceTestRun	unity/extras/fixture/src/unity_fixture.c	/^static void announceTestRun(unsigned int runNumber)$/;"	f	file:
 buffer	unity/extras/memory/test/unity_output_Spy.c	/^static char* buffer;$/;"	v	file:
 calloc	unity/extras/memory/src/unity_memory.c	/^#undef calloc$/;"	d	file:
 calloc	unity/extras/memory/src/unity_memory.h	/^#define calloc /;"	d
-compare_numbers	src/anadiv.c	/^int compare_numbers(struct number *a, struct number *b) {$/;"	f
-copy_number	src/anadiv.c	/^void copy_number(struct number *srce, struct number *dest) {$/;"	f
+cmp_char_desc	src/anadiv.c	/^int cmp_char_desc(const void *arg_a, const void *arg_b) {$/;"	f
+cmp_numbers	src/anadiv.c	/^int cmp_numbers(struct number *a, struct number *b) {$/;"	f
+compare_numbers	src/temp_scratch.c	/^int compare_numbers(struct number *a, struct number *b) {$/;"	f
+copy_number	src/temp_scratch.c	/^void copy_number(struct number *srce, struct number *dest) {$/;"	f
+copy_numbers	src/anadiv.c	/^void copy_numbers(struct number *a, struct number *b) {$/;"	f
 count	unity/extras/memory/test/unity_output_Spy.c	/^static int count;$/;"	v	file:
 d	unity/src/unity.c	/^    double d;$/;"	m	union:__anon1	file:
 dashRNotLast	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* dashRNotLast[] = {$/;"	v	file:
 data	unity/extras/fixture/test/template_fixture_tests.c	/^static int data = -1;$/;"	v	file:
-digits	src/anadiv.h	/^    int digits[MAX_DIGITS];$/;"	m	struct:number
+digits	src/anadiv.h	/^    char digits[MAX_DIGITS];$/;"	m	struct:number
+digits	src/temp_scratch.c	/^    int digits[MAX_DIGITS];$/;"	m	struct:number	file:
 divisible_by_7	src/spike.c	/^int divisible_by_7(char *num_str) {$/;"	f
-early_stop	src/anadiv.c	/^bool early_stop(struct number *number, int k) {$/;"	f
 end	unity/extras/memory/src/unity_memory.c	/^static const char end[] = "END";$/;"	v	file:
-equal_numbers	src/anadiv.c	/^bool equal_numbers(struct number *number, struct number *other) {$/;"	f
+equal_numbers	src/temp_scratch.c	/^bool equal_numbers(struct number *number, struct number *other) {$/;"	f
 f	unity/src/unity.c	/^    float f;$/;"	m	union:__anon1	file:
-find_digit_equal_to	src/anadiv.c	/^bool find_digit_equal_to(struct number *number, int target, int *position) {$/;"	f
-find_largest_multiple_of_2	src/anadiv.c	/^bool find_largest_multiple_of_2(struct number *number) {$/;"	f
+find_digit_equal_to	src/temp_scratch.c	/^bool find_digit_equal_to(struct number *number, int target, int *position) {$/;"	f
+find_largest_multiple_of_1	src/temp_scratch.c	/^bool find_largest_multiple_of_1(struct number *number) {$/;"	f
+find_largest_multiple_of_2	src/temp_scratch.c	/^bool find_largest_multiple_of_2(struct number *number) {$/;"	f
 free	unity/extras/memory/src/unity_memory.c	/^#undef free$/;"	d	file:
 free	unity/extras/memory/src/unity_memory.h	/^#define free /;"	d
-greater_digit_smaller_than	src/anadiv.c	/^int greater_digit_smaller_than(struct number *number, int len_prefix) {$/;"	f
+greater_digit_smaller_than	src/temp_scratch.c	/^int greater_digit_smaller_than(struct number *number, int len_prefix) {$/;"	f
+greatest_permutation	src/anadiv.c	/^void greatest_permutation(struct number *n) {$/;"	f
 group	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* group[] = {$/;"	v	file:
 groupSelected	unity/extras/fixture/src/unity_fixture.c	/^static int groupSelected(const char* group)$/;"	f	file:
 guard_space	unity/extras/memory/src/unity_memory.c	/^    size_t guard_space;$/;"	m	struct:GuardBytes	file:
@@ -1057,15 +1070,18 @@ int1	unity/extras/fixture/test/unity_fixture_Test.c	/^static int int1;$/;"	v	fil
 int2	unity/extras/fixture/test/unity_fixture_Test.c	/^static int int2;$/;"	v	file:
 int3	unity/extras/fixture/test/unity_fixture_Test.c	/^static int int3;$/;"	v	file:
 int4	unity/extras/fixture/test/unity_fixture_Test.c	/^static int int4;$/;"	v	file:
-int_compare_ascending	src/anadiv.c	/^int int_compare_ascending(const void *arg_a, const void *arg_b) {$/;"	f
+int_compare_ascending	src/temp_scratch.c	/^int int_compare_ascending(const void *arg_a, const void *arg_b) {$/;"	f
 isOverrun	unity/extras/memory/src/unity_memory.c	/^static int isOverrun(void* mem)$/;"	f	file:
-is_even	src/anadiv.c	/^bool is_even(int digit) {$/;"	f
-is_multiple_of	src/anadiv.c	/^bool is_multiple_of(int k, struct number *number) {$/;"	f
+is_even	src/temp_scratch.c	/^bool is_even(int digit) {$/;"	f
 isinf	unity/src/unity_internals.h	/^#define isinf(/;"	d
 isnan	unity/src/unity_internals.h	/^#define isnan(/;"	d
-largest_multiple	src/anadiv.c	/^bool largest_multiple(struct number *number, int k) {$/;"	f
+k	test/anadiv_tests.c	/^int k;$/;"	v
+largest_anagram	src/anadiv.c	/^bool largest_anagram(struct number *n, int k) {$/;"	f
+largest_multiple	src/temp_scratch.c	/^bool largest_multiple(struct number *number, int k) {$/;"	f
 length	src/anadiv.h	/^    int length;$/;"	m	struct:number
-longest_descending_sequence	src/anadiv.c	/^int longest_descending_sequence(struct number *number) {$/;"	f
+length	src/temp_scratch.c	/^    int length;$/;"	m	struct:number	file:
+longest_descending_sequence	src/temp_scratch.c	/^int longest_descending_sequence(struct number *number) {$/;"	f
+longest_descending_subsequence	src/anadiv.c	/^int longest_descending_subsequence(struct number *n, int start) {$/;"	f
 main	src/spike.c	/^int main(int argc, char *argv[]) {$/;"	f
 main	test/runner/all_tests.c	/^int main(int argc, const char *argv[]) {$/;"	f
 main	unity/extras/fixture/test/main/AllTests.c	/^int main(int argc, const char* argv[])$/;"	f
@@ -1074,18 +1090,22 @@ malloc	unity/extras/memory/src/unity_memory.c	/^#undef malloc$/;"	d	file:
 malloc	unity/extras/memory/src/unity_memory.h	/^#define malloc /;"	d
 malloc_count	unity/extras/memory/src/unity_memory.c	/^static int malloc_count;$/;"	v	file:
 malloc_fail_countdown	unity/extras/memory/src/unity_memory.c	/^static int malloc_fail_countdown = MALLOC_DONT_FAIL;$/;"	v	file:
-max_anagram	src/anadiv.c	/^void max_anagram(struct number *number) {$/;"	f
-max_anagram_from	src/anadiv.c	/^void max_anagram_from(struct number *number, int start_position) {$/;"	f
+max_anagram	src/temp_scratch.c	/^void max_anagram(struct number *number) {$/;"	f
+max_anagram_from	src/temp_scratch.c	/^void max_anagram_from(struct number *number, int start_position) {$/;"	f
 multiple	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* multiple[] = {$/;"	v	file:
 mygroup	unity/extras/fixture/test/template_fixture_tests.c	/^TEST_GROUP(mygroup);$/;"	v
+n	test/anadiv_tests.c	/^struct number *n;$/;"	v	typeref:struct:number
 name	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* name[] = {$/;"	v	file:
-next_anagram	src/anadiv.c	/^bool next_anagram(struct number *number) {$/;"	f
+next_anagram	src/anadiv.c	/^bool next_anagram(struct number *n) {$/;"	f
+next_anagram	src/temp_scratch.c	/^bool next_anagram(struct number *number) {$/;"	f
 noOptions	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* noOptions[] = {$/;"	v	file:
 noreturn	unity/src/unity_internals.h	/^void UnityFail(const char* message, const UNITY_LINE_TYPE line) UNITY_FUNCTION_ATTR(noreturn);$/;"	v
 noreturn	unity/src/unity_internals.h	/^void UnityIgnore(const char* message, const UNITY_LINE_TYPE line) UNITY_FUNCTION_ATTR(noreturn);$/;"	v
 number	src/anadiv.h	/^struct number {$/;"	s
-number_contains	src/anadiv.c	/^bool number_contains(struct number *number, bool (*predicate)(int)) {$/;"	f
-number_value	test/anadiv_tests.c	/^int number_value(struct number *number) {$/;"	f
+number	src/temp_scratch.c	/^struct number {$/;"	s	file:
+number_contains	src/temp_scratch.c	/^bool number_contains(struct number *number, bool (*predicate)(int)) {$/;"	f
+number_value	src/anadiv.c	/^long long number_value(struct number *n) {$/;"	f
+number_value	src/temp_scratch.c	/^int number_value(struct number *number) {$/;"	f
 old_value	unity/extras/fixture/src/unity_fixture.c	/^    void* old_value;$/;"	m	struct:PointerPair	file:
 p1	unity/extras/fixture/test/unity_fixture_Test.c	/^static char *p1;$/;"	v	file:
 p2	unity/extras/fixture/test/unity_fixture_Test.c	/^static char *p2;$/;"	v	file:
@@ -1095,28 +1115,32 @@ pointer2	unity/extras/fixture/test/unity_fixture_Test.c	/^static int* pointer2 =
 pointer3	unity/extras/fixture/test/unity_fixture_Test.c	/^static int* pointer3 = (int*)3;$/;"	v	file:
 pointer_index	unity/extras/fixture/src/unity_fixture.c	/^static int pointer_index = 0;$/;"	v	file:
 pointer_store	unity/extras/fixture/src/unity_fixture.c	/^static struct PointerPair pointer_store[UNITY_MAX_POINTERS];$/;"	v	typeref:struct:PointerPair	file:
-print_all_anagrams	src/anadiv.c	/^void print_all_anagrams(struct number *number) {$/;"	f
-print_number	src/anadiv.c	/^void print_number(struct number *number) {$/;"	f
+print_all_anagrams	src/temp_scratch.c	/^void print_all_anagrams(struct number *number) {$/;"	f
+print_number	src/anadiv.c	/^void print_number(struct number *n) {$/;"	f
+print_number	src/temp_scratch.c	/^void print_number(struct number *number) {$/;"	f
 realloc	unity/extras/memory/src/unity_memory.c	/^#undef realloc$/;"	d	file:
 realloc	unity/extras/memory/src/unity_memory.h	/^#define realloc /;"	d
 release_memory	unity/extras/memory/src/unity_memory.c	/^static void release_memory(void* mem)$/;"	f	file:
 repeat	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* repeat[] = {$/;"	v	file:
-reverse_number	src/anadiv.c	/^void reverse_number(struct number *number) {$/;"	f
+reverse_number	src/temp_scratch.c	/^void reverse_number(struct number *number) {$/;"	f
 runAllTests	unity/extras/fixture/test/main/AllTests.c	/^static void runAllTests(void)$/;"	f	file:
 savedGroup	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* savedGroup;$/;"	v	file:
 savedName	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* savedName;$/;"	v	file:
 savedRepeat	unity/extras/fixture/test/unity_fixture_Test.c	/^static unsigned int savedRepeat;$/;"	v	file:
 savedVerbose	unity/extras/fixture/test/unity_fixture_Test.c	/^static int savedVerbose;$/;"	v	file:
-scan_number_and_divisor	src/anadiv.c	/^int scan_number_and_divisor(char *srce, struct number *number) {$/;"	f
+scan_input	src/anadiv.c	/^bool scan_input(char *line, struct number *n, int *factor) {$/;"	f
+scan_number_and_divisor	src/temp_scratch.c	/^int scan_number_and_divisor(char *srce, struct number *number) {$/;"	f
 selected	unity/extras/fixture/src/unity_fixture.c	/^static int selected(const char* filter, const char* name)$/;"	f	file:
 setUp	unity/extras/fixture/src/unity_fixture.c	/^void setUp(void)    { \/*does nothing*\/ }$/;"	f
 setUp	unity/extras/memory/test/unity_memory_Test.c	/^void setUp(void) $/;"	f
 size	unity/extras/memory/src/unity_memory.c	/^    size_t size;$/;"	m	struct:GuardBytes	file:
 size	unity/extras/memory/test/unity_output_Spy.c	/^static int size;$/;"	v	file:
-sort_number_subsequence	src/anadiv.c	/^void sort_number_subsequence(struct number *number, int start_position, int length) {$/;"	f
+sort_number_subsequence	src/temp_scratch.c	/^void sort_number_subsequence(struct number *number, int start_position, int length) {$/;"	f
+sort_subsequence	src/anadiv.c	/^void sort_subsequence(struct number *n, int pos, int len) {$/;"	f
 spy_enable	unity/extras/memory/test/unity_output_Spy.c	/^static int spy_enable;$/;"	v	file:
 strip	gen_test_runner.awk	/^function strip(str) {$/;"	f
-swap	src/anadiv.c	/^void swap(int *a, int *b) {$/;"	f
+swap	src/temp_scratch.c	/^void swap(int *a, int *b) {$/;"	f
+swap_digits	src/anadiv.c	/^void swap_digits(struct number *n, int pos_a, int pos_b) {$/;"	f
 tearDown	unity/extras/fixture/src/unity_fixture.c	/^void tearDown(void) { \/*does nothing*\/ }$/;"	f
 tearDown	unity/extras/memory/test/unity_memory_Test.c	/^void tearDown(void) $/;"	f
 testSelected	unity/extras/fixture/src/unity_fixture.c	/^static int testSelected(const char* test)$/;"	f	file:
