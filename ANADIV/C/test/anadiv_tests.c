@@ -71,3 +71,25 @@ TEST(anadiv, largest_multiple_of_1_impossible) {
     check_no_solution(1,1);
 }
 
+TEST(anadiv, largest_multiple_of_2_obvious_solution) {
+    check_largest_anagram(4082, 2, 8420);
+}
+
+TEST(anadiv, largest_multiple_of_2_no_even_digit) {
+    check_no_solution(97531, 2);
+}
+
+TEST(anadiv, largest_multiple_of_2_look_for_first_even) {
+    check_largest_anagram(32791, 2, 97312);
+    check_largest_anagram(32741, 2, 74312);
+}
+
+TEST(anadiv, largest_multiple_of_2_different_from_n) {
+    check_largest_anagram(975210, 2, 975102);
+    check_largest_anagram(975214, 2, 975412);
+}
+
+TEST(anadiv, largest_multiple_of_2_no_solution) {
+    check_no_solution(97510, 2);
+    check_no_solution(9758, 2);
+}

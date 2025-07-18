@@ -9,6 +9,10 @@ void swap_digits(struct number *, int, int);
 bool next_anagram(struct number *);
 int longest_descending_subsequence(struct number *, int);
 void sort_subsequence(struct number *, int, int);
+bool largest_anagram_multiple_of_1(struct number *, struct number *);
+bool largest_anagram_multiple_of_2(struct number *, struct number *);
+bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
+bool is_even(char);
 
 bool scan_input(char *line, struct number *n, int *factor) {
     n->length = 0;
@@ -78,6 +82,16 @@ int longest_descending_subsequence(struct number *n, int start) {
     return -1;
 }
 
+bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(char), int *pos) {
+    for(int i = start; i >= 0; i--) {
+        if(predicate(n->digits[i])) {
+            *pos = i;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool next_anagram(struct number *n) {
     int next_pos = longest_descending_subsequence(n, n->length-1);
     if (next_pos < 0)
@@ -89,13 +103,48 @@ bool next_anagram(struct number *n) {
     return true;
 }
 
-bool largest_anagram(struct number *n, int k) {
-    struct number *original = (struct number *)malloc(sizeof(struct number));
-    copy_numbers(n, original);
+bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {
     greatest_permutation(n);
     if (! cmp_numbers(n, original)) {
         return next_anagram(n);
     }
-    free(original);
     return true;
+}
+
+bool is_even(char c) {
+    return (c & 1) == 0;
+}
+
+bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
+    int pos_even;
+    greatest_permutation(n);
+    if (! find_digit_with_predicate(n, n->length-1,  &is_even, &pos_even))
+        return false;
+    if (! is_even(n->digits[n->length-1])) {
+        swap_digits(n, n->length-1, pos_even);
+        sort_subsequence(n, 0, n->length-1);
+    }
+    if (! cmp_numbers(n, original)) {
+        if (! find_digit_with_predicate(n, n->length-2, &is_even, &pos_even))
+            return false;
+        swap_digits(n, n->length-1, pos_even);
+        sort_subsequence(n, 0, n->length-1);
+    }
+    return true;
+}
+
+bool largest_anagram(struct number *n, int k) {
+    bool result = false;
+    struct number *original = (struct number *)malloc(sizeof(struct number));
+    copy_numbers(n, original);
+    switch(k) {
+        case 1:
+            result = largest_anagram_multiple_of_1(n, original);
+            break;
+        case 2:
+            result = largest_anagram_multiple_of_2(n, original);
+            break;
+    }
+    free(original);
+    return result;
 }
