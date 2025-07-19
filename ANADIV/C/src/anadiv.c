@@ -63,6 +63,8 @@ int cmp_char_desc(const void *arg_a, const void *arg_b) {
 }
 
 void sort_subsequence(struct number *n, int pos, int len) {
+    assert(pos >= 0);
+    assert(len <= n->length);
     qsort(&n->digits[pos], len, sizeof(char), cmp_char_desc);
 }
 void greatest_permutation(struct number *n) {
@@ -117,8 +119,15 @@ bool next_subsequence(struct number *n, int length) {
     if (next_pos < 0)
         return false;
     int to_swap = length -1;
+    print_number(n);putchar('\n');
+    printf("next_pos:%d\n", next_pos);
     swap_digits(n, next_pos, to_swap);
-    sort_subsequence(n, 0, length - next_pos);
+    sort_subsequence(n, next_pos+1, length - next_pos);
+    print_number(n);putchar('\n');
+    if (next_pos > 0)
+        sort_subsequence(n, 0, length - next_pos);
+    else printf("don't bother\n");
+
     return true;
 }
 
@@ -154,7 +163,7 @@ bool is_multiple_of_4(char c) {
 
 bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct number *original) {
     int found = 0;
-    int suffix = s; 
+    int suffix = s;
     for (int i = 0; i < nb_pos; i++) {
         for(int j=0; j < n->length - i; j++) {
             if( n->digits[j] == suffix % 10) {
@@ -165,14 +174,14 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
         }
         suffix /= 10;
     }
-    if (found == nb_pos) {
-        sort_subsequence(n, 0, n->length - nb_pos);
-        if (! cmp_numbers(n, original)) {
-            found = 0;
-            if (n->length > nb_pos + 1)
-                if (next_subsequence(n, n->length - nb_pos))
-                    found = nb_pos;
-        }
+    if (found < nb_pos)
+        return false;
+    sort_subsequence(n, 0, n->length - nb_pos);
+    if (! cmp_numbers(n, original)) {
+        found = 0;
+        if (n->length > nb_pos + 1)
+            if (next_subsequence(n, n->length - nb_pos))
+                found = nb_pos;
     }
     return found == nb_pos;
 }

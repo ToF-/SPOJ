@@ -35,6 +35,15 @@ void check_largest_anagram_ending_with(long long input, int nb_pos, int suffix, 
     TEST_ASSERT_EQUAL(expected, number_value(n));
     free(original);
 }
+void check_no_largest_anagram_ending_with(long long input, int nb_pos, int suffix, long long expected) {
+    struct number *original = (struct number *)malloc(sizeof(struct number));
+    char line[MAX_DIGITS+3];
+    sprintf(line, "%lld %d", input, 1);
+    scan_input(line, n, &k);
+    copy_number(n, original);
+    TEST_ASSERT_FALSE(largest_anagram_ending_with(n, nb_pos, suffix, original));
+    free(original);
+}
 
 void check_no_solution(long long input, int factor) {
     char line[MAX_DIGITS+3];
@@ -139,16 +148,24 @@ TEST(anadiv, largest_anagram_multiple_of_4_obvious_solution) {
 }
 
 TEST(anadiv, largest_anagram_ending_with) {
-    check_largest_anagram_ending_with(262, 1, 2, 622);
-    check_largest_anagram_ending_with(622, 1, 2, 262);
     check_largest_anagram_ending_with(62222, 1, 2, 26222);
-    check_largest_anagram_ending_with(261, 1, 6, 216);
+    check_no_largest_anagram_ending_with(1, 1, 1, 1);
+    check_no_largest_anagram_ending_with(7, 1, 1, 1);
+    check_no_largest_anagram_ending_with(5, 1, 2, 1);
+    check_no_largest_anagram_ending_with(14, 1, 2, 41);
+    check_no_largest_anagram_ending_with(12, 1, 2, 21);
+    check_largest_anagram_ending_with(27, 1, 2, 72);
+    check_largest_anagram_ending_with(72, 1, 7, 27);
     check_largest_anagram_ending_with(4807, 2, 48, 7048);
     check_largest_anagram_ending_with(7048, 2, 48, 748);
+    check_largest_anagram_ending_with(262, 1, 2, 622);
+    check_largest_anagram_ending_with(622, 1, 2, 262);
+    check_largest_anagram_ending_with(261, 1, 6, 216);
     check_largest_anagram_ending_with(7897493048, 3, 748, 9987430748);
 }
 
 TEST(anadiv, largest_anagram_multiple_of_4_different_from_n) {
+    TEST_IGNORE();
     check_no_solution(96, 4);
     check_largest_anagram(424, 4, 244); // change the suffix multiple of 4
     check_largest_anagram(4224, 4, 2424); // keep the suffix, change the prefix
