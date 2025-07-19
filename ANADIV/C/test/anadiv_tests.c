@@ -184,3 +184,17 @@ TEST(anadiv, largest_anagram_multiple_of_5_obvious_solution) {
     check_largest_anagram(210, 5, 120);
     check_largest_anagram(5028755003, 5, 8755532000);
 }
+
+TEST(anadiv, largest_anagram_multiple_of_6_no_solution) {
+    check_no_solution(487, 6);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_6_no_solution_different_from_n) {
+    check_no_solution(72, 6);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_6_obvious_solution) {
+    check_largest_anagram(63, 6, 36);
+    check_largest_anagram(780897087, 6, 988877700);
+}
+

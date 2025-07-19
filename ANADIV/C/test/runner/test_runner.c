@@ -23,4 +23,7 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_5_no_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_5_no_solution_different_from_n);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_5_obvious_solution);
+    RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_6_no_solution);
+    RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_6_no_solution_different_from_n);
+    RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_6_obvious_solution);
 }
