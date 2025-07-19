@@ -118,7 +118,7 @@ bool next_subsequence(struct number *n, int length) {
         return false;
     int to_swap = length -1;
     swap_digits(n, next_pos, to_swap);
-    sort_subsequence(n, next_pos+1, length - next_pos);
+    sort_subsequence(n, 0, length - next_pos);
     return true;
 }
 
@@ -168,33 +168,35 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
     if (found == nb_pos) {
         sort_subsequence(n, 0, n->length - nb_pos);
         if (! cmp_numbers(n, original)) {
-            if (n->length > nb_pos + 1) {
-                if (! next_subsequence(n, n->length - nb_pos)) {
-                    found = 0;
-                }
-            } else {
-                found = 0;
-            }
+            found = 0;
+            if (n->length > nb_pos + 1)
+                if (next_subsequence(n, n->length - nb_pos))
+                    found = nb_pos;
         }
     }
     return found == nb_pos;
 }
 bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
-    int pos_even;
-    greatest_permutation(n);
-    if (! find_digit_with_predicate(n, n->length-1,  &is_even, &pos_even))
-        return false;
-    if (! is_even(n->digits[n->length-1])) {
-        swap_digits(n, n->length-1, pos_even);
-        sort_subsequence(n, 0, n->length-1);
+    const int suffixes[] = { 0, 2, 4, 6, 8 };
+    const int nb_pos = 1;
+    const int nb_suffixes = 5;
+    bool found = false;
+    struct number *accum = (struct number *)malloc(sizeof(struct number));
+    for (int i = 0; i < n->length; i++)
+        accum->digits[i] = 0;
+    accum->length = n->length;
+    for (int i = 0; i < nb_suffixes; i++) {
+       if (largest_anagram_ending_with(n, nb_pos, suffixes[i], original)) {
+           if (cmp_numbers(n, accum) > 0) {
+               copy_number(n, accum);
+               found = true;
+           }
+       }
     }
-    if (! cmp_numbers(n, original)) {
-        if (! find_digit_with_predicate(n, n->length-2, &is_even, &pos_even))
-            return false;
-        swap_digits(n, n->length-1, pos_even);
-        sort_subsequence(n, 0, n->length-1);
-    }
-    return true;
+    if(found)
+        copy_number(accum, n);
+    free(accum);
+    return found;
 }
 
 bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
