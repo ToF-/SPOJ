@@ -65,6 +65,8 @@ int cmp_char_desc(const void *arg_a, const void *arg_b) {
 void sort_subsequence(struct number *n, int pos, int len) {
     assert(pos >= 0);
     assert(len <= n->length);
+    if (len < 2)
+        return;
     qsort(&n->digits[pos], len, sizeof(char), cmp_char_desc);
 }
 void greatest_permutation(struct number *n) {
@@ -124,7 +126,9 @@ bool next_subsequence(struct number *n, int length) {
     if(uniform(n, length))
         return false;
     int next_pos;
+    printf("calling longest_descending_subsequence(");print_number(n);printf(",%d)\n", length-1);
     int size = longest_descending_subsequence(n, length-1, &next_pos);
+    printf("size:%d next_pos:%d", size, next_pos);putchar('\n');
     if (size == length)
         return false;
     int to_swap = next_pos + 1;
@@ -134,8 +138,13 @@ bool next_subsequence(struct number *n, int length) {
             to_swap = i;
         }
     }
+    printf("next_pos:%d to_swap:%d\n", next_pos, to_swap);
+    print_number(n);putchar(' ');
     swap_digits(n, next_pos, to_swap);
-    sort_subsequence(n, next_pos+1, length - next_pos);
+    print_number(n);putchar('\n');
+    printf("calling sort_subsequence(%d,%d)\n", next_pos+1, length-(next_pos+1));
+    sort_subsequence(n, next_pos+1, length-(next_pos+1));
+    print_number(n);putchar('\n');
     return true;
 }
 
@@ -181,6 +190,8 @@ bool is_multiple_of_4(char c) {
  * e.b. n = 12,   size = 1  s = 2              return false
  * */
 bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct number *original) {
+    print_number(n); putchar(':'); print_number(original);putchar('\n');
+    printf("ns_pos:%d s:%d\n", nb_pos, s);
     int found = 0;
     int suffix = s;
     for (int i = 0; i < nb_pos; i++) {
@@ -193,13 +204,17 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
         }
         suffix /= 10;
     }
+    print_number(n);putchar('\n');
     if (found < nb_pos)
         return false;
     sort_subsequence(n, 0, n->length - nb_pos);
     if (! cmp_numbers(n, original)) {
         found = 0;
+        printf("n->length:%d nb_pos+1:%d\n", n->length, nb_pos+1);
         if (n->length > nb_pos + 1) {
+            printf("calling next_subsequence(");print_number(n);printf(",%d)\n", n->length-nb_pos);
             bool result = next_subsequence(n, n->length - nb_pos);
+            printf("%d ", result);print_number(n);putchar('\n');
             if (result) {
                 found = nb_pos;
             }
