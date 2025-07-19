@@ -8,7 +8,7 @@
 void swap_digits(struct number *, int, int);
 bool uniform(struct number *, int);
 bool next_anagram(struct number *);
-int longest_descending_subsequence(struct number *, int);
+int longest_descending_subsequence(struct number *, int, int *);
 void sort_subsequence(struct number *, int, int);
 bool next_subsequence(struct number *, int);
 bool largest_anagram_multiple_of_1(struct number *, struct number *);
@@ -94,12 +94,18 @@ void swap_digits(struct number *n, int pos_a, int pos_b) {
     n->digits[pos_b] = temp;
 }
 
-int longest_descending_subsequence(struct number *n, int start) {
+/* e.g. n= 4807 start = 3
+ * stop_pos ← 1, return 2
+ */
+int longest_descending_subsequence(struct number *n, int start, int *stop_pos) {
+    assert(start > 0);
     for( int i = start; i > 0; i--) {
-        if (n->digits[i-1] > n->digits[i])
-            return i-1;
+        if (n->digits[i-1] > n->digits[i]) {
+            *stop_pos = i-1;
+            return start - i + 1;
+        }
     }
-    return -1;
+    return start - *stop_pos;
 }
 
 bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(char), int *pos) {
@@ -111,25 +117,40 @@ bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(c
     }
     return false;
 }
-
+/* e.g. n = 4807 length = 4    n ← 4780 return true
+ * n = 0478 length = 4         return false
+ */
 bool next_subsequence(struct number *n, int length) {
     if(uniform(n, length))
         return false;
-    int next_pos = longest_descending_subsequence(n, length-1);
-    if (next_pos < 0)
+    int next_pos;
+    int size = longest_descending_subsequence(n, length-1, &next_pos);
+    if (size == length)
         return false;
-    int to_swap = length -1;
+    int to_swap = next_pos + 1;
+    for (int i = to_swap; i < length; i++) {
+        if (n->digits[i] > n->digits[to_swap]
+                && n->digits[i] < n->digits[next_pos]) {
+            to_swap = i;
+        }
+    }
     swap_digits(n, next_pos, to_swap);
     sort_subsequence(n, next_pos+1, length - next_pos);
     return true;
 }
 
 bool next_anagram(struct number *n) {
-    int next_pos = longest_descending_subsequence(n, n->length-1);
-    if (next_pos < 0)
+    int next_pos;
+    int size = longest_descending_subsequence(n, n->length-1, &next_pos);
+    if (size == n->length)
         return false;
     int to_swap = n->length -1;
-
+    for (int i = to_swap; i < n->length; i++) {
+        if (n->digits[i] > n->digits[to_swap]
+                && n->digits[i] < n->digits[next_pos]) {
+            to_swap = i;
+        }
+    }
     swap_digits(n, next_pos, to_swap);
     sort_subsequence(n, next_pos+1, n->length - next_pos);
     return true;
@@ -138,7 +159,7 @@ bool next_anagram(struct number *n) {
 bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {
     greatest_permutation(n);
     if (! cmp_numbers(n, original)) {
-        return next_anagram(n);
+        return next_subsequence(n, n->length);
     }
     return true;
 }
@@ -153,7 +174,12 @@ bool is_odd(char c) {
 bool is_multiple_of_4(char c) {
     return (c % 4) == 0;
 }
-
+/* if digits of s are in n, finds the largest anagram with s as suffix which is not
+ *  the orginal n
+ * e.g. n = 4807, size = 2, s = 04   n ← 8704  return true
+ * e.g. n = 7408, size = 1, s = 8    n ← 7048  return true
+ * e.b. n = 12,   size = 1  s = 2              return false
+ * */
 bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct number *original) {
     int found = 0;
     int suffix = s;
@@ -169,14 +195,11 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
     }
     if (found < nb_pos)
         return false;
-    print_number(n); putchar(':'); print_number(original); putchar('\n');
     sort_subsequence(n, 0, n->length - nb_pos);
     if (! cmp_numbers(n, original)) {
         found = 0;
-        printf("%d %d\n", n->length, nb_pos+1);
         if (n->length > nb_pos + 1) {
             bool result = next_subsequence(n, n->length - nb_pos);
-            print_number(n);putchar('\n');
             if (result) {
                 found = nb_pos;
             }
