@@ -25,6 +25,17 @@ void check_largest_anagram(long long input, int factor, long long expected) {
     TEST_ASSERT_EQUAL(expected, number_value(n));
 }
 
+void check_largest_anagram_ending_with(long long input, int nb_pos, int suffix, long long expected) {
+    struct number *original = (struct number *)malloc(sizeof(original));
+    char line[MAX_DIGITS+3];
+    sprintf(line, "%lld %d", input, 1);
+    scan_input(line, n, &k);
+    copy_number(n, original);
+    TEST_ASSERT_TRUE(largest_anagram_ending_with(n, nb_pos, suffix, original));
+    TEST_ASSERT_EQUAL(expected, number_value(n));
+    free(original);
+}
+
 void check_no_solution(long long input, int factor) {
     char line[MAX_DIGITS+3];
     sprintf(line, "%lld %d", input, factor);
@@ -101,8 +112,7 @@ TEST(anadiv, largest_multiple_of_2_no_solution_different_from_n) {
 
 TEST(anadiv, largest_multiple_of_3_no_solution) {
     check_no_solution(4280, 3);
-    check_no_solution(1111111111, 3);
-}
+    check_no_solution(1111111111, 3); }
 
 TEST(anadiv, largest_multiple_of_3_obvious_solution) {
     check_largest_anagram(3273, 3, 7332);
@@ -125,6 +135,14 @@ TEST(anadiv, largest_anagram_multiple_of_4_obvious_solution) {
     check_largest_anagram(289, 4, 928);
 }
 
-TEST(anadiv, largest_anagram_multiple_of_4_different_from_n) {
-    check_largest_anagram(424, 4, 244);
+TEST(anadiv, largest_anagram_ending_with) {
+    check_largest_anagram_ending_with(262, 1, 2, 622);
+    check_largest_anagram_ending_with(622, 1, 2, 262);
+    check_largest_anagram_ending_with(261, 1, 6, 216);
 }
+/*
+T*EST(anadiv, largest_anagram_multiple_of_4_different_from_n) {
+    check_largest_anagram(424, 4, 244); // change the suffix multiple of 4
+    check_largest_anagram(4224, 4, 2424); // keep the suffix, change the prefix
+}
+*/

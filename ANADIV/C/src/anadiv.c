@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void copy_numbers(struct number *, struct number *);
 void swap_digits(struct number *, int, int);
 bool uniform(struct number *);
 bool next_anagram(struct number *);
@@ -79,7 +78,7 @@ int cmp_numbers(struct number *a, struct number *b) {
     return 0;
 }
 
-void copy_numbers(struct number *a, struct number *b) {
+void copy_number(struct number *a, struct number *b) {
     for (int i = 0; i < a->length; i++) {
         b->digits[i] = a->digits[i];
     }
@@ -140,6 +139,43 @@ bool is_multiple_of_4(char c) {
     return (c % 4) == 0;
 }
 
+bool largest_anagram_ending_with(struct number *n, int nb_pos, int suffix, struct number *original) {
+    bool found = false;
+    struct number *accum = (struct number *)malloc(sizeof(struct number));
+    accum->length = n->length;
+    for (int i = 0; i < accum->length; i++)
+        accum->digits[i] = 0;
+
+    char suffix_digits[4] = { 0, 0, 0 , 0 };
+    for (int value = suffix, i = 0; value > 0; value /= 10, i++) {
+        suffix_digits[i] = value % 10;
+    }
+    for(int i = 0; i < n->length; i++)
+        accum->digits[i] = 0;
+
+    for (int i = 0; i < nb_pos; i++) {
+        for(int j=0; j < n->length - i; j++) {
+            if( n->digits[j] == suffix_digits[i]) {
+                swap_digits(n, n->length - 1 - i, j);
+            }
+        }
+    }
+    sort_subsequence(n, 0, n->length - nb_pos);
+    if (cmp_numbers(n, original)) {
+        int cmp = cmp_numbers(n, accum);
+        if (cmp > 0) {
+            copy_number(n, accum);
+            found = true;
+        }
+    } else {
+        if (n->length > nb_pos + 1) {
+            swap_digits(n, n->length-1-nb_pos, n->length-2-nb_pos);
+        }
+    }
+    copy_number(accum, n);
+    free(accum);
+    return found;
+}
 bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     int pos_even;
     greatest_permutation(n);
@@ -196,6 +232,9 @@ bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
     else
         return false;
     if (! cmp_numbers(n, original)) {
+        struct number *candidate = (struct number *)malloc(sizeof(struct number));
+
+        free(candidate);
         return false;
     }
     return true;
@@ -206,7 +245,7 @@ bool largest_anagram(struct number *n, int k) {
     if (uniform(n))
         return false;
     struct number *original = (struct number *)malloc(sizeof(struct number));
-    copy_numbers(n, original);
+    copy_number(n, original);
     switch(k) {
         case 1:
             result = largest_anagram_multiple_of_1(n, original);
