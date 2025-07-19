@@ -75,6 +75,23 @@ TEST(anadiv, comparing_numbers) {
     free(m);
 }
 
+TEST(anadiv, largest_anagram_ending_with) {
+    check_largest_anagram_ending_with(9758, 1, 8, 9578);
+    check_largest_anagram_ending_with(62222, 1, 2, 26222);
+    check_no_largest_anagram_ending_with(1, 1, 1, 1);
+    check_no_largest_anagram_ending_with(7, 1, 1, 1);
+    check_no_largest_anagram_ending_with(5, 1, 2, 1);
+    check_no_largest_anagram_ending_with(14, 1, 2, 41);
+    check_no_largest_anagram_ending_with(12, 1, 2, 21);
+    check_largest_anagram_ending_with(27, 1, 2, 72);
+    check_largest_anagram_ending_with(72, 1, 7, 27);
+    check_largest_anagram_ending_with(4807, 2, 48, 7048);
+    check_largest_anagram_ending_with(7048, 2, 48, 748);
+    check_largest_anagram_ending_with(262, 1, 2, 622);
+    check_largest_anagram_ending_with(622, 1, 2, 262);
+    check_largest_anagram_ending_with(261, 1, 6, 216);
+    check_largest_anagram_ending_with(7897493048, 3, 748, 9987430748);
+}
 TEST(anadiv, largest_multiple_of_1) {
     check_largest_anagram(4807, 1, 8740);
 }
@@ -147,27 +164,23 @@ TEST(anadiv, largest_anagram_multiple_of_4_obvious_solution) {
     check_largest_anagram(444442, 4, 444424);
 }
 
-TEST(anadiv, largest_anagram_ending_with) {
-    check_largest_anagram_ending_with(9758, 1, 8, 9578);
-    check_largest_anagram_ending_with(62222, 1, 2, 26222);
-    check_no_largest_anagram_ending_with(1, 1, 1, 1);
-    check_no_largest_anagram_ending_with(7, 1, 1, 1);
-    check_no_largest_anagram_ending_with(5, 1, 2, 1);
-    check_no_largest_anagram_ending_with(14, 1, 2, 41);
-    check_no_largest_anagram_ending_with(12, 1, 2, 21);
-    check_largest_anagram_ending_with(27, 1, 2, 72);
-    check_largest_anagram_ending_with(72, 1, 7, 27);
-    check_largest_anagram_ending_with(4807, 2, 48, 7048);
-    check_largest_anagram_ending_with(7048, 2, 48, 748);
-    check_largest_anagram_ending_with(262, 1, 2, 622);
-    check_largest_anagram_ending_with(622, 1, 2, 262);
-    check_largest_anagram_ending_with(261, 1, 6, 216);
-    check_largest_anagram_ending_with(7897493048, 3, 748, 9987430748);
-}
-
 TEST(anadiv, largest_anagram_multiple_of_4_different_from_n) {
     check_no_solution(96, 4);
     check_largest_anagram(424, 4, 244); // change the suffix multiple of 4
     check_largest_anagram(4224, 4, 2424); // keep the suffix, change the prefix
 }
 
+TEST(anadiv, largest_anagram_multiple_of_5_no_solution) {
+    check_no_solution(487, 5);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_5_no_solution_different_from_n) {
+    check_no_solution(45, 5);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_5_obvious_solution) {
+    check_largest_anagram(51, 5, 15);
+    check_largest_anagram(120, 5, 210);
+    check_largest_anagram(210, 5, 120);
+    check_largest_anagram(5028755003, 5, 8755532000);
+}

@@ -15,6 +15,7 @@ bool largest_anagram_multiple_of_1(struct number *, struct number *);
 bool largest_anagram_multiple_of_2(struct number *, struct number *);
 bool largest_anagram_multiple_of_3(struct number *, struct number *);
 bool largest_anagram_multiple_of_4(struct number *, struct number *);
+bool largest_anagram_multiple_of_5(struct number *, struct number *);
 bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
 bool is_even(char);
 bool is_odd(char);
@@ -279,6 +280,29 @@ bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
     return found;
 }
 
+bool largest_anagram_multiple_of_5(struct number *n, struct number *original) {
+    const int suffixes[] = { 0, 5 };
+    const int nb_pos = 1;
+    const int nb_suffixes = 2;
+    bool found = false;
+    struct number *accum = (struct number *)malloc(sizeof(struct number));
+    for (int i = 0; i < n->length; i++)
+        accum->digits[i] = 0;
+    accum->length = n->length;
+    for (int i = 0; i < nb_suffixes; i++) {
+        if (largest_anagram_ending_with(n, nb_pos, suffixes[i], original)) {
+            if (cmp_numbers(n, accum) > 0) {
+                copy_number(n, accum);
+                found = true;
+                }
+        }
+    }
+    if(found)
+        copy_number(accum, n);
+    free(accum);
+    return found;
+}
+
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
     if (uniform(n, n->length))
@@ -297,6 +321,9 @@ bool largest_anagram(struct number *n, int k) {
             break;
         case 4:
             result = largest_anagram_multiple_of_4(n, original);
+            break;
+        case 5:
+            result = largest_anagram_multiple_of_5(n, original);
             break;
     }
     free(original);
