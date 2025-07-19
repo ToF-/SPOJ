@@ -152,30 +152,32 @@ bool is_multiple_of_4(char c) {
     return (c % 4) == 0;
 }
 
-bool largest_anagram_ending_with(struct number *n, int nb_pos, int suffix, struct number *original) {
-    bool found = false;
-    char suffix_digits[4] = { 0, 0, 0 , 0 };
-    for (int value = suffix, i = 0; value > 0; value /= 10, i++) {
-        suffix_digits[i] = value % 10;
-    }
+bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct number *original) {
+    int found = 0;
+    int suffix = s; 
     for (int i = 0; i < nb_pos; i++) {
         for(int j=0; j < n->length - i; j++) {
-            if( n->digits[j] == suffix_digits[i]) {
+            if( n->digits[j] == suffix % 10) {
+                found++;
                 swap_digits(n, n->length - 1 - i, j);
+                break;
+            }
+        }
+        suffix /= 10;
+    }
+    if (found == nb_pos) {
+        sort_subsequence(n, 0, n->length - nb_pos);
+        if (! cmp_numbers(n, original)) {
+            if (n->length > nb_pos + 1) {
+                if (! next_subsequence(n, n->length - nb_pos)) {
+                    found = 0;
+                }
+            } else {
+                found = 0;
             }
         }
     }
-    sort_subsequence(n, 0, n->length - nb_pos);
-    if (cmp_numbers(n, original)) {
-            found = true;
-    } else {
-        if (n->length > nb_pos + 1) {
-            if (next_subsequence(n, n->length - nb_pos)) {
-                found = true;
-            }
-        }
-    }
-    return found;
+    return found == nb_pos;
 }
 bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     int pos_even;
@@ -207,38 +209,26 @@ bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
 }
 
 bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
-    int pos_unit_digit;
-    int pos_tens_digit;
-    greatest_permutation(n);
-    if (find_digit_with_predicate(n, n->length-1, &is_multiple_of_4, &pos_unit_digit)) {
-        swap_digits(n, n->length-1, pos_unit_digit);
-        sort_subsequence(n, 0, n->length-1);
-        if (find_digit_with_predicate(n, n->length-2, &is_even, &pos_tens_digit)) {
-            swap_digits(n, n->length-2, pos_tens_digit);
-            sort_subsequence(n, 0, n->length-2);
-        }
-        else
-            return false;
+    const int suffixes[] = { 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96 };
+    const int nb_pos = 2;
+    const int nb_suffixes = 25;
+    bool found = false;
+    struct number *accum = (struct number *)malloc(sizeof(struct number));
+    for (int i = 0; i < n->length; i++)
+        accum->digits[i] = 0;
+    accum->length = n->length;
+    for (int i = 0; i < nb_suffixes; i++) {
+       if (largest_anagram_ending_with(n, nb_pos, suffixes[i], original)) {
+           if (cmp_numbers(n, accum) > 0) {
+               copy_number(n, accum);
+               found = true;
+           }
+       }
     }
-    else if (find_digit_with_predicate(n, n->length-1, &is_even, &pos_unit_digit)) {
-        swap_digits(n, n->length-1, pos_unit_digit);
-        sort_subsequence(n, 0, n->length-1);
-        if (find_digit_with_predicate(n, n->length-2, &is_odd, &pos_tens_digit)) {
-            swap_digits(n, n->length-2, pos_tens_digit);
-            sort_subsequence(n, 0, n->length-2);
-        }
-        else
-            return false;
-    }
-    else
-        return false;
-    if (! cmp_numbers(n, original)) {
-        struct number *candidate = (struct number *)malloc(sizeof(struct number));
-
-        free(candidate);
-        return false;
-    }
-    return true;
+    if(found)
+        copy_number(accum, n);
+    free(accum);
+    return found;
 }
 
 bool largest_anagram(struct number *n, int k) {

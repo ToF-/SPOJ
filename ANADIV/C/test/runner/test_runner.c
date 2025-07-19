@@ -19,4 +19,5 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_4_no_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_4_obvious_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_ending_with);
+    RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_4_different_from_n);
 }

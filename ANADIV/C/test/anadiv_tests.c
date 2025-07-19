@@ -133,6 +133,8 @@ TEST(anadiv, largest_anagram_multiple_of_4_obvious_solution) {
     check_largest_anagram(3261, 4, 6312);
     check_largest_anagram(1023456789, 4, 9876543120);
     check_largest_anagram(289, 4, 928);
+    check_largest_anagram(196, 4, 916);
+    check_largest_anagram(444442, 4, 4444244);
 }
 
 TEST(anadiv, largest_anagram_ending_with) {
@@ -144,9 +146,10 @@ TEST(anadiv, largest_anagram_ending_with) {
     check_largest_anagram_ending_with(7048, 2, 48, 748);
     check_largest_anagram_ending_with(7897493048, 3, 748, 9987430748);
 }
-/*
-T*EST(anadiv, largest_anagram_multiple_of_4_different_from_n) {
+
+TEST(anadiv, largest_anagram_multiple_of_4_different_from_n) {
+    check_no_solution(96, 4);
     check_largest_anagram(424, 4, 244); // change the suffix multiple of 4
     check_largest_anagram(4224, 4, 2424); // keep the suffix, change the prefix
 }
-*/
+
