@@ -99,7 +99,28 @@ for a large number e.g 999988887777666655554444433333222211110000
 999 988 887 777 666 655 554 444 433 333 222 211 110 000
     
 
+this procedure:
+```lisp
+(defun mod-7s (n)
+  (defun mod-7s-aux (digits counter)
+    (if digits
+      (if (= (rem (number-from-digits digits) 7) 0)
+        counter
+        (mod-7s-aux (next-anagram digits) (1+ counter)))
+      (- 1)))
+  (car (sort
+         (loop for i from 0 to n
+               collect
+               (mod-7s-aux
+                 (max-anagram
+                   (digits-from-number (random (expt 10 1000))))
+                 0)) #'>)))
+```
+tells how many call to `next-anagram` we are away from a number betwen 0 and 10¹⁰⁰⁰ that is divisible by 7. 
+the most frequent answer is between 0 and 15.
+the maximum calls obtained on 20000 runs of this procedure is 139
 
+therefore : compute the max anagram of the argument, and loop over next-anagram, counting the calls, until the result is divisible by 7 or the counter is > 150, in which case return -1.
 
 △
 

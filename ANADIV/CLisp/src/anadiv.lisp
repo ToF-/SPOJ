@@ -397,3 +397,18 @@
         (process)
       ))))
 
+(defun mod-7s (n)
+  (defun mod-7s-aux (digits counter)
+    (if digits
+      (if (= (rem (number-from-digits digits) 7) 0)
+        counter
+        (mod-7s-aux (next-anagram digits) (1+ counter)))
+      (- 1)))
+  (car (sort
+         (loop for i from 0 to n
+               collect
+               (mod-7s-aux
+                 (max-anagram
+                   (digits-from-number (random (expt 10 1000))))
+                 0)) #'>)))
+
