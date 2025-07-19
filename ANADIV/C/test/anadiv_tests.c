@@ -148,6 +148,7 @@ TEST(anadiv, largest_anagram_multiple_of_4_obvious_solution) {
 }
 
 TEST(anadiv, largest_anagram_ending_with) {
+    check_largest_anagram_ending_with(9758, 1, 8, 9578);
     check_largest_anagram_ending_with(62222, 1, 2, 26222);
     check_no_largest_anagram_ending_with(1, 1, 1, 1);
     check_no_largest_anagram_ending_with(7, 1, 1, 1);

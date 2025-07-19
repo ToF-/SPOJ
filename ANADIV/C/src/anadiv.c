@@ -119,15 +119,8 @@ bool next_subsequence(struct number *n, int length) {
     if (next_pos < 0)
         return false;
     int to_swap = length -1;
-    print_number(n);putchar('\n');
-    printf("next_pos:%d\n", next_pos);
     swap_digits(n, next_pos, to_swap);
     sort_subsequence(n, next_pos+1, length - next_pos);
-    print_number(n);putchar('\n');
-    if (next_pos > 0)
-        sort_subsequence(n, 0, length - next_pos);
-    else printf("don't bother\n");
-
     return true;
 }
 
@@ -176,12 +169,18 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
     }
     if (found < nb_pos)
         return false;
+    print_number(n); putchar(':'); print_number(original); putchar('\n');
     sort_subsequence(n, 0, n->length - nb_pos);
     if (! cmp_numbers(n, original)) {
         found = 0;
-        if (n->length > nb_pos + 1)
-            if (next_subsequence(n, n->length - nb_pos))
+        printf("%d %d\n", n->length, nb_pos+1);
+        if (n->length > nb_pos + 1) {
+            bool result = next_subsequence(n, n->length - nb_pos);
+            print_number(n);putchar('\n');
+            if (result) {
                 found = nb_pos;
+            }
+        }
     }
     return found == nb_pos;
 }
