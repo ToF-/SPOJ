@@ -13,9 +13,12 @@ int longest_descending_subsequence(struct number *, int);
 void sort_subsequence(struct number *, int, int);
 bool largest_anagram_multiple_of_1(struct number *, struct number *);
 bool largest_anagram_multiple_of_2(struct number *, struct number *);
-bool largest_anagram_multiple_of_2(struct number *, struct number *);
+bool largest_anagram_multiple_of_3(struct number *, struct number *);
+bool largest_anagram_multiple_of_4(struct number *, struct number *);
 bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
 bool is_even(char);
+bool is_odd(char);
+bool is_multiple_of_4(char);
 
 bool scan_input(char *line, struct number *n, int *factor) {
     n->length = 0;
@@ -130,6 +133,13 @@ bool is_even(char c) {
     return (c & 1) == 0;
 }
 
+bool is_odd(char c) {
+    return (c & 1) == 1;
+}
+bool is_multiple_of_4(char c) {
+    return (c % 4) == 0;
+}
+
 bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     int pos_even;
     greatest_permutation(n);
@@ -159,6 +169,38 @@ bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
     return true;
 }
 
+bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
+    int pos_unit_digit;
+    int pos_tens_digit;
+    greatest_permutation(n);
+    if (find_digit_with_predicate(n, n->length-1, &is_multiple_of_4, &pos_unit_digit)) {
+        swap_digits(n, n->length-1, pos_unit_digit);
+        sort_subsequence(n, 0, n->length-1);
+        if (find_digit_with_predicate(n, n->length-2, &is_even, &pos_tens_digit)) {
+            swap_digits(n, n->length-2, pos_tens_digit);
+            sort_subsequence(n, 0, n->length-2);
+        }
+        else
+            return false;
+    }
+    else if (find_digit_with_predicate(n, n->length-1, &is_even, &pos_unit_digit)) {
+        swap_digits(n, n->length-1, pos_unit_digit);
+        sort_subsequence(n, 0, n->length-1);
+        if (find_digit_with_predicate(n, n->length-2, &is_odd, &pos_tens_digit)) {
+            swap_digits(n, n->length-2, pos_tens_digit);
+            sort_subsequence(n, 0, n->length-2);
+        }
+        else
+            return false;
+    }
+    else
+        return false;
+    if (! cmp_numbers(n, original)) {
+        return false;
+    }
+    return true;
+}
+
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
     if (uniform(n))
@@ -174,6 +216,9 @@ bool largest_anagram(struct number *n, int k) {
             break;
         case 3:
             result = largest_anagram_multiple_of_3(n, original);
+            break;
+        case 4:
+            result = largest_anagram_multiple_of_4(n, original);
             break;
     }
     free(original);
