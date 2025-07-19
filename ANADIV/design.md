@@ -86,6 +86,18 @@ Collect even digits from the max anagram into a set, with their first position ,
 If the number contains a 0, the max anagram will be the one having a zero in digit[0], if it's not the input number, it's the solution.
 
 
+△
+
+largest anagram multiple of 7
+
+given N with n digits dn…d₂d₁d₀ that can be traited in ⌊ n / 3 ⌋ groups of 3 digits + optionally a group of 1 or 2 digits
+
+7 | N iff 7| (d₂d₁d₀ - d₅d₄d₃ + d₈d₇d₆ - … + … - 00dn) 
+
+for a large number e.g 999988887777666655554444433333222211110000
+
+999 988 887 777 666 655 554 444 433 333 222 211 110 000
+    
 
 
 
