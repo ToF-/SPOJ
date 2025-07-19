@@ -49,7 +49,7 @@ bool uniform(struct number *n, int length) {
     if (length == 1)
         return true;
     char digit = n->digits[0];
-    for(int i = 1; i < length; i++) {
+    for(int i = 1; i < n->length; i++) {
         if (n->digits[i] != digit)
             return false;
     }
@@ -110,16 +110,11 @@ bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(c
     return false;
 }
 
-bool next_subsequence(struct number *n, int length) {
-    if(uniform(n, length))
-        return false;
-    int next_pos = longest_descending_subsequence(n, length-1);
+bool next_subsequence(struct number *n, int len) {
+    int next_pos = longest_descending_subsequence(n, len-1);
     if (next_pos < 0)
         return false;
-    int to_swap = length -1;
-    swap_digits(n, next_pos, to_swap);
-    sort_subsequence(n, next_pos+1, length - next_pos);
-    return true;
+    int to_swap = n->length -1;
 }
 
 bool next_anagram(struct number *n) {
@@ -243,7 +238,7 @@ bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
 
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
-    if (uniform(n, n->length))
+    if (uniform(n))
         return false;
     struct number *original = (struct number *)malloc(sizeof(struct number));
     copy_number(n, original);

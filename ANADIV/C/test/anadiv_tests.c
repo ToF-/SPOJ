@@ -26,7 +26,7 @@ void check_largest_anagram(long long input, int factor, long long expected) {
 }
 
 void check_largest_anagram_ending_with(long long input, int nb_pos, int suffix, long long expected) {
-    struct number *original = (struct number *)malloc(sizeof(original));
+    struct number *original = (struct number *)malloc(sizeof(struct number));
     char line[MAX_DIGITS+3];
     sprintf(line, "%lld %d", input, 1);
     scan_input(line, n, &k);
@@ -138,7 +138,11 @@ TEST(anadiv, largest_anagram_multiple_of_4_obvious_solution) {
 TEST(anadiv, largest_anagram_ending_with) {
     check_largest_anagram_ending_with(262, 1, 2, 622);
     check_largest_anagram_ending_with(622, 1, 2, 262);
+    check_largest_anagram_ending_with(62222, 1, 2, 26222);
     check_largest_anagram_ending_with(261, 1, 6, 216);
+    check_largest_anagram_ending_with(4807, 2, 48, 7048);
+    check_largest_anagram_ending_with(7048, 2, 48, 748);
+    check_largest_anagram_ending_with(7897493048, 3, 748, 9987430748);
 }
 /*
 T*EST(anadiv, largest_anagram_multiple_of_4_different_from_n) {
