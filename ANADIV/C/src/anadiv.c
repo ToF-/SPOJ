@@ -17,6 +17,7 @@ bool largest_anagram_multiple_of_3(struct number *, struct number *);
 bool largest_anagram_multiple_of_4(struct number *, struct number *);
 bool largest_anagram_multiple_of_5(struct number *, struct number *);
 bool largest_anagram_multiple_of_6(struct number *, struct number *);
+bool largest_anagram_multiple_of_7(struct number *, struct number *);
 bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
 bool is_even(char);
 bool is_odd(char);
@@ -103,13 +104,15 @@ void swap_digits(struct number *n, int pos_a, int pos_b) {
  */
 int longest_descending_subsequence(struct number *n, int start, int *stop_pos) {
     assert(start > 0);
-    for( int i = start; i > 0; i--) {
+    *stop_pos = -1;
+    int i;
+    for( i = start; i > 0; i--) {
         if (n->digits[i-1] > n->digits[i]) {
             *stop_pos = i-1;
             return start - i + 1;
         }
     }
-    return start - *stop_pos;
+    return start-i+1;
 }
 
 bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(char), int *pos) {
@@ -300,6 +303,42 @@ bool largest_anagram_multiple_of_6(struct number *n, struct number *original) {
     return largest_anagram_multiple_of_2(n, original);
 }
 
+bool divisible_by_7(struct number *n) {
+    int sum_groups = 0;
+    int group_sign = 1;
+    int group = 0;
+    int factor = 1;
+    int i = n->length - 1;
+    int d = 0;
+    do {
+        group += n->digits[i] * factor;
+        if (d > 0 && d % 3 == 0) {
+            sum_groups = sum_groups + group * group_sign;
+            group = 0;
+            factor = 1;
+            group_sign = group_sign == 1 ? -1 : 1;
+        } else {
+            factor *= 10;
+        }
+        d++;
+        i--;
+    } while (i >= 0);
+    sum_groups = sum_groups + group * group_sign;
+    return sum_groups % 7 == 0;
+}
+
+bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {
+    sort_subsequence(n, 0, n->length);
+    while (true) {
+        if (divisible_by_7(n)) {
+            if (cmp_numbers(n, original))
+                return true;
+        }
+        if (! next_subsequence(n, n->length))
+            return false;
+    }
+    return false;
+}
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
     if (uniform(n, n->length))
@@ -324,6 +363,9 @@ bool largest_anagram(struct number *n, int k) {
             break;
         case 6:
             result = largest_anagram_multiple_of_6(n, original);
+            break;
+        case 7:
+            result = largest_anagram_multiple_of_7(n, original);
             break;
     }
     free(original);
