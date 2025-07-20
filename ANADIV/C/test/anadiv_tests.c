@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "unity.h"
 #include "unity_fixture.h"
 #include "unity_memory.h"
@@ -216,9 +217,24 @@ TEST(anadiv, largest_anagram_multiple_of_7_obvious_solution) {
     check_largest_anagram(41, 7, 14);
     check_largest_anagram(70, 7, 70);
     check_largest_anagram(510,7,105);
+    check_largest_anagram(10001, 7, 10010);
     check_largest_anagram(7*7*7*7,7,4102);
-    check_largest_anagram(2104*2104,7,8664142);
-    check_largest_anagram(1+2104*2104,7,8764124);
+    check_largest_anagram(2104*2104,7,8664124);
+    check_largest_anagram(1+2104*2104,7,8761424);
+}
+
+TEST(anadiv, divisible_by_7) {
+    char line[MAX_DIGITS+3];
+    for(long long i = 0; i < 100000; i++) {
+        sprintf(line, "%lld %d", i, 7);
+        scan_input(line, n, &k);
+        TEST_ASSERT_EQUAL(divisible_by_7(n), (i % 7) == 0);
+    }
+    TEST_ASSERT_FALSE(10001 % 7 == 0);
+}
+TEST(anadiv, largest_anagram_multiple_of_7_no_solution) {
+    check_no_solution(8, 7);
+    check_no_solution(15, 7);
 }
 
 TEST(anadiv, largest_anagram_multiple_of_8_obvious_solution) {
@@ -268,4 +284,19 @@ TEST(anadiv, scan_number_with_only_zeroes) {
     scan_input("00000000 1", n, &k);
     bool result = largest_anagram(n, k);
     TEST_ASSERT_EQUAL(0, number_value(n));
+}
+
+TEST(anadiv, general_output) {
+    char line[MAX_DIGITS+3];
+    for (long long v = 000; v < 100000; v++) {
+        for(int f = 2; f <= 10; f++) {
+            sprintf(line, "%lld %d", v, f);
+            scan_input(line, n, &k);
+            bool result = largest_anagram(n, k);
+            if (result) {
+                assert(number_value(n) % f == 0);
+                assert(n->digits[0] != 0 || n->length == 1);
+            }
+        }
+    }
 }

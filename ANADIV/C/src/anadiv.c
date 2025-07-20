@@ -346,7 +346,7 @@ bool divisible_by_7(struct number *n) {
     int d = 0;
     do {
         group += n->digits[i] * factor;
-        if (d > 0 && d % 3 == 0) {
+        if (d > 0 && d % 3 == 2) {
             sum_groups = sum_groups + group * group_sign;
             group = 0;
             factor = 1;
@@ -514,3 +514,4 @@ void process() {
     }
     free(n);
 }
+

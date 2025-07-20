@@ -13,6 +13,7 @@ long long number_value(struct number *);
 void copy_number(struct number *, struct number *);
 void print_number(struct number *);
 void greatest_permutation(struct number *);
+bool divisible_by_7(struct number *);
 int cmp_numbers(struct number *, struct number *);
 bool largest_anagram(struct number *, int k);
 bool largest_anagram_ending_with(struct number *, int, int, struct number *);

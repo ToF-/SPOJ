@@ -22,6 +22,8 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, prime_numbers);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_6_obvious_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_7_obvious_solution);
+    RUN_TEST_CASE(anadiv, divisible_by_7);
+    RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_7_no_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_8_obvious_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_8_no_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_9_no_solution);
@@ -32,4 +34,5 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, scan_number_without_leading_zeroes);
     RUN_TEST_CASE(anadiv, scan_10_factor);
     RUN_TEST_CASE(anadiv, scan_number_with_only_zeroes);
+    RUN_TEST_CASE(anadiv, general_output);
 }
