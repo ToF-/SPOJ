@@ -145,6 +145,10 @@ TEST(anadiv, largest_multiple_of_3_obvious_solution) {
     check_largest_anagram(3273, 3, 7332);
 }
 
+TEST(anadiv, largest_multiple_of_3_solution_different_from_n) {
+    check_largest_anagram(864, 3, 846);
+}
+
 TEST(anadiv, largest_multiple_of_3_no_solution_different_from_n) {
     check_no_solution(333, 3);
 }
@@ -222,3 +226,14 @@ TEST(anadiv, largest_anagram_multiple_of_8_no_solution_different_from_n) {
     check_no_solution(16, 8);
 }
 
+TEST(anadiv, largest_anagram_multiple_of_9_no_solution) {
+    check_no_solution(497, 9);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_9_obvions_solution) {
+    check_largest_anagram(486, 9, 864);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_9_no_solution_different_from_n) {
+    check_largest_anagram(864, 9, 846);
+}

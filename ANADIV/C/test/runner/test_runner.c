@@ -16,6 +16,7 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, largest_multiple_of_2_no_solution_different_from_n);
     RUN_TEST_CASE(anadiv, largest_multiple_of_3_no_solution);
     RUN_TEST_CASE(anadiv, largest_multiple_of_3_obvious_solution);
+    RUN_TEST_CASE(anadiv, largest_multiple_of_3_solution_different_from_n);
     RUN_TEST_CASE(anadiv, largest_multiple_of_3_no_solution_different_from_n);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_4_no_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_4_obvious_solution);
@@ -31,4 +32,7 @@ TEST_GROUP_RUNNER(anadiv) {
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_8_obvious_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_8_no_solution);
     RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_8_no_solution_different_from_n);
+    RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_9_no_solution);
+    RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_9_obvions_solution);
+    RUN_TEST_CASE(anadiv, largest_anagram_multiple_of_9_no_solution_different_from_n);
 }

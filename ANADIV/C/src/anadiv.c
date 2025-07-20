@@ -19,6 +19,7 @@ bool largest_anagram_multiple_of_5(struct number *, struct number *);
 bool largest_anagram_multiple_of_6(struct number *, struct number *);
 bool largest_anagram_multiple_of_7(struct number *, struct number *);
 bool largest_anagram_multiple_of_8(struct number *, struct number *);
+bool largest_anagram_multiple_of_9(struct number *, struct number *);
 bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
 bool is_even(char);
 bool is_odd(char);
@@ -245,7 +246,9 @@ bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
     if (sum_digits % 3 > 0)
         return false;
     greatest_permutation(n);
-
+    if (! cmp_numbers(n, original)) {
+        return next_subsequence(n, n->length);
+    }
     return true;
 }
 
@@ -373,6 +376,18 @@ bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
     free(accum);
     return found;
 }
+bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {
+    int sum_digits = 0;
+    for (int i = 0; i < n->length; i++)
+        sum_digits += n->digits[i];
+    if (sum_digits % 9 > 0)
+        return false;
+    greatest_permutation(n);
+    if (! cmp_numbers(n, original)) {
+        return next_subsequence(n, n->length);
+    }
+    return true;
+}
 
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
@@ -404,6 +419,9 @@ bool largest_anagram(struct number *n, int k) {
             break;
         case 8:
             result = largest_anagram_multiple_of_8(n, original);
+            break;
+        case 9:
+            result = largest_anagram_multiple_of_9(n, original);
             break;
     }
     free(original);
