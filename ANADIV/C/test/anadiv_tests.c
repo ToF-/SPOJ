@@ -209,3 +209,16 @@ TEST(anadiv, largest_anagram_multiple_of_7_no_solution_different_from_n) {
     check_no_solution(14, 7);
 }
 
+TEST(anadiv, largest_anagram_multiple_of_8_obvious_solution) {
+    check_largest_anagram(808, 8, 880);
+    check_largest_anagram(8*8*8*8*8*8*8, 8, 9752120);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_8_no_solution) {
+    check_no_solution(497, 8);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_8_no_solution_different_from_n) {
+    check_no_solution(16, 8);
+}
+

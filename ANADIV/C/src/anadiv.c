@@ -18,6 +18,7 @@ bool largest_anagram_multiple_of_4(struct number *, struct number *);
 bool largest_anagram_multiple_of_5(struct number *, struct number *);
 bool largest_anagram_multiple_of_6(struct number *, struct number *);
 bool largest_anagram_multiple_of_7(struct number *, struct number *);
+bool largest_anagram_multiple_of_8(struct number *, struct number *);
 bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
 bool is_even(char);
 bool is_odd(char);
@@ -341,6 +342,38 @@ bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {
     }
     return false;
 }
+
+bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
+    const int suffixes[] = { 
+        0,   8,  16,  24,  32,  40,  48,  56,  64,  72,  80,  88,  96, 104, 112, 120,
+        128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248,
+        256, 264, 272, 280, 288, 296, 304, 312, 320, 328, 336, 344, 352, 360, 368, 376,
+        384, 392, 400, 408, 416, 424, 432, 440, 448, 456, 464, 472, 480, 488, 496, 504,
+        512, 520, 528, 536, 544, 552, 560, 568, 576, 584, 592, 600, 608, 616, 624, 632, 
+        640, 648, 656, 664, 672, 680, 688, 696, 704, 712, 720, 728, 736, 744, 752, 760,
+        768, 776, 784, 792, 800, 808, 816, 824, 832, 840, 848, 856, 864, 872, 880, 888, 
+        896, 904, 912, 920, 928, 936, 944, 952, 960, 968, 976, 984, 992 };
+    const int nb_pos = 3;
+    const int nb_suffixes = 125;
+    bool found = false;
+    struct number *accum = (struct number *)malloc(sizeof(struct number));
+    for (int i = 0; i < n->length; i++)
+        accum->digits[i] = 0;
+    accum->length = n->length;
+    for (int i = 0; i < nb_suffixes; i++) {
+       if (largest_anagram_ending_with(n, nb_pos, suffixes[i], original)) {
+           if (cmp_numbers(n, accum) > 0) {
+               copy_number(n, accum);
+               found = true;
+           }
+       }
+    }
+    if(found)
+        copy_number(accum, n);
+    free(accum);
+    return found;
+}
+
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
     if (uniform(n, n->length))
@@ -368,6 +401,9 @@ bool largest_anagram(struct number *n, int k) {
             break;
         case 7:
             result = largest_anagram_multiple_of_7(n, original);
+            break;
+        case 8:
+            result = largest_anagram_multiple_of_8(n, original);
             break;
     }
     free(original);
