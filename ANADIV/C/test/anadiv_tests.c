@@ -197,4 +197,15 @@ TEST(anadiv, largest_anagram_multiple_of_6_obvious_solution) {
     check_largest_anagram(63, 6, 36);
     check_largest_anagram(780897087, 6, 988877700);
 }
+TEST(anadiv, largest_anagram_multiple_of_7_different_from_n) {
+    check_largest_anagram(70, 7, 7);
+    check_largest_anagram(510,7,105);
+    check_largest_anagram(7*7*7*7,7,4102);
+    check_largest_anagram(2104*2104,7,8664142);
+    check_largest_anagram(1+2104*2104,7,8764124);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_7_no_solution_different_from_n) {
+    check_no_solution(14, 7);
+}
 
