@@ -9,8 +9,6 @@ void swap_digits(struct number *, int, int);
 bool uniform(struct number *, int);
 bool next_anagram(struct number *);
 int longest_descending_subsequence(struct number *, int, int *);
-void sort_subsequence(struct number *, int, int);
-bool next_subsequence(struct number *, int);
 bool largest_anagram_multiple_of_1(struct number *, struct number *);
 bool largest_anagram_multiple_of_2(struct number *, struct number *);
 bool largest_anagram_multiple_of_3(struct number *, struct number *);
@@ -380,17 +378,14 @@ bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
     if (n->length == 1)
         return ((n->digits[0] % 8) == 0) && ! STRICT_ANAGRAM;
     if (n->length == 2) {
-        if (number_value(n) % 8 == 0) {
-            if (n->digits[1] > n->digits[0])
-                return ! STRICT_ANAGRAM;
-            else 
-                return true;
-        } else {
-            if (next_subsequence(n, 2)) {
-                if (number_value(n) % 8 == 0)
+        sort_subsequence(n, 0, n->length);
+        do {
+            if (number_value(n) % 8 == 0) {
+                if (!same_number(n, original))
                     return true;
             }
-        }
+        } while(next_subsequence(n, n->length));
+        return false;
     }
     const int suffixes[] = { 
         0,   8,  16,  24,  32,  40,  48,  56,  64,  72,  80,  88,  96, 104, 112, 120,

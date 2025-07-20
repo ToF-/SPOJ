@@ -9,6 +9,8 @@ struct number {
 };
 
 bool scan_input(char *, struct number *, int *);
+void sort_subsequence(struct number *, int, int);
+bool next_subsequence(struct number *, int);
 long long number_value(struct number *);
 void copy_number(struct number *, struct number *);
 void print_number(struct number *);

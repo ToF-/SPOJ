@@ -9,10 +9,13 @@ struct number {
 };
 
 bool scan_input(char *, struct number *, int *);
+void sort_subsequence(struct number *, int, int);
+bool next_subsequence(struct number *, int);
 long long number_value(struct number *);
 void copy_number(struct number *, struct number *);
 void print_number(struct number *);
 void greatest_permutation(struct number *);
+bool divisible_by_7(struct number *);
 int cmp_numbers(struct number *, struct number *);
 bool largest_anagram(struct number *, int k);
 bool largest_anagram_ending_with(struct number *, int, int, struct number *);
@@ -27,8 +30,6 @@ void swap_digits(struct number *, int, int);
 bool uniform(struct number *, int);
 bool next_anagram(struct number *);
 int longest_descending_subsequence(struct number *, int, int *);
-void sort_subsequence(struct number *, int, int);
-bool next_subsequence(struct number *, int);
 bool largest_anagram_multiple_of_1(struct number *, struct number *);
 bool largest_anagram_multiple_of_2(struct number *, struct number *);
 bool largest_anagram_multiple_of_3(struct number *, struct number *);
@@ -364,7 +365,7 @@ bool divisible_by_7(struct number *n) {
     int d = 0;
     do {
         group += n->digits[i] * factor;
-        if (d > 0 && d % 3 == 0) {
+        if (d > 0 && d % 3 == 2) {
             sum_groups = sum_groups + group * group_sign;
             group = 0;
             factor = 1;
@@ -398,17 +399,14 @@ bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
     if (n->length == 1)
         return ((n->digits[0] % 8) == 0) && ! STRICT_ANAGRAM;
     if (n->length == 2) {
-        if (number_value(n) % 8 == 0) {
-            if (n->digits[1] > n->digits[0])
-                return ! STRICT_ANAGRAM;
-            else 
-                return true;
-        } else {
-            if (next_subsequence(n, 2)) {
-                if (number_value(n) % 8 == 0)
+        sort_subsequence(n, 0, n->length);
+        do {
+            if (number_value(n) % 8 == 0) {
+                if (!same_number(n, original))
                     return true;
             }
-        }
+        } while(next_subsequence(n, n->length));
+        return false;
     }
     const int suffixes[] = { 
         0,   8,  16,  24,  32,  40,  48,  56,  64,  72,  80,  88,  96, 104, 112, 120,

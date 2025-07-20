@@ -46,6 +46,16 @@ void check_no_largest_anagram_ending_with(long long input, int nb_pos, int suffi
     free(original);
 }
 
+bool check_no_anagram_multiple(struct number *n, int k) {
+    sort_subsequence(n, 0, n->length);
+    do {
+        long long v = number_value(n);
+        if (v % k == 0) {
+            TEST_ASSERT_FALSE(v % k == 0);
+        }
+    } while(next_subsequence(n, n->length));
+    return true;
+}
 void check_no_solution(long long input, int factor) {
     char line[MAX_DIGITS+3];
     sprintf(line, "%lld %d", input, factor);
@@ -238,6 +248,7 @@ TEST(anadiv, largest_anagram_multiple_of_7_no_solution) {
 }
 
 TEST(anadiv, largest_anagram_multiple_of_8_obvious_solution) {
+    check_largest_anagram(32, 8,  32);
     check_largest_anagram(61, 8, 16);
     check_largest_anagram(16, 8, 16);
     check_largest_anagram(808, 8, 880);
@@ -287,6 +298,7 @@ TEST(anadiv, scan_number_with_only_zeroes) {
 }
 
 TEST(anadiv, general_output) {
+
     char line[MAX_DIGITS+3];
     for (long long v = 000; v < 100000; v++) {
         for(int f = 2; f <= 10; f++) {
@@ -296,6 +308,10 @@ TEST(anadiv, general_output) {
             if (result) {
                 assert(number_value(n) % f == 0);
                 assert(n->digits[0] != 0 || n->length == 1);
+            } else { 
+                sprintf(line, "%lld %d", v, f);
+                scan_input(line, n, &k);
+                check_no_anagram_multiple(n, k);
             }
         }
     }
