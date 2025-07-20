@@ -329,13 +329,15 @@ bool divisible_by_7(struct number *n) {
 
 bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {
     sort_subsequence(n, 0, n->length);
-    while (true) {
+    int trials = 0;
+    while (trials < MAX_TRIALS) {
         if (divisible_by_7(n)) {
             if (cmp_numbers(n, original))
                 return true;
         }
         if (! next_subsequence(n, n->length))
             return false;
+        trials++;
     }
     return false;
 }
