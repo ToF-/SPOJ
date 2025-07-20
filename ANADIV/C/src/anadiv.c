@@ -25,13 +25,25 @@ bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
 bool is_even(char);
 bool is_odd(char);
 bool is_multiple_of_4(char);
+bool same_number(struct number *, struct number *);
 
 bool scan_input(char *line, struct number *n, int *factor) {
     n->length = 0;
     *factor = 0;
     char *s = line;
-    while (*s && isdigit(*s) && n->length < MAX_DIGITS)
-        n->digits[n->length++] = *s++ - '0';
+    bool in_number = false;
+    while (*s && isdigit(*s) && n->length < MAX_DIGITS) {
+        if (*s == '0' && ! in_number) {
+            s++;
+        } else {
+            in_number = true;
+            n->digits[n->length++] = *s++ - '0';
+        }
+    }
+    if (n->length == 0) {
+        n->digits[0] = 0;
+        n->length = 1;
+    }
     while (*s == ' ') s++;
     while (*s && isdigit(*s))
         *factor = *factor * 10 + *s++ -'0';
@@ -62,6 +74,11 @@ bool uniform(struct number *n, int length) {
     return true;
 }
 
+bool same_number(struct number *a, struct number *b) {
+    if (STRICT_ANAGRAM && cmp_numbers(a, b) == 0)
+        return true;
+    return false;
+}
 int cmp_char_desc(const void *arg_a, const void *arg_b) {
     char a = * (const char *)arg_a;
     char b = * (const char *)arg_b;
@@ -168,7 +185,7 @@ bool next_anagram(struct number *n) {
 
 bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {
     greatest_permutation(n);
-    if (! cmp_numbers(n, original)) {
+    if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
     return true;
@@ -210,7 +227,7 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
     if (found < nb_pos)
         return false;
     sort_subsequence(n, 0, n->length - nb_pos);
-    if (! cmp_numbers(n, original)) {
+    if (same_number(n, original)) {
         found = 0;
         if (n->length > nb_pos + 1) {
             bool result = next_subsequence(n, n->length - nb_pos);
@@ -222,6 +239,8 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
     return found == nb_pos;
 }
 bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
+    if (n->length == 1 && n->digits[0] == 0)
+        return ! STRICT_ANAGRAM;
     const int suffixes[] = { 0, 2, 4, 6, 8 };
     const int nb_pos = 1;
     const int nb_suffixes = 5;
@@ -251,13 +270,17 @@ bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
     if (sum_digits % 3 > 0)
         return false;
     greatest_permutation(n);
-    if (! cmp_numbers(n, original)) {
+    if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
     return true;
 }
 
 bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
+    if (n->length == 1) {
+        return ((n->digits[0] % 4) == 0) && (! STRICT_ANAGRAM);
+    }
+
     const int suffixes[] = { 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96 };
     const int nb_pos = 2;
     const int nb_suffixes = 25;
@@ -281,6 +304,8 @@ bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
 }
 
 bool largest_anagram_multiple_of_5(struct number *n, struct number *original) {
+    if (n->length == 1 && n->digits[0] == 0)
+        return ! STRICT_ANAGRAM;
     const int suffixes[] = { 0, 5 };
     const int nb_pos = 1;
     const int nb_suffixes = 2;
@@ -341,7 +366,7 @@ bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {
     int trials = 0;
     while (trials < MAX_TRIALS) {
         if (divisible_by_7(n)) {
-            if (cmp_numbers(n, original))
+            if (! same_number(n, original))
                 return true;
         }
         if (! next_subsequence(n, n->length))
@@ -352,6 +377,12 @@ bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {
 }
 
 bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
+    if (n->length == 1)
+        return ((n->digits[0] % 8) == 0) && ! STRICT_ANAGRAM;
+    if (n->length == 2) {
+        return (((n->digits[0] + n->digits[1] * 10) % 8 == 0) && ! STRICT_ANAGRAM)
+            || ((n->digits[1] + n->digits[0] * 10) % 8 == 0);
+    }
     const int suffixes[] = { 
         0,   8,  16,  24,  32,  40,  48,  56,  64,  72,  80,  88,  96, 104, 112, 120,
         128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240, 248,
@@ -388,13 +419,15 @@ bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {
     if (sum_digits % 9 > 0)
         return false;
     greatest_permutation(n);
-    if (! cmp_numbers(n, original)) {
+    if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
     return true;
 }
 
 bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {
+    if (n->length == 1 && n->digits[0] == 0 && ! STRICT_ANAGRAM)
+        return true;
 
     const int suffixes[] = { 0 };
     const int nb_pos = 1;
@@ -420,8 +453,6 @@ bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {
 
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
-    if (uniform(n, n->length))
-        return false;
     struct number *original = (struct number *)malloc(sizeof(struct number));
     copy_number(n, original);
     switch(k) {
