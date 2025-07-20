@@ -15,3 +15,4 @@ void greatest_permutation(struct number *);
 int cmp_numbers(struct number *, struct number *);
 bool largest_anagram(struct number *, int k);
 bool largest_anagram_ending_with(struct number *, int, int, struct number *);
+void process();

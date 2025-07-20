@@ -230,10 +230,21 @@ TEST(anadiv, largest_anagram_multiple_of_9_no_solution) {
     check_no_solution(497, 9);
 }
 
-TEST(anadiv, largest_anagram_multiple_of_9_obvions_solution) {
+TEST(anadiv, largest_anagram_multiple_of_9_obvious_solution) {
     check_largest_anagram(486, 9, 864);
 }
 
 TEST(anadiv, largest_anagram_multiple_of_9_no_solution_different_from_n) {
     check_largest_anagram(864, 9, 846);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_10_no_solution) {
+    check_no_solution(497, 10);
+}
+TEST(anadiv, largest_anagram_multiple_of_10_no_solution_different_from_n) {
+    check_no_solution(10, 10);
+}
+
+TEST(anadiv, largest_anagram_multiple_of_10_obvious_solution) {
+    check_largest_anagram(40086, 10, 86400);
 }

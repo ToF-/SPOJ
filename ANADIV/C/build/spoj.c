@@ -1,4 +1,21 @@
-#include "anadiv.h"  // this line on top (building spoj)
+#include <stdbool.h>
+#define MAX_TRIALS 150
+#define MAX_DIGITS 1024
+
+struct number {
+    int length;
+    char digits[MAX_DIGITS];
+};
+
+bool scan_input(char *, struct number *, int *);
+long long number_value(struct number *);
+void copy_number(struct number *, struct number *);
+void print_number(struct number *);
+void greatest_permutation(struct number *);
+int cmp_numbers(struct number *, struct number *);
+bool largest_anagram(struct number *, int k);
+bool largest_anagram_ending_with(struct number *, int, int, struct number *);
+void process();
 #include <assert.h>
 #include <stdbool.h>
 #include <ctype.h>
@@ -20,7 +37,6 @@ bool largest_anagram_multiple_of_6(struct number *, struct number *);
 bool largest_anagram_multiple_of_7(struct number *, struct number *);
 bool largest_anagram_multiple_of_8(struct number *, struct number *);
 bool largest_anagram_multiple_of_9(struct number *, struct number *);
-bool largest_anagram_multiple_of_10(struct number *, struct number *);
 bool find_digit_with_predicate(struct number *, int, bool (*)(char), int *);
 bool is_even(char);
 bool is_odd(char);
@@ -172,10 +188,6 @@ bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {
         return next_subsequence(n, n->length);
     }
     return true;
-}
-
-bool is_zero(char c) {
-    return c == 0;
 }
 
 bool is_even(char c) {
@@ -394,30 +406,6 @@ bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {
     return true;
 }
 
-bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {
-
-    const int suffixes[] = { 0 };
-    const int nb_pos = 1;
-    const int nb_suffixes = 1;
-    bool found = false;
-    struct number *accum = (struct number *)malloc(sizeof(struct number));
-    for (int i = 0; i < n->length; i++)
-        accum->digits[i] = 0;
-    accum->length = n->length;
-    for (int i = 0; i < nb_suffixes; i++) {
-        if (largest_anagram_ending_with(n, nb_pos, suffixes[i], original)) {
-            if (cmp_numbers(n, accum) > 0) {
-                copy_number(n, accum);
-                found = true;
-                }
-        }
-    }
-    if(found)
-        copy_number(accum, n);
-    free(accum);
-    return found;
-}
-
 bool largest_anagram(struct number *n, int k) {
     bool result = false;
     if (uniform(n, n->length))
@@ -452,9 +440,6 @@ bool largest_anagram(struct number *n, int k) {
         case 9:
             result = largest_anagram_multiple_of_9(n, original);
             break;
-        case 10:
-            result = largest_anagram_multiple_of_10(n, original);
-            break;
     }
     free(original);
     return result;
@@ -474,3 +459,4 @@ void process() {
     }
     free(n);
 }
+int main(int argc, char* argv[]) { process(); return 0; }
