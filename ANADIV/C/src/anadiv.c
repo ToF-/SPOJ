@@ -380,8 +380,17 @@ bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
     if (n->length == 1)
         return ((n->digits[0] % 8) == 0) && ! STRICT_ANAGRAM;
     if (n->length == 2) {
-        return (((n->digits[0] + n->digits[1] * 10) % 8 == 0) && ! STRICT_ANAGRAM)
-            || ((n->digits[1] + n->digits[0] * 10) % 8 == 0);
+        if (number_value(n) % 8 == 0) {
+            if (n->digits[1] > n->digits[0])
+                return ! STRICT_ANAGRAM;
+            else 
+                return true;
+        } else {
+            if (next_subsequence(n, 2)) {
+                if (number_value(n) % 8 == 0)
+                    return true;
+            }
+        }
     }
     const int suffixes[] = { 
         0,   8,  16,  24,  32,  40,  48,  56,  64,  72,  80,  88,  96, 104, 112, 120,

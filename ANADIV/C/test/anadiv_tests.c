@@ -161,6 +161,7 @@ TEST(anadiv, largest_anagram_multiple_of_4_obvious_solution) {
     check_largest_anagram(0, 4, 0);
     check_largest_anagram(8, 4, 8);
     check_largest_anagram(4, 4, 4);
+    check_largest_anagram(29, 4, 92);
     check_largest_anagram(61, 4, 16);
     check_largest_anagram(3561, 4, 5316);
     check_largest_anagram(3261, 4, 6312);
@@ -211,6 +212,8 @@ TEST(anadiv, largest_anagram_multiple_of_6_obvious_solution) {
 }
 TEST(anadiv, largest_anagram_multiple_of_7_obvious_solution) {
     check_largest_anagram(14, 7, 14);
+    check_largest_anagram(12, 7, 21);
+    check_largest_anagram(41, 7, 14);
     check_largest_anagram(70, 7, 70);
     check_largest_anagram(510,7,105);
     check_largest_anagram(7*7*7*7,7,4102);
@@ -219,6 +222,7 @@ TEST(anadiv, largest_anagram_multiple_of_7_obvious_solution) {
 }
 
 TEST(anadiv, largest_anagram_multiple_of_8_obvious_solution) {
+    check_largest_anagram(61, 8, 16);
     check_largest_anagram(16, 8, 16);
     check_largest_anagram(808, 8, 880);
     check_largest_anagram(8*8*8*8*8*8*8, 8, 9752120);

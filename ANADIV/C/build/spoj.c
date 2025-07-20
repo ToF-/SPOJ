@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #define MAX_TRIALS 150
 #define MAX_DIGITS 1024
-#define STRICT_ANAGRAM true
+#define STRICT_ANAGRAM false
 
 struct number {
     int length;
@@ -93,7 +93,8 @@ bool uniform(struct number *n, int length) {
 }
 
 bool same_number(struct number *a, struct number *b) {
-    // return cmp_numbers(a, b) == 0;
+    if (STRICT_ANAGRAM && cmp_numbers(a, b) == 0)
+        return true;
     return false;
 }
 int cmp_char_desc(const void *arg_a, const void *arg_b) {
@@ -257,7 +258,7 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
 }
 bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     if (n->length == 1 && n->digits[0] == 0)
-        return true;
+        return ! STRICT_ANAGRAM;
     const int suffixes[] = { 0, 2, 4, 6, 8 };
     const int nb_pos = 1;
     const int nb_suffixes = 5;
@@ -294,8 +295,9 @@ bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
 }
 
 bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
-    if (n->length == 1)
-        return (n->digits[0] % 4) == 0;
+    if (n->length == 1) {
+        return ((n->digits[0] % 4) == 0) && (! STRICT_ANAGRAM);
+    }
 
     const int suffixes[] = { 0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 84, 88, 92, 96 };
     const int nb_pos = 2;
@@ -321,7 +323,7 @@ bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
 
 bool largest_anagram_multiple_of_5(struct number *n, struct number *original) {
     if (n->length == 1 && n->digits[0] == 0)
-        return true;
+        return ! STRICT_ANAGRAM;
     const int suffixes[] = { 0, 5 };
     const int nb_pos = 1;
     const int nb_suffixes = 2;
@@ -394,10 +396,19 @@ bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {
 
 bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
     if (n->length == 1)
-        return (n->digits[0] % 8) == 0;
+        return ((n->digits[0] % 8) == 0) && ! STRICT_ANAGRAM;
     if (n->length == 2) {
-        return ((n->digits[0] + n->digits[1] * 10) % 8 == 0)
-            || ((n->digits[1] + n->digits[0] * 10) % 8 == 0);
+        if (number_value(n) % 8 == 0) {
+            if (n->digits[1] > n->digits[0])
+                return ! STRICT_ANAGRAM;
+            else 
+                return true;
+        } else {
+            if (next_subsequence(n, 2)) {
+                if (number_value(n) % 8 == 0)
+                    return true;
+            }
+        }
     }
     const int suffixes[] = { 
         0,   8,  16,  24,  32,  40,  48,  56,  64,  72,  80,  88,  96, 104, 112, 120,
@@ -442,7 +453,7 @@ bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {
 }
 
 bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {
-    if (n->length == 1 && n->digits[0] == 0)
+    if (n->length == 1 && n->digits[0] == 0 && ! STRICT_ANAGRAM)
         return true;
 
     const int suffixes[] = { 0 };
