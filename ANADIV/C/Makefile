@@ -50,7 +50,7 @@ clean:
 	rm bin/*
 
 tags: src/anadiv.c src/anadiv.h test/anadiv_tests.c
-	ctags --recurse
+	`brew --prefix`/bin/ctags --recurse
 
 random: spoj
 	bin/spoj <../test/random.txt >result.txt
