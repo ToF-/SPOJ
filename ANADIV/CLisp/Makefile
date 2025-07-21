@@ -11,3 +11,9 @@ spoj:
 
 tests:
 	sbcl --script build/spoj.lisp
+
+random: spoj
+	sbcl --script build/spoj.lisp <../test/random.txt >result.txt
+	diff ../test/random-expected.txt result.txt
+
+
