@@ -412,13 +412,34 @@
                    (digits-from-number (random (expt 10 1000))))
                  0)) #'>)))
 
-(defun generate-test-cases (n)
+(defun generate-random-test-cases (n)
   (defun generate-test-case ()
     (let ((n (digits-from-number (random (expt 10 1000))))
           (k (1+ (random 10))))
       (format t "~A ~A:~A~%" (number-from-digits n) k (number-from-digits (max-anagram-divisible-by k n)))))
   (loop for i from 1 to n
         do (generate-test-case)))
+
+(defun generate-sequential-test-cases (n value)
+  (defun generate-test-case (n v)
+    (cond ((= n 0) ())
+          ((= v 0) ())
+          (t (loop for k from 1 to 10
+                   do (let ((r (max-anagram-divisible-by k (digits-from-number v))))
+                        (format t "~A ~A:~A~%" v k (if r (number-from-digits r) -1))))
+             (generate-test-case (- n 1) (- v 1)))))
+  (generate-test-case n (number-from-digits (max-anagram (digits-from-number value)))))
+
+
+(defun generate-sequential ()
+  (progn
+    (if (= (length *posix-argv*) 3)
+      (generate-sequential-test-cases (parse-integer (cadr *posix-argv*)) (parse-integer (caddr *posix-argv*)))
+      (format t "incorrect arguments: ~A~%" *posix-argv*))
+    (sb-ext:quit)))
+
+
+
 
 
 

@@ -19,4 +19,7 @@ random: spoj
 clean:
 	rm -f result.txt
 
+sequential:
+	sbcl --load src/anadiv.lisp --eval "(generate-sequential)" 100000 100000
+
 
