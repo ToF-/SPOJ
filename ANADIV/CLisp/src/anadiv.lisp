@@ -412,3 +412,13 @@
                    (digits-from-number (random (expt 10 1000))))
                  0)) #'>)))
 
+(defun generate-test-cases (n)
+  (defun generate-test-case ()
+    (let ((n (digits-from-number (random (expt 10 1000))))
+          (k (1+ (random 10))))
+      (format t "~A ~A:~A~%" (number-from-digits n) k (number-from-digits (max-anagram-divisible-by k n)))))
+  (loop for i from 1 to n
+        do (generate-test-case)))
+
+
+
