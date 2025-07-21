@@ -65,6 +65,8 @@ SPOJ_FILES	Makefile	/^SPOJ_FILES=build\/spoj.c$/;"	m
 SRC	unity/extras/fixture/test/Makefile	/^SRC = ..\/src\/unity_fixture.c \\$/;"	m
 SRC	unity/extras/memory/test/Makefile	/^SRC = ..\/src\/unity_memory.c \\$/;"	m
 STRCMP_EQUAL	unity/extras/fixture/src/unity_fixture.h	/^#define STRCMP_EQUAL(/;"	d
+STRICT_ANAGRAM	build/spoj.c	/^#define STRICT_ANAGRAM /;"	d	file:
+STRICT_ANAGRAM	src/anadiv.h	/^#define STRICT_ANAGRAM /;"	d
 Silent	unity/extras/fixture/src/unity_fixture_internals.h	/^    int Silent;$/;"	m	struct:UNITY_FIXTURE_T
 TARGET	unity/extras/fixture/test/Makefile	/^TARGET = ..\/build\/fixture_tests.exe$/;"	m
 TARGET	unity/extras/memory/test/Makefile	/^TARGET = ..\/build\/memory_tests.exe$/;"	m
@@ -79,39 +81,39 @@ TEST	src/temp_scratch.c	/^TEST(anadiv, max_anagram) {$/;"	f
 TEST	src/temp_scratch.c	/^TEST(anadiv, next_anagram) {$/;"	f
 TEST	src/temp_scratch.c	/^TEST(anadiv, scan_number_and_k) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, comparing_numbers) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, divisible_by_7) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, general_output) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, greatest_permutation) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_ending_with) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_4_different_from_n) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_10_no_solution) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_10_obvious_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_4_no_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_4_obvious_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_5_no_solution) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_5_no_solution_different_from_n) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_5_obvious_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_6_no_solution) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_6_no_solution_different_from_n) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_6_obvious_solution) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_7_different_from_n) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_7_no_solution_different_from_n) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_7_no_solution) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_7_obvious_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_8_no_solution) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_8_no_solution_different_from_n) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_8_obvious_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_9_no_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_9_no_solution_different_from_n) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_9_obvions_solution) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_anagram_multiple_of_9_obvious_solution) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1_different_from_N) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1_impossible) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_different_from_n) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_1_same_as_N) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_look_for_first_even) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_no_even_digit) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_no_solution) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_no_solution_different_from_n) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_obvious_solution) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_2_same_n) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_3_no_solution) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_3_no_solution_different_from_n) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_3_obvious_solution) {$/;"	f
-TEST	test/anadiv_tests.c	/^TEST(anadiv, largest_multiple_of_3_solution_different_from_n) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, prime_numbers) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, scan_10_factor) {$/;"	f
 TEST	test/anadiv_tests.c	/^TEST(anadiv, scan_number_and_factor) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, scan_number_with_only_zeroes) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, scan_number_without_leading_zeroes) {$/;"	f
+TEST	test/anadiv_tests.c	/^TEST(anadiv, trivial_cases) {$/;"	f
 TEST	unity/extras/fixture/src/unity_fixture.h	/^#define TEST(/;"	d
 TEST	unity/extras/fixture/test/template_fixture_tests.c	/^TEST(mygroup, test1)$/;"	f
 TEST	unity/extras/fixture/test/template_fixture_tests.c	/^TEST(mygroup, test2)$/;"	f
@@ -1070,6 +1072,7 @@ calloc	unity/extras/memory/src/unity_memory.c	/^#undef calloc$/;"	d	file:
 calloc	unity/extras/memory/src/unity_memory.h	/^#define calloc /;"	d
 check_largest_anagram	test/anadiv_tests.c	/^void check_largest_anagram(long long input, int factor, long long expected) {$/;"	f
 check_largest_anagram_ending_with	test/anadiv_tests.c	/^void check_largest_anagram_ending_with(long long input, int nb_pos, int suffix, long long expected) {$/;"	f
+check_no_anagram_multiple	test/anadiv_tests.c	/^bool check_no_anagram_multiple(struct number *n, int k) {$/;"	f
 check_no_largest_anagram_ending_with	test/anadiv_tests.c	/^void check_no_largest_anagram_ending_with(long long input, int nb_pos, int suffix, long long expected) {$/;"	f
 check_no_solution	test/anadiv_tests.c	/^void check_no_solution(long long input, int factor) {$/;"	f
 cmp_char_desc	build/spoj.c	/^int cmp_char_desc(const void *arg_a, const void *arg_b) {$/;"	f
@@ -1124,6 +1127,8 @@ is_multiple_of_4	build/spoj.c	/^bool is_multiple_of_4(char c) {$/;"	f
 is_multiple_of_4	src/anadiv.c	/^bool is_multiple_of_4(char c) {$/;"	f
 is_odd	build/spoj.c	/^bool is_odd(char c) {$/;"	f
 is_odd	src/anadiv.c	/^bool is_odd(char c) {$/;"	f
+is_zero	build/spoj.c	/^bool is_zero(char c) {$/;"	f
+is_zero	src/anadiv.c	/^bool is_zero(char c) {$/;"	f
 isinf	unity/src/unity_internals.h	/^#define isinf(/;"	d
 isnan	unity/src/unity_internals.h	/^#define isnan(/;"	d
 k	test/anadiv_tests.c	/^int k;$/;"	v
@@ -1133,6 +1138,8 @@ largest_anagram_ending_with	build/spoj.c	/^bool largest_anagram_ending_with(stru
 largest_anagram_ending_with	src/anadiv.c	/^bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct number *original) {$/;"	f
 largest_anagram_multiple_of_1	build/spoj.c	/^bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_1	src/anadiv.c	/^bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_10	build/spoj.c	/^bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_10	src/anadiv.c	/^bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_2	build/spoj.c	/^bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_2	src/anadiv.c	/^bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_3	build/spoj.c	/^bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {$/;"	f
@@ -1207,6 +1214,8 @@ release_memory	unity/extras/memory/src/unity_memory.c	/^static void release_memo
 repeat	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* repeat[] = {$/;"	v	file:
 reverse_number	src/temp_scratch.c	/^void reverse_number(struct number *number) {$/;"	f
 runAllTests	unity/extras/fixture/test/main/AllTests.c	/^static void runAllTests(void)$/;"	f	file:
+same_number	build/spoj.c	/^bool same_number(struct number *a, struct number *b) {$/;"	f
+same_number	src/anadiv.c	/^bool same_number(struct number *a, struct number *b) {$/;"	f
 savedGroup	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* savedGroup;$/;"	v	file:
 savedName	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* savedName;$/;"	v	file:
 savedRepeat	unity/extras/fixture/test/unity_fixture_Test.c	/^static unsigned int savedRepeat;$/;"	v	file:
