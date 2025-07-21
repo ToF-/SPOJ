@@ -1,20 +1,20 @@
-### What is an anagram of a number ?
+### What is an anagram of a number?
 
 An anagram M of number N = d₀d₁…dn is the number formed by a permutation of the digits d₀,d₁,…dn such that M <> N.
 
-### How to represent large numbers ?
+### How to represent large numbers?
 
 Use arrays of digits (AD). A digit is a number between 0 and 9. Store units on location 0, tens on location 1 and so on.
 The value of the AD is AD[0] + AD[1] * 10 + … + AD[L-1] * 10^(L-1) where L = number of digits in the number.
 
-### How to represent the maximum anagram ?
+### How to represent the maximum anagram?
 
 Sort the AD in increasing order.
 Let M = d₀ + d₁.10 + … + dl.10^(l-1)
 
 Since di ≤ di+1 and 10^p < 10^(p+1), M is the largest number that can be created with d₀d₁…
 
-### Given an AD N, how to obtain M the next largest anagram of N such that M < N ?
+### Given an AD N, how to obtain M the next largest anagram of N such that M < N?
 
 Starting from the left of the AD (unit, then tens, etc), deterrmine the longest descencding subsequence LDS, such d₀ ≥ d₁ ≥ … dp
 
@@ -30,49 +30,49 @@ sort LDS in decreasing order
 e.g. 1798;  LDS = 8; D = 9; G = 8; S = 1789
 e.g. 34005;  LDS = 5|0|0; D = 4; G = 0; S = 30540
 
-### How to determine if a very large number is divisible by 1 ?
+### How to determine if a very large number is divisible by 1?
 
 It's always true.
 
-### How to determine if a very large number is divisible by 2 ?
+### How to determine if a very large number is divisible by 2?
 
 It's last digit modulo 2 is 0.
 
-### How to determine if a very large number is divisible by 3 ?
+### How to determine if a very large number is divisible by 3?
 
 The sum of all digits modulo 3 is 0.
 
-### How to determine if a very large number is divisible by 4 ?
+### How to determine if a very large number is divisible by 4?
 
 The number formed by the last and before last digits modulo 4 = 0.
 
-### How to determine if a very large number is divisible by 5 ?
+### How to determine if a very large number is divisible by 5?
 
 The last digit is either 5 or 0.
 
-### How to determine if a very large number is divisible by 6 ?
+### How to determine if a very large number is divisible by 6?
 
 The sum of all digits modulo 3 is 0 and the last digit modulo 2 is 0.
 
-### How to determine if a very large number is divisible by 7 ?
+### How to determine if a very large number is divisible by 7?
 
 Group the digits by 3 : T1 = N mod 1000, T2 = ⌊ N / 1000 ⌋ mod 1000, T3 = ⌊ N / 1000000 ⌋ mod 1000, etc
 Compute the sum S = T1 - T2 + T3 - T4 …
 S mod 7 = 0.
 
-### How to determine if a very large number is divisible by 8 ?
+### How to determine if a very large number is divisible by 8?
 
 The number formed by the last 3 digits modulo 8 = 0.
 
-### How to determine if a very large number is divisible by 9 ?
+### How to determine if a very large number is divisible by 9?
 
 The sum of all digits modulo 9 is 0.
 
-### How to determine if a very large number is divisible by 10 ?
+### How to determine if a very large number is divisible by 10?
 
 The last digit is 0.
 
-### How to find the largest anagram of a very large number which is divisible by 2 ?
+### How to find the largest anagram of a very large number which is divisible by 2?
 
 If the number contains only even digits, go for max anagram.
 If the number contains some even digits, search the max anagram for the first position where an even digit is, collecting the set of even digits and their first position,  e.g. { 0:Ø, 2:17, 4:Ø,  6:Ø, 8:482 }
@@ -85,6 +85,15 @@ Collect even digits from the max anagram into a set, with their first position ,
 
 If the number contains a 0, the max anagram will be the one having a zero in digit[0], if it's not the input number, it's the solution.
 
+### How to find problems in the program?
+
+Create one or several oracles that you sufficiently trust. Compare the program's result with the oracles results for a large input set. Find discrepancies and explain them.
+Write unit tests for small procedures.
+Write assertions about what is assumed for each procedure to work.
+
+### How to avoid rewriting the program from scratch from a lack of trust in it?
+
+Do not write print statements to test values. Write unit tests instead.
 
 △
 
@@ -98,6 +107,7 @@ for a large number e.g 999988887777666655554444433333222211110000
 
 999 988 887 777 666 655 554 444 433 333 222 211 110 000
     
+
 
 this procedure:
 ```lisp
@@ -141,9 +151,9 @@ A number is divisible by:
 - 9, if the sum of the digits is divisible by 9.
 - 10, if the last digit is a 0.
 
-e.g 8470 is divisible by 7 ?  847 - 2 x 0 = 845
-e.g 2023 is divisible by 7 ?  202 - 2 x 3 = 196, 196 mod 7 = 0 
-e.g 49 is divisible by 7 ? 4 - 2 x 9 = -16
+e.g 8470 is divisible by 7?  847 - 2 x 0 = 845
+e.g 2023 is divisible by 7?  202 - 2 x 3 = 196, 196 mod 7 = 0 
+e.g 49 is divisible by 7? 4 - 2 x 9 = -16
 
 
 e.g : 35655243119027
@@ -213,11 +223,11 @@ problem: if N is 1000 digits long, the total number of permutations in 1000!, so
                 S = P ++ Q'
 
 
-problem : is N divisible by 7 ?
+problem : is N divisible by 7?
 if nb digits in N > 3 
     p1p2…pmpn remove last digit pn
     subtract q1q2 = 2pn from p1p2…pm
-    is M = r1r2…rm divisible by 7 ?
+    is M = r1r2…rm divisible by 7?
 else
     compute N rem 7
 
