@@ -16,4 +16,7 @@ random: spoj
 	sbcl --script build/spoj.lisp <../test/random.txt >result.txt
 	diff ../test/random-expected.txt result.txt
 
+clean:
+	rm -f result.txt
+
 
