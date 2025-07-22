@@ -67,12 +67,13 @@
              (assert-equal 4780 (next-anagram 4807))
              (assert-equal 4708 (next-anagram 4780))
              (assert-equal 4087 (next-anagram 4708))
+             (assert-equal 212 (next-anagram 221))
              )
 
 (define-test next-anagram-last-anagram
+             (assert-equal 0 (next-anagram 123456789))
              (assert-equal 0 (next-anagram 478))
              )
 
 (run-tests :all)
-; (run-tests '(next-anagram))
 (sb-ext:quit)
