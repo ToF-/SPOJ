@@ -76,3 +76,31 @@
         (format t "~A " n)
         (process (next-anagram n)))))
   (process (max-anagram n)))
+
+(defun remove-digits (target digits)
+  (if (null target)
+    digits
+    (if (find (car target) digits)
+      (remove-digits (cdr target) (remove (car target) digits :count 1))
+      nil)))
+
+(defun max-suffix (s f n)
+  (defun digits-aux (n c)
+    (if (= c 0)
+      ()
+      (multiple-value-bind (q r)
+        (truncate n 10)
+        (cons r (digits-aux q (- c 1))))))
+
+  (let* ((tgt (digits-aux f s))
+         (dgt (digits n))
+         (prefix (remove-digits tgt dgt)))
+    (if prefix
+      (number- (append tgt
+                        (max-subseq prefix (length prefix))))
+      0)))
+
+(defun max-suffixes (s fs n)
+  (car (sort
+         (mapcar #'(lambda (f) (max-suffix s f n)) fs)
+         #'>)))

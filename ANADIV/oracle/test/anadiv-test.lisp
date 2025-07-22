@@ -75,5 +75,31 @@
              (assert-equal 0 (next-anagram 478))
              )
 
+(define-test remove-digits
+             (assert-equal '(0 7) (remove-digits '(4 8) '(4 8 0 7)))
+             )
+
+(define-test remove-digits-missing-digit
+             (assert-equal nil (remove-digits '(4 9) '(4 8 0 7)))
+             )
+(define-test max-suffix
+             (assert-equal 7048 (max-suffix 2 48 4807))
+             (assert-equal 70048 (max-suffix 3 48 48007))
+             (assert-equal 87640351 (max-suffix 3 351 56148307))
+             )
+
+(define-test max-suffix-missing-digits
+             (assert-equal 0 (max-suffix 3 48 4817))
+             )
+(define-test max-suffixes
+             (assert-equal 8740 (max-suffixes 1 '(0 2 4 6 8) 4807))
+             (assert-equal 874 (max-suffixes 1 '(0 2 4 6 8) 487))
+             (assert-equal 86 (max-suffixes 1 '(0 2 4 6 8) 68))
+             (assert-equal 9877263 (max-suffixes 2 '(0 12 42 63 87) 6798732))
+             )
+(define-test max-suffixes-mising-digits
+             (assert-equal 0 (max-suffixes 1 '(0 2 4 6 8) 13579))
+             )
+
 (run-tests :all)
 (sb-ext:quit)
