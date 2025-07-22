@@ -80,7 +80,7 @@
              )
 
 (define-test remove-digits-missing-digit
-             (assert-equal nil (remove-digits '(4 9) '(4 8 0 7)))
+             (assert-equal '(-1) (remove-digits '(4 9) '(4 8 0 7)))
              )
 (define-test max-suffix
              (assert-equal 7048 (max-suffix 2 48 4807))
@@ -96,10 +96,48 @@
              (assert-equal 874 (max-suffixes 1 '(0 2 4 6 8) 487))
              (assert-equal 86 (max-suffixes 1 '(0 2 4 6 8) 68))
              (assert-equal 9877263 (max-suffixes 2 '(0 12 42 63 87) 6798732))
+             (assert-equal 8 (max-suffixes 1 '(0 2 4 6 8) 8))
              )
 (define-test max-suffixes-mising-digits
              (assert-equal 0 (max-suffixes 1 '(0 2 4 6 8) 13579))
              )
 
+(define-test max-anagram-multiple-of-1
+             (assert-equal 8740 (max-anagram-multiple 1 4807))
+             (assert-equal 9 (max-anagram-multiple 1 9))
+             )
+
+(define-test max-anagram-multiple-of-2
+             (assert-equal 8740 (max-anagram-multiple 2 4807))
+             (assert-equal 099888773210(max-anagram-multiple 2 38709871298))
+             (assert-equal 0 (max-anagram-multiple 2 173799955533311133))
+             (assert-equal 8 (max-anagram-multiple 2 8))
+             )
+
+(define-test max-anagram-multiple-of-3
+             (assert-equal 95433 (max-anagram-multiple 3 93543))
+             (assert-equal 0 (max-anagram-multiple 3 374))
+             )
+
+(define-test max-anagram-multiple-of-4
+             (assert-equal 8 (max-anagram-multiple 4 8))
+             (assert-equal 8740 (max-anagram-multiple 4 4807))
+             (assert-equal 7184 (max-anagram-multiple 4 4817))
+             (assert-equal 988888777743333120 (max-anagram-multiple 4 387908731873874328))
+             (assert-equal 0 (max-anagram-multiple 4 333))
+             )
+
+(define-test max-anagram-multiple-of-5
+             (assert-equal 5 (max-anagram-multiple 5 5))
+             (assert-equal 988888777743333210 (max-anagram-multiple 5 387908731873874328))
+             (assert-equal 0 (max-anagram-multiple 5 387481))
+             )
+
+(define-test max-anagram-multiple-of-6
+             (assert-equal 6 (max-anagram-multiple 6 6))
+             (assert-equal 12 (max-anagram-multiple 6 21))
+             (assert-equal 738 (max-anagram-multiple 6 783))
+             (assert-equal 0 (max-anagram-multiple 6 387481))
+             )
 (run-tests :all)
 (sb-ext:quit)

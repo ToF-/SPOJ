@@ -61,9 +61,11 @@
     0
     (+ (car d) (* 10 (number- (cdr d))))))
 
-(defun max-anagram (n)
+(defun max-anagram (n &key (predicate #'(lambda (x) t)))
   (let ((d (digits n)))
-    (number- (max-subseq d (length d)))))
+    (if (apply predicate (list d))
+      (number- (max-subseq d (length d)))
+      0)))
 
 (defun next-anagram (n)
   (number- (swap (to-swap (desc-prefix (digits n))))))
@@ -82,7 +84,7 @@
     digits
     (if (find (car target) digits)
       (remove-digits (cdr target) (remove (car target) digits :count 1))
-      nil)))
+      (list -1))))
 
 (defun max-suffix (s f n)
   (defun digits-aux (n c)
@@ -95,12 +97,26 @@
   (let* ((tgt (digits-aux f s))
          (dgt (digits n))
          (prefix (remove-digits tgt dgt)))
-    (if prefix
-      (number- (append tgt
-                        (max-subseq prefix (length prefix))))
-      0)))
+    (cond
+      ((equal prefix '(-1)) 0)
+      ((null prefix) f)
+      (t (number- (append tgt
+                        (max-subseq prefix (length prefix))))))))
 
 (defun max-suffixes (s fs n)
   (car (sort
          (mapcar #'(lambda (f) (max-suffix s f n)) fs)
          #'>)))
+
+(defparameter *multiples-4* (loop for f from 0 to 24 collect (* f 4)))
+
+(defun max-anagram-multiple (f n)
+ (cond
+   ((= 1 f) (max-anagram n))
+   ((= 2 f) (max-suffixes 1 '(0 2 4 6 8) n))
+   ((= 3 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0))))
+   ((= 4 f) (if (< n 10) (if (= (rem n 4) 0) n 0)
+              (max-suffixes 2 *multiples-4* n)))
+   ((= 5 f) (max-suffixes 1 '(0 5) n))
+   ((= 6 f) (max-suffixes 1 '(0 2 4 6 8) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0)))))
+   ))
