@@ -68,3 +68,11 @@
 (defun next-anagram (n)
   (number- (swap (to-swap (desc-prefix (digits n))))))
 
+(defun print-all-anagrams (n)
+  (defun process (n)
+    (if (= 0 n)
+      ()
+      (progn
+        (format t "~A " n)
+        (process (next-anagram n)))))
+  (process (max-anagram n)))
