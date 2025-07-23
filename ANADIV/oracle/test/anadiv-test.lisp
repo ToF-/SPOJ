@@ -139,5 +139,42 @@
              (assert-equal 738 (max-anagram-multiple 6 783))
              (assert-equal 0 (max-anagram-multiple 6 387481))
              )
+
+(define-test max-anagram-multiple-of-7
+            (assert-equal 7 (max-anagram-multiple 7 7))
+            (assert-equal 0 (max-anagram-multiple 7 131))
+            (assert-equal 971614 (max-anagram-multiple 7 971614))
+            (assert-equal 976115 (max-anagram-multiple 7 971615))
+            )
+
+(define-test max-anagram-multiple-of-8
+             (assert-equal 8 (max-anagram-multiple 8 8))
+             (assert-equal 0 (max-anagram-multiple 8 131))
+             (assert-equal 877432112 (max-anagram-multiple 8 211234778))
+             (assert-equal 777432112(max-anagram-multiple 8 211234777))
+             )
+
+(define-test max-anagram-multiple-of-9
+             (assert-equal 9 (max-anagram-multiple 9 9))
+             (assert-equal 9775443333321 (max-anagram-multiple 9 3337354374921))
+             (assert-equal 9775443321000 (max-anagram-multiple 9 3007354074921))
+             )
+
+(define-test max-anagram-multiple-of-10
+             (assert-equal 0 (max-anagram-multiple 10 8))
+             (assert-equal 8740 (max-anagram-multiple 10 4807))
+             (assert-equal 0 (max-anagram-multiple 10 4887))
+             )
+
+(define-test scan-input
+             (assert-equal '(4807 7) (scan-input "4807 7"))
+             (assert-equal '(380989734122308974510398734551098734512309875109875123 5)
+                           (scan-input "380989734122308974510398734551098734512309875109875123 5"))
+             )
+
+(define-test process-line
+             (assert-equal nil (process-line "4807 3")) ; should print -1
+             (assert-equal nil (process-line "4807 7")) ; shourd print 8470
+             )
 (run-tests :all)
 (sb-ext:quit)

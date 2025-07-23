@@ -168,3 +168,4 @@
             do (loop from k from 1 to 10
                      do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n)))))
     (format  t "usage: scbl --load series.lisp <start> <end>")))
+(series)
