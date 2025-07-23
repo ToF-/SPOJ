@@ -173,6 +173,20 @@
                      do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n))))
         (sb-ext:quit)))
     (progn
-      (format  t "usage: scbl --load series.lisp <start> <end>")
+      (format  t "usage: sbcl --load series.lisp <start> <end>")
       (sb-ext:quit))))
+
+(defun random- ()
+  (if (= (length *posix-argv*) 2)
+    (let ((counter (parse-integer (cadr *posix-argv*))))
+      (let ((n (random (expt 10 1000))))
+        (progn
+          (loop for i from 1 to counter
+                do (loop for k from 1 to 10
+                         do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n)))))
+        (sb-ext:quit)))
+    (progn
+      (format t "usage: sbcl -- load random.lisp <count>")
+      (sb-ext:quit))))
+        
 (series)

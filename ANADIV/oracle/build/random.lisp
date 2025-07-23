@@ -61,13 +61,10 @@
     0
     (+ (car d) (* 10 (number- (cdr d))))))
 
-(defun max-anagram (n &key (predicate #'(lambda (x) t)) strict)
+(defun max-anagram (n &key (predicate #'(lambda (x) t)))
   (let ((d (digits n)))
     (if (apply predicate (list d))
-      (let ((result (number- (max-subseq d (length d)))))
-        (if (and strict (= result n))
-          (next-anagram result)
-          result))
+      (number- (max-subseq d (length d)))
       0)))
 
 (defun next-anagram (n)
@@ -106,13 +103,10 @@
       (t (number- (append tgt
                         (max-subseq prefix (length prefix))))))))
 
-(defun max-suffixes (s fs n &key strict)
-  (let ((suffixes (mapcar #'(lambda (f) (max-suffix s f n)) fs)))
-    (car (sort
-           (if strict 
-             (remove-if #'(lambda (x) (= x n)) suffixes)
-             suffixes)
-         #'>))))
+(defun max-suffixes (s fs n)
+  (car (sort
+         (mapcar #'(lambda (f) (max-suffix s f n)) fs)
+         #'>)))
 
 (defparameter *multiples-4* (loop for f from 0 to 24 collect (* f 4)))
 (defparameter *multiples-8-2* (loop for f from 0 to 12 collect (* f 8)))
@@ -126,17 +120,14 @@
       (t (find-max-anagram (next-anagram n) (- counter 1)))))
     (find-max-anagram (max-anagram n) 150))
 
-(defun max-anagram-multiple (f n &key strict)
+(defun max-anagram-multiple (f n)
   (let ((result (cond
-                  ((= 1 f) (max-anagram n :strict strict))
-                  ((= 2 f) (let ((result (max-suffixes 1 '(0 2 4 6 8) n)))
-                             (if (and strict (= n result))
-                               (next-anagram result)
-                               result)))
-                  ((= 3 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0)) :strict strict))
-                  ((= 4 f) (if (< n 10) (if (and (= (rem n 4) 0) (not strict)) n 0)
-                             (max-suffixes 2 *multiples-4* n :strict strict)))
-                  ((= 5 f) (max-suffixes 1 '(0 5) n :strict strict))
+                  ((= 1 f) (max-anagram n))
+                  ((= 2 f) (max-suffixes 1 '(0 2 4 6 8) n))
+                  ((= 3 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0))))
+                  ((= 4 f) (if (< n 10) (if (= (rem n 4) 0) n 0)
+                             (max-suffixes 2 *multiples-4* n)))
+                  ((= 5 f) (max-suffixes 1 '(0 5) n))
                   ((= 6 f) (max-suffixes 1 '(0 2 4 6 8) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0)))))
                   ((= 7 f) (find-multiple-7 n))
                   ((= 8 f) (cond
@@ -198,3 +189,4 @@
       (format t "usage: sbcl -- load random.lisp <count>")
       (sb-ext:quit))))
         
+(random-)

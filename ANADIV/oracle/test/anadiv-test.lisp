@@ -107,6 +107,10 @@
              (assert-equal 9 (max-anagram-multiple 1 9))
              )
 
+(define-test max-anagram-multiple-of-1-strict
+             (assert-equal 8704 (max-anagram-multiple 1 8740 :strict t))
+             (assert-equal -1 (max-anagram-multiple 1 9 :strict t))
+             )
 (define-test max-anagram-multiple-of-2
              (assert-equal 8740 (max-anagram-multiple 2 4807))
              (assert-equal 099888773210(max-anagram-multiple 2 38709871298))
@@ -114,9 +118,18 @@
              (assert-equal 8 (max-anagram-multiple 2 8))
              )
 
+(define-test max-anagram-multiple-of-2-strict
+             (assert-equal -1 (max-anagram-multiple 2 8 :strict t))
+             (assert-equal 28 (max-anagram-multiple 2 82 :strict t))
+             )
 (define-test max-anagram-multiple-of-3
              (assert-equal 95433 (max-anagram-multiple 3 93543))
              (assert-equal -1 (max-anagram-multiple 3 374))
+             )
+
+(define-test max-anagram-multiple-of-3-strict
+             (assert-equal -1 (max-anagram-multiple 3 9 :strict t))
+             (assert-equal 95433 (max-anagram-multiple 3 93543 :strict t))
              )
 
 (define-test max-anagram-multiple-of-4
@@ -127,10 +140,21 @@
              (assert-equal -1 (max-anagram-multiple 4 333))
              )
 
+(define-test max-anagram-multiple-of-4-strict
+             (assert-equal -1 (max-anagram-multiple 4 8 :strict t))
+             (assert-equal 8704 (max-anagram-multiple 4 8740 :strict t))
+             )
+
 (define-test max-anagram-multiple-of-5
              (assert-equal 5 (max-anagram-multiple 5 5))
              (assert-equal 988888777743333210 (max-anagram-multiple 5 387908731873874328))
              (assert-equal -1 (max-anagram-multiple 5 387481))
+             )
+
+(define-test max-anagram-multiple-of-5-strict
+             (assert-equal -1 (max-anagram-multiple 5 5 :strict t))
+             (assert-equal -1 (max-anagram-multiple 5 55555 :strict t))
+             (assert-equal -1 (max-anagram-multiple 5 98760 :strict t))
              )
 
 (define-test max-anagram-multiple-of-6
