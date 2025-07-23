@@ -12,6 +12,10 @@ series:
 	echo "(series)" >>build/series.lisp
 
 series-large: series
-	sbcl --noinform --load build/series.lisp 1 100000
+	sbcl --noinform --load build/series.lisp 100000 200000 >result.txt
+	sed -E 's/^([0-9]+) ([0-9]+):.*/\1 \2/' result.txt > ../test/series-cases.txt
+	sed -E 's/^[0-9]+ [0-9]+://' result.txt > ../test/series-expected.txt
+
+
 
 

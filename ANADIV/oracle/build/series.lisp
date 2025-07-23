@@ -109,7 +109,8 @@
          #'>)))
 
 (defparameter *multiples-4* (loop for f from 0 to 24 collect (* f 4)))
-(defparameter *multiples-8* (loop for f from 0 to 124 collect (* f 8)))
+(defparameter *multiples-8-2* (loop for f from 0 to 12 collect (* f 8)))
+(defparameter *multiples-8-3* (loop for f from 0 to 124 collect (* f 8)))
 
 (defun find-multiple-7 (n)
   (defun find-max-anagram (n counter)
@@ -129,8 +130,10 @@
                   ((= 5 f) (max-suffixes 1 '(0 5) n))
                   ((= 6 f) (max-suffixes 1 '(0 2 4 6 8) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0)))))
                   ((= 7 f) (find-multiple-7 n))
-                  ((= 8 f) (if (< n 100) (if (= (rem n 8) 0) n 0)
-                             (max-suffixes 3 *multiples-8* n)))
+                  ((= 8 f) (cond
+                             ((< n 10) (if (= (rem n 8) 0) n 0))
+                             ((< n 100) (max-suffixes 2 *multiples-8-2* n))
+                             (t (max-suffixes 3 *multiples-8-3* n))))
                   ((= 9 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 9) 0))))
                   ((= 10 f) (max-suffixes 1 '(0) n))
                   )))

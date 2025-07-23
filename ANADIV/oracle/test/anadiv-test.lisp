@@ -150,6 +150,7 @@
 (define-test max-anagram-multiple-of-8
              (assert-equal 8 (max-anagram-multiple 8 8))
              (assert-equal -1 (max-anagram-multiple 8 131))
+             (assert-equal 32 (max-anagram-multiple 8 23))
              (assert-equal 877432112 (max-anagram-multiple 8 211234778))
              (assert-equal 777432112(max-anagram-multiple 8 211234777))
              )

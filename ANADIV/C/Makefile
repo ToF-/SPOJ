@@ -56,4 +56,8 @@ random: spoj
 	bin/spoj <../test/random.txt >result.txt
 	diff ../test/random-expected.txt result.txt
 
+series: spoj
+	bin/spoj <../test/series-cases.txt >result.txt
+	diff ../test/series-expected.txt result.txt
+
 
