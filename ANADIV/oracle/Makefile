@@ -11,3 +11,7 @@ series:
 	cat src/anadiv.lisp >build/series.lisp
 	echo "(series)" >>build/series.lisp
 
+series-large: series
+	sbcl --noinform --load build/series.lisp 1 100000
+
+

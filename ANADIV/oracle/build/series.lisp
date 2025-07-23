@@ -120,20 +120,21 @@
     (find-max-anagram (max-anagram n) 150))
 
 (defun max-anagram-multiple (f n)
- (cond
-   ((= 1 f) (max-anagram n))
-   ((= 2 f) (max-suffixes 1 '(0 2 4 6 8) n))
-   ((= 3 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0))))
-   ((= 4 f) (if (< n 10) (if (= (rem n 4) 0) n 0)
-              (max-suffixes 2 *multiples-4* n)))
-   ((= 5 f) (max-suffixes 1 '(0 5) n))
-   ((= 6 f) (max-suffixes 1 '(0 2 4 6 8) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0)))))
-   ((= 7 f) (find-multiple-7 n))
-   ((= 8 f) (if (< n 100) (if (= (rem n 8) 0) n 0)
-              (max-suffixes 3 *multiples-8* n)))
-   ((= 9 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 9) 0))))
-   ((= 10 f) (max-suffixes 1 '(0) n))
-   ))
+  (let ((result (cond
+                  ((= 1 f) (max-anagram n))
+                  ((= 2 f) (max-suffixes 1 '(0 2 4 6 8) n))
+                  ((= 3 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0))))
+                  ((= 4 f) (if (< n 10) (if (= (rem n 4) 0) n 0)
+                             (max-suffixes 2 *multiples-4* n)))
+                  ((= 5 f) (max-suffixes 1 '(0 5) n))
+                  ((= 6 f) (max-suffixes 1 '(0 2 4 6 8) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0)))))
+                  ((= 7 f) (find-multiple-7 n))
+                  ((= 8 f) (if (< n 100) (if (= (rem n 8) 0) n 0)
+                             (max-suffixes 3 *multiples-8* n)))
+                  ((= 9 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 9) 0))))
+                  ((= 10 f) (max-suffixes 1 '(0) n))
+                  )))
+    (if (> result 0) result -1)))
 
 (defun scan-input (line)
   (defun split-string (s)
@@ -148,10 +149,9 @@
          (n (car input))
          (f (cadr input))
          (r (max-anagram-multiple f n)))
-    (if (> r 0)
-      (princ r)
-      (princ -1))
-    (terpri)))
+      (progn 
+        (princ (max-anagram-multiple f n))
+        (terpri))))
 
 (defun process ()
   (handler-case
@@ -164,8 +164,12 @@
   (if (= (length *posix-argv*) 3)
     (let ((start (parse-integer (cadr *posix-argv*)))
           (end (parse-integer (caddr *posix-argv*))))
-      (loop for n from start to end
-            do (loop from k from 1 to 10
-                     do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n)))))
-    (format  t "usage: scbl --load series.lisp <start> <end>")))
+      (progn
+        (loop for n from start to end
+            do (loop for k from 1 to 10
+                     do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n))))
+        (sb-ext:quit)))
+    (progn
+      (format  t "usage: scbl --load series.lisp <start> <end>")
+      (sb-ext:quit))))
 (series)
