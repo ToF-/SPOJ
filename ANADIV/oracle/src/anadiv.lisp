@@ -12,10 +12,13 @@
     '(0)
     (digits-aux n)))
 
-(defun max-subseq (l n)
+(defun reorder-subseq (l n)
   (append
     (sort (subseq l 0 n) #'<)
     (subseq l n)))
+
+(defun reorder-seq (l)
+  (reorder-subseq l (length l)))
 
 (defun desc-prefix (l)
   (defun desc-prefix-aux (l prefix)
@@ -53,7 +56,7 @@
     nil
     (let ((prefix (car sp))
           (suffix (cdr sp)))
-      (append (max-subseq (cons (car suffix) (cdr prefix)) (length prefix))
+      (append (reorder-seq (cons (car suffix) (cdr prefix)))
               (cons (car prefix) (cdr suffix))))))
 
 (defun number- (d)
@@ -64,7 +67,7 @@
 (defun max-anagram (n &key (predicate #'(lambda (x) t)) strict)
   (let ((d (digits n)))
     (if (apply predicate (list d))
-      (let ((result (number- (max-subseq d (length d)))))
+      (let ((result (number- (reorder-subseq d (length d)))))
         (if (and strict (= result n))
           (next-anagram result)
           result))
@@ -89,7 +92,10 @@
       (remove-digits (cdr target) (remove (car target) digits :count 1))
       (list -1))))
 
-(defun max-suffix (s f n)
+; return the maximum anagram of n | f of size s is a suffix of n
+; e.g (max-suffix (3 96 14069)) → 41096 because 096 is a suffix of n and 41096 > 14096
+; e.g (max-suffix (3 96 41096 :strict t)) → 14096 because 096 is a suffix of n and 14096 ≠ 14096
+(defun max-suffix (s f n &key strict)
   (defun digits-aux (n c)
     (if (= c 0)
       ()
@@ -102,12 +108,18 @@
          (prefix (remove-digits tgt dgt)))
     (cond
       ((equal prefix '(-1)) 0)
-      ((null prefix) f)
-      (t (number- (append tgt
-                        (max-subseq prefix (length prefix))))))))
+      ((null prefix) (if (= f n) (if strict 0 f)))
+      (t (let ((result (number- (append tgt (reorder-subseq prefix (length prefix))))))
+              (if (/= result n)
+                result
+                (if strict
+                  0
+                  (next-anagram result))))))))
 
 (defun max-suffixes (s fs n &key strict)
-  (let ((suffixes (mapcar #'(lambda (f) (max-suffix s f n)) fs)))
+  (let ((suffixes (mapcar #'(lambda (f) (max-suffix s f n :strict strict)) fs)))
+    (format t "(max-suffixes (~A ~A ~A ~A)~%" s fs n strict)
+    (format t "~A~%" suffixes)
     (car (sort
            (if strict 
              (remove-if #'(lambda (x) (= x n)) suffixes)
@@ -129,7 +141,7 @@
 (defun max-anagram-multiple (f n &key strict)
   (let ((result (cond
                   ((= 1 f) (max-anagram n :strict strict))
-                  ((= 2 f) (let ((result (max-suffixes 1 '(0 2 4 6 8) n)))
+                  ((= 2 f) (let ((result (max-suffixes 1 '(0 2 4 6 8) n :strict strict)))
                              (if (and strict (= n result))
                                (next-anagram result)
                                result)))

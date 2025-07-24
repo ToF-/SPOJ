@@ -13,13 +13,13 @@
               (assert-equal '(0) (digits 0))
               )
 
-(define-test max-subseq-on-full-length
-             (assert-equal '(0 4 7 8) (max-subseq '(4 8 0 7) 4))
+(define-test reorder-subseq
+             (assert-equal '(4 8 0 7) (reorder-subseq '(8 4 0 7) 2))
+             (assert-equal '(0 2 3 1 9) (reorder-subseq '(2 0 3 1 9) 3))
              )
 
-(define-test max-subseq-on-partial-length
-             (assert-equal '(4 8 0 7) (max-subseq '(8 4 0 7) 2))
-             (assert-equal '(0 2 3 1 9) (max-subseq '(2 0 3 1 9) 3))
+(define-test reorder-seq
+             (assert-equal '(0 4 7 8) (reorder-seq '(4 8 0 7)))
              )
 
 (define-test desc-prefix-full-length
@@ -121,6 +121,8 @@
 (define-test max-anagram-multiple-of-2-strict
              (assert-equal -1 (max-anagram-multiple 2 8 :strict t))
              (assert-equal 28 (max-anagram-multiple 2 82 :strict t))
+             (assert-equal 68 (max-anagram-multiple 2 86 :strict t))
+             (assert-equal 418  (max-anagram-multiple 2 814 :strict t))
              (assert-equal 8704 (max-anagram-multiple 2 8740 :strict t))
              )
 (define-test max-anagram-multiple-of-3
@@ -202,5 +204,6 @@
              (assert-equal nil (process-line "4807 3")) ; should print -1
              (assert-equal nil (process-line "4807 7")) ; shourd print 8470
              )
-(run-tests :all)
+; (run-tests :all)
+(run-tests '(digits reorder-subseq reorder-seq))
 (sb-ext:quit)
