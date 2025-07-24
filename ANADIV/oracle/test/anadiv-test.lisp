@@ -13,6 +13,25 @@
               (assert-equal '(0) (digits 0))
               )
 
+(define-test digits-within-size
+             (assert-equal '(0 0 0) (digits 0 3))
+             (assert-equal '(8 0 0 0) (digits 8 4))
+             (assert-equal '(6 9) (digits 96 1))
+             (assert-equal '(0 4) (digits 40 2))
+             )
+
+(define-test remove-digits
+             (assert-equal '(0 7) (remove-digits '(4 8) '(4 8 0 7)))
+             )
+
+(define-test remove-digits-missing-digit
+             (assert-equal '(-1) (remove-digits '(4 9) '(4 8 0 7)))
+             )
+
+(define-test remove-digits-no-digits-to-remove
+             (assert-equal '(4 8 0 7) (remove-digits '() '(4 8 0 7)))
+             )
+
 (define-test sort-prefix
              (assert-equal '(4 8 0 7) (sort-prefix '(8 4 0 7) 2))
              (assert-equal '(0 2 3 1 9) (sort-prefix '(2 0 3 1 9) 3))
@@ -59,9 +78,20 @@
              (assert-equal 4807 (number- '(7 0 8 4)))
              )
 
-(define-test max-anagram-of-no-prefix
+(define-test max-anagram-of-no-prefix-no-strict
+             (assert-equal 5 (max-anagram-of 0 0 5 nil))
              (assert-equal 8740 (max-anagram-of 0 0 4807 nil))
              )
+
+(define-test max-anagram-of-no-prefix-strict
+             (assert-equal 0 (max-anagram-of 0 0 5 t))
+             (assert-equal 8704 (max-anagram-of 0 0 8740 t))
+             )
+
+(define-test max-anagram-of-single-digit-prefix-no-strict
+             (assert-equal 28 (max-anagram-of 8 1 28 nil))
+             )
+
 (define-test max-anagram
              (assert-equal 98740 (max-anagram 48097))
              )
@@ -78,13 +108,6 @@
              (assert-equal 0 (next-anagram 478))
              )
 
-(define-test remove-digits
-             (assert-equal '(0 7) (remove-digits '(4 8) '(4 8 0 7)))
-             )
-
-(define-test remove-digits-missing-digit
-             (assert-equal '(-1) (remove-digits '(4 9) '(4 8 0 7)))
-             )
 (define-test max-suffix
              (assert-equal 7048 (max-suffix 2 48 4807))
              (assert-equal 70048 (max-suffix 3 48 48007))
@@ -209,6 +232,10 @@
              )
 ; (run-tests :all)
 (run-tests '(digits
+              digits-within-size
+              remove-digits
+              remove-digits-missing-digit
+              remove-digits-no-digits-to-remove
               sort-prefix
               sort-all
               desc-prefix-full-length
@@ -219,6 +246,8 @@
               swap
               swap-nil
               number-
-              max-anagram-of-no-prefix
+              max-anagram-of-no-prefix-no-strict
+              max-anagram-of-no-prefix-strict
+              max-anagram-of-single-digit-prefix-no-strict
               ))
 (sb-ext:quit)

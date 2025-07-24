@@ -3,7 +3,9 @@
 
 ; returns the digits of a number in reverse order of rank
 ; e.g. (digits 4807) → '(7 0 8 4)
-(defun digits (n)
+; given an optional size, pads digits with zeroes
+; e.g. (digits 4807 7) → '(7 0 8 4 0 0 0)
+(defun digits (n &optional size)
 
   (defun digits-aux (n)
     (if (= n 0)
@@ -12,9 +14,19 @@
         (truncate n 10)
         (cons r (digits-aux q)))))
 
-  (if (= n 0)
-    '(0)
-    (digits-aux n)))
+  (let* ((r (if (= n 0) '(0) (digits-aux n)))
+         (s (if size (- size (length r)) 0)))
+    (append r (loop repeat s collect 0))))
+
+; remove the digits in targets from the digit list
+; e.g. (remove-digits '(4 7) '(4 8 0 7)) → '(8 0)
+; e.g. (remove-digits '(4 9) '(4 8 0 7)) → nil
+; e.g. (remove-digits '() '(4 8 0 7)) → '(4 8 0 7)
+(defun remove-digits (tg l)
+  (cond
+    ((null tg) l)
+    ((find (car tg) l) (remove-digits (cdr tg) (remove (car tg) l :count 1)))
+    (t (list -1))))
 
 ; sort in ascending order a prefix of a list
 ; e.g. (sort-prefix '(7 0 8 4) 3) → '(0 7 8 4)
@@ -92,8 +104,11 @@
 ;      (max-anagram-of 0 0 4807 nil) → 8740
 ;      (max-anagram-of 0 0 8740 t) → 8704
 (defun max-anagram-of (m s n st)
-    8740
-  )
+  (let* ((r (number- (sort-all (digits n)))))
+    (cond
+      ((and (= r n) st) (number- (swap (to-swap (desc-prefix (digits n))))))
+      (t r)
+      )))
 
 (defun max-anagram (n &key (predicate #'(lambda (x) t)) strict)
   (let ((d (digits n)))
@@ -115,13 +130,6 @@
         (format t "~A " n)
         (process (next-anagram n)))))
   (process (max-anagram n)))
-
-(defun remove-digits (target digits)
-  (if (null target)
-    digits
-    (if (find (car target) digits)
-      (remove-digits (cdr target) (remove (car target) digits :count 1))
-      (list -1))))
 
 ; return the maximum anagram of n | f of size s is a suffix of n
 ; e.g (max-suffix (3 96 14069)) → 41096 because 096 is a suffix of n and 41096 > 14096

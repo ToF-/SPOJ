@@ -54,12 +54,11 @@ max-anagram-multiple-of-6	test/anadiv-test.lisp	/^(define-test max-anagram-multi
 max-anagram-multiple-of-7	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-7$/;"	f
 max-anagram-multiple-of-8	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-8$/;"	f
 max-anagram-multiple-of-9	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-9$/;"	f
+max-anagram-of	src/anadiv.lisp	/^(defun max-anagram-of (m s n st)$/;"	f
+max-anagram-of-no-prefix	test/anadiv-test.lisp	/^(define-test max-anagram-of-no-prefix$/;"	f
 max-subseq	build/oracle.lisp	/^(defun max-subseq (l n)$/;"	f
 max-subseq	build/random.lisp	/^(defun max-subseq (l n)$/;"	f
 max-subseq	build/series.lisp	/^(defun max-subseq (l n)$/;"	f
-max-subseq	src/anadiv.lisp	/^(defun max-subseq (l n)$/;"	f
-max-subseq-on-full-length	test/anadiv-test.lisp	/^(define-test max-subseq-on-full-length$/;"	f
-max-subseq-on-partial-length	test/anadiv-test.lisp	/^(define-test max-subseq-on-partial-length$/;"	f
 max-suffix	build/oracle.lisp	/^(defun max-suffix (s f n)$/;"	f
 max-suffix	build/random.lisp	/^(defun max-suffix (s f n)$/;"	f
 max-suffix	build/series.lisp	/^(defun max-suffix (s f n)$/;"	f
@@ -113,6 +112,10 @@ scan-input	test/anadiv-test.lisp	/^(define-test scan-input$/;"	f
 series	build/random.lisp	/^(defun series ()$/;"	f
 series	build/series.lisp	/^(defun series ()$/;"	f
 series	src/anadiv.lisp	/^(defun series ()$/;"	f
+sort-all	src/anadiv.lisp	/^(defun sort-all (l)$/;"	f
+sort-all	test/anadiv-test.lisp	/^(define-test sort-all$/;"	f
+sort-prefix	src/anadiv.lisp	/^(defun sort-prefix (l n)$/;"	f
+sort-prefix	test/anadiv-test.lisp	/^(define-test sort-prefix$/;"	f
 swap	build/oracle.lisp	/^(defun swap (sp)$/;"	f
 swap	build/random.lisp	/^(defun swap (sp)$/;"	f
 swap	build/series.lisp	/^(defun swap (sp)$/;"	f
