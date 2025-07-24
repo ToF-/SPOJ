@@ -13,13 +13,13 @@
               (assert-equal '(0) (digits 0))
               )
 
-(define-test reorder-subseq
-             (assert-equal '(4 8 0 7) (reorder-subseq '(8 4 0 7) 2))
-             (assert-equal '(0 2 3 1 9) (reorder-subseq '(2 0 3 1 9) 3))
+(define-test sort-prefix
+             (assert-equal '(4 8 0 7) (sort-prefix '(8 4 0 7) 2))
+             (assert-equal '(0 2 3 1 9) (sort-prefix '(2 0 3 1 9) 3))
              )
 
-(define-test reorder-seq
-             (assert-equal '(0 4 7 8) (reorder-seq '(4 8 0 7)))
+(define-test sort-all
+             (assert-equal '(0 4 7 8) (sort-all '(4 8 0 7)))
              )
 
 (define-test desc-prefix-full-length
@@ -205,5 +205,15 @@
              (assert-equal nil (process-line "4807 7")) ; shourd print 8470
              )
 ; (run-tests :all)
-(run-tests '(digits reorder-subseq reorder-seq))
+(run-tests '(digits
+              sort-prefix
+              sort-all
+              desc-prefix-full-length
+              desc-prefix-partial-length
+              to-swap
+              to-swap-single-pivot
+              to-swap-full-length-prefix
+              swap
+              swap-nil
+              number-))
 (sb-ext:quit)

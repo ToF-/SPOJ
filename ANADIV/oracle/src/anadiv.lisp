@@ -1,48 +1,58 @@
 ; anadiv.lisp
 
 
+; returns the digits of a number in reverse order of rank
+; e.g. (digits 4807) → '(7 0 8 4)
 (defun digits (n)
+
   (defun digits-aux (n)
     (if (= n 0)
       ()
       (multiple-value-bind (q r)
         (truncate n 10)
         (cons r (digits-aux q)))))
+
   (if (= n 0)
     '(0)
     (digits-aux n)))
 
-(defun reorder-subseq (l n)
-  (append
-    (sort (subseq l 0 n) #'<)
-    (subseq l n)))
+; sort in ascending order a prefix of a list
+; e.g. (sort-prefix '(7 0 8 4) 3) → '(0 7 8 4)
+(defun sort-prefix (l n)
+  (append (sort-all (subseq l 0 n))
+          (subseq l n)))
 
-(defun reorder-seq (l)
-  (reorder-subseq l (length l)))
+(defun sort-all (l)
+  (sort l #'<))
 
+
+; isolate the longest descending prefix of a list
+; e.g. (desc-prefix '(7 2 3 4) → '((7 2) 3 4)
 (defun desc-prefix (l)
-  (defun desc-prefix-aux (l prefix)
+
+  (defun desc-prefix-aux (l p)
     (cond
-      ((null l)
-       (cons (reverse prefix) l))
-      ((null prefix)
-       (desc-prefix-aux (cdr l) (cons (car l) prefix)))
-      ((<= (car l) (car prefix))
-       (desc-prefix-aux (cdr l) (cons (car l) prefix)))
-      (t
-        (cons (reverse prefix) l))))
-  (desc-prefix-aux l ()))
+      ((null l) (cons (reverse p) l))
+      ((> (car l) (car p)) (cons (reverse p) l))
+      (t  (desc-prefix-aux (cdr l) (cons (car l) p)))))
 
+  (desc-prefix-aux (cdr l) (list (car l))))
 
+; given a prefix and the rest of a list puts the digits to swap
+; at front of prefix and rest respectively
+; e.g. '((7 0) 4 8) → '((0 7) 4 8) because 0 and 4 must be swapped 
 (defun to-swap (sp)
   ; find in the ordered prefix the max digit < limit
   ; starts with pivot = first digit of prefix
   (defun find-pivot (prefix limit pivot result)
+    (let ((c (car prefix))
+          (cs (cdr prefix)))
     (cond
       ((null prefix) (cons pivot result))
-      ((>= (car prefix) limit) (find-pivot (cdr prefix) limit pivot (cons (car prefix) result)))
-      ((> (car prefix) pivot) (find-pivot (cdr prefix) limit (car prefix) (cons pivot result)))
-      ((<= (car prefix) pivot) (find-pivot (cdr prefix) limit pivot (cons (car prefix) result)))))
+      ((>= c limit) (find-pivot cs limit pivot (cons c result)))
+      ((> c pivot) (find-pivot cs limit c (cons pivot result)))
+      ((<= c pivot) (find-pivot cs limit pivot (cons c result))))))
+
   (if (null (cdr sp))
     nil
     (let ((prefix (sort (car sp) #'<))
@@ -56,7 +66,7 @@
     nil
     (let ((prefix (car sp))
           (suffix (cdr sp)))
-      (append (reorder-seq (cons (car suffix) (cdr prefix)))
+      (append (sort-all (cons (car suffix) (cdr prefix)))
               (cons (car prefix) (cdr suffix))))))
 
 (defun number- (d)
@@ -67,7 +77,7 @@
 (defun max-anagram (n &key (predicate #'(lambda (x) t)) strict)
   (let ((d (digits n)))
     (if (apply predicate (list d))
-      (let ((result (number- (reorder-subseq d (length d)))))
+      (let ((result (number- (sort-prefix d (length d)))))
         (if (and strict (= result n))
           (next-anagram result)
           result))
@@ -109,7 +119,7 @@
     (cond
       ((equal prefix '(-1)) 0)
       ((null prefix) (if (= f n) (if strict 0 f)))
-      (t (let ((result (number- (append tgt (reorder-subseq prefix (length prefix))))))
+      (t (let ((result (number- (append tgt (sort-prefix prefix (length prefix))))))
               (if (/= result n)
                 result
                 (if strict
