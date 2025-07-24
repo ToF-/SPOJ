@@ -40,8 +40,9 @@
 
 ; given a prefix and the rest of a list puts the digits to swap
 ; at front of prefix and rest respectively
-; e.g. '((7 0) 4 8) → '((0 7) 4 8) because 0 and 4 must be swapped 
+; e.g. '(to-swap ((7 0) 4 8)) → '((0 7) 4 8) because 0 and 4 must be swapped 
 (defun to-swap (sp)
+
   ; find in the ordered prefix the max digit < limit
   ; starts with pivot = first digit of prefix
   (defun find-pivot (prefix limit pivot result)
@@ -55,12 +56,15 @@
 
   (if (null (cdr sp))
     nil
-    (let ((prefix (sort (car sp) #'<))
+    (let ((prefix (sort-all (car sp)))
           (limit (cadr sp)))
       (cons
         (find-pivot (cdr prefix) limit (car prefix) ())
         (cdr sp)))))
 
+; given an ordered prefix and the rest of a list swaps the first digit of each
+; then reorder the prefix
+; e.g. '(swap ((5 2 7) 6 8)) → '(2 6 7 5 8)
 (defun swap (sp)
   (if (null sp)
     nil
@@ -69,10 +73,27 @@
       (append (sort-all (cons (car suffix) (cdr prefix)))
               (cons (car prefix) (cdr suffix))))))
 
+; given a list of digits returns the number 
 (defun number- (d)
   (if (null d)
     0
     (+ (car d) (* 10 (number- (cdr d))))))
+
+; given a prefix of a given size in digits, a number, and a strict boolean flag
+; returns the max anagram of n with the same prefix as m if no strict 
+; returns the next anagram of n with the same prefix as m if strict
+; returns 0 if no anagram of n can have the prefix
+; returns 0 if n equals the only anagram with this prefix
+; e.g. (max-anagram-of 24 2 4827 nil) → 8724
+;      (max-anagram-of 7 2 8407 t)   → 4807
+;      (max-anagram-of 3 1 4807 nil) → 0
+;      (max-anagram-of 5 1 15 nil) → 15
+;      (max-anagram-of 5 1 15 t) → 0
+;      (max-anagram-of 0 0 4807 nil) → 8740
+;      (max-anagram-of 0 0 8740 t) → 8704
+(defun max-anagram-of (m s n st)
+    8740
+  )
 
 (defun max-anagram (n &key (predicate #'(lambda (x) t)) strict)
   (let ((d (digits n)))
@@ -119,7 +140,7 @@
     (cond
       ((equal prefix '(-1)) 0)
       ((null prefix) (if (= f n) (if strict 0 f)))
-      (t (let ((result (number- (append tgt (sort-prefix prefix (length prefix))))))
+      (t (let ((result (number- (append tgt (sort-all prefix)))))
               (if (/= result n)
                 result
                 (if strict

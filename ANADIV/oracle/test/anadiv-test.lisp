@@ -59,6 +59,9 @@
              (assert-equal 4807 (number- '(7 0 8 4)))
              )
 
+(define-test max-anagram-of-no-prefix
+             (assert-equal 8740 (max-anagram-of 0 0 4807 nil))
+             )
 (define-test max-anagram
              (assert-equal 98740 (max-anagram 48097))
              )
@@ -215,5 +218,7 @@
               to-swap-full-length-prefix
               swap
               swap-nil
-              number-))
+              number-
+              max-anagram-of-no-prefix
+              ))
 (sb-ext:quit)
