@@ -196,10 +196,6 @@
              (assert-equal 98670 (max-anagram-multiple 5 98760 :strict t))
              )
 
-(define-test max-anagram-of-with-a-condition
-             (assert-equal 0 (max-anagram-of 0 0 4807 nil (lambda (n) (= (rem n 7) 0))))
-             (assert-equal 4809 (max-anagram-of 0 0 4809 nil (lambda (n) (= (rem n 7) 0))))
-             )
 ; (define-test max-anagram-multiple-of-6
 ;              (assert-equal 6 (max-anagram-multiple 6 6))
 ;              (assert-equal 12 (max-anagram-multiple 6 21))

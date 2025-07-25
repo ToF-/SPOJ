@@ -109,24 +109,21 @@
 ;      (max-anagram-of 5 1 15 t) → 0
 ;      (max-anagram-of 0 0 4807 nil) → 8740
 ;      (max-anagram-of 0 0 8740 t) → 8704
-(defun max-anagram-of (m s n st &optional p)
+(defun max-anagram-of (m s n st)
   (format t "(max-anagram-of ~A ~A ~A ~A)~%" m s n st) 
   (let* ((ms (digits m s))
          (ns (digits n))
          (ss (remove-digits ms ns)))
-      (let ((r (to-number (append ms (sort-all ss)))))
-        (progn
-          (cond
-            ((equal '(-1) ss) 0)
-            ((and p (not (funcall p r))) 0)
-            ((and st (= r n))
-             (let* ((na (swap (to-swap (desc-prefix (sort-all ss)))))
-                    (nr (to-number (append ms na))))
-               (cond
-                 ((and na (not p)) nr)
-                 ((and na p (funcall p nr)) nr)
-                 (t 0))))
-            (t r))))))
+    (let ((r (to-number (append ms (sort-all ss)))))
+      (cond
+        ((equal '(-1) ss) 0)
+        ((and st (= r n))
+         (let ((na (swap (to-swap (desc-prefix (sort-all ss))))))
+           (if na
+             (to-number (append ms na))
+             0)))
+        (t r)))))
+
 ; given a list of prefixes of a given size in digits, a number, and a strict boolean flag
 ; return the max anagram of all possible numbers with the same prefix as m
 ; e.g. (max-anagram-of-all '(0 2 4 6 8) 2 4807 nil) → 8740
