@@ -123,11 +123,11 @@
 (define-test max-anagram-of-all-a-list-of-multiples-no-strict
              (assert-equal 8874312 (max-anagram-of-all *multiples-2* 1 1234788 nil))
              (assert-equal 8504 (max-anagram-of-all *multiples-8-3* 3 4805 nil))
-             (assert-equal 984 (max-anagram-of-all *multiples-4* 2 489 nil))
+             (assert-equal 984 (max-anagram-of-all *multiples-4-2* 2 489 nil))
              )
 
 (define-test max-anagram-of-all-a-list-of-multiples-strict
-             (assert-equal 948 (max-anagram-of-all *multiples-4* 2 984 t))
+             (assert-equal 948 (max-anagram-of-all *multiples-4-2* 2 984 t))
              (assert-equal 9784 (max-anagram-of-all *multiples-2* 1 9874 t))
              (assert-equal 0 (max-anagram-of-all *multiples-2* 1 7772 t))
              )
@@ -136,65 +136,70 @@
              (assert-equal 0 (max-anagram-of-all *multiples-8-3* 3 777777 t))
              )
 
-; (define-test max-anagram-multiple-of-1
-;              (assert-equal 8740 (max-anagram-multiple 1 4807))
-;              (assert-equal 9 (max-anagram-multiple 1 9))
-;              )
-; 
-; (define-test max-anagram-multiple-of-1-strict
-;              (assert-equal 8704 (max-anagram-multiple 1 8740 :strict t))
-;              (assert-equal -1 (max-anagram-multiple 1 9 :strict t))
-;              )
-; 
-; (define-test max-anagram-multiple-of-2
-;              (assert-equal 8740 (max-anagram-multiple 2 4807))
-;              (assert-equal 099888773210(max-anagram-multiple 2 38709871298))
-;              (assert-equal -1 (max-anagram-multiple 2 173799955533311133))
-;              (assert-equal 8 (max-anagram-multiple 2 8))
-;              )
-; 
-; (define-test max-anagram-multiple-of-2-strict
-;              (assert-equal -1 (max-anagram-multiple 2 8 :strict t))
-;              (assert-equal 28 (max-anagram-multiple 2 82 :strict t))
-;              (assert-equal 68 (max-anagram-multiple 2 86 :strict t))
-;              (assert-equal 418  (max-anagram-multiple 2 814 :strict t))
-;              (assert-equal 8704 (max-anagram-multiple 2 8740 :strict t))
-;              )
-; (define-test max-anagram-multiple-of-3
-;              (assert-equal 95433 (max-anagram-multiple 3 93543))
-;              (assert-equal -1 (max-anagram-multiple 3 374))
-;              )
-; 
-; (define-test max-anagram-multiple-of-3-strict
-;              (assert-equal -1 (max-anagram-multiple 3 9 :strict t))
-;              (assert-equal 95343 (max-anagram-multiple 3 95433 :strict t))
-;              )
-; 
-; (define-test max-anagram-multiple-of-4
-;              (assert-equal 8 (max-anagram-multiple 4 8))
-;              (assert-equal 8740 (max-anagram-multiple 4 4807))
-;              (assert-equal 7184 (max-anagram-multiple 4 4817))
-;              (assert-equal 988888777743333120 (max-anagram-multiple 4 387908731873874328))
-;              (assert-equal -1 (max-anagram-multiple 4 333))
-;              )
-; 
-; (define-test max-anagram-multiple-of-4-strict
-;              (assert-equal -1 (max-anagram-multiple 4 8 :strict t))
-;              (assert-equal 8704 (max-anagram-multiple 4 8740 :strict t))
-;              )
-; 
-; (define-test max-anagram-multiple-of-5
-;              (assert-equal 5 (max-anagram-multiple 5 5))
-;              (assert-equal 988888777743333210 (max-anagram-multiple 5 387908731873874328))
-;              (assert-equal -1 (max-anagram-multiple 5 387481))
-;              )
-; 
-; (define-test max-anagram-multiple-of-5-strict
-;              (assert-equal -1 (max-anagram-multiple 5 5 :strict t))
-;              (assert-equal -1 (max-anagram-multiple 5 55555 :strict t))
-;              (assert-equal 98670 (max-anagram-multiple 5 98760 :strict t))
-;              )
-; 
+(define-test max-anagram-multiple-of-1
+             (assert-equal 8740 (max-anagram-multiple 1 4807))
+             (assert-equal 9 (max-anagram-multiple 1 9))
+             )
+
+(define-test max-anagram-multiple-of-1-strict
+             (assert-equal 8704 (max-anagram-multiple 1 8740 :strict t))
+             (assert-equal -1 (max-anagram-multiple 1 9 :strict t))
+             )
+
+(define-test max-anagram-multiple-of-2
+             (assert-equal 8740 (max-anagram-multiple 2 4807))
+             (assert-equal 099888773210(max-anagram-multiple 2 38709871298))
+             (assert-equal -1 (max-anagram-multiple 2 173799955533311133))
+             (assert-equal 8 (max-anagram-multiple 2 8))
+             )
+
+(define-test max-anagram-multiple-of-2-strict
+             (assert-equal -1 (max-anagram-multiple 2 8 :strict t))
+             (assert-equal 28 (max-anagram-multiple 2 82 :strict t))
+             (assert-equal 68 (max-anagram-multiple 2 86 :strict t))
+             (assert-equal 418  (max-anagram-multiple 2 814 :strict t))
+             (assert-equal 8704 (max-anagram-multiple 2 8740 :strict t))
+             )
+
+(define-test max-anagram-multiple-of-3
+             (assert-equal 95433 (max-anagram-multiple 3 93543))
+             (assert-equal -1 (max-anagram-multiple 3 374))
+             )
+
+(define-test max-anagram-multiple-of-3-strict
+             (assert-equal -1 (max-anagram-multiple 3 9 :strict t))
+             (assert-equal 95343 (max-anagram-multiple 3 95433 :strict t))
+             )
+
+(define-test max-anagram-multiple-of-4
+             (assert-equal 8 (max-anagram-multiple 4 8))
+             (assert-equal 8740 (max-anagram-multiple 4 4807))
+             (assert-equal 7184 (max-anagram-multiple 4 4817))
+             (assert-equal 988888777743333120 (max-anagram-multiple 4 387908731873874328))
+             (assert-equal -1 (max-anagram-multiple 4 333))
+             )
+
+(define-test max-anagram-multiple-of-4-strict
+             (assert-equal -1 (max-anagram-multiple 4 8 :strict t))
+             (assert-equal 8704 (max-anagram-multiple 4 8740 :strict t))
+             )
+
+(define-test max-anagram-multiple-of-5
+             (assert-equal 5 (max-anagram-multiple 5 5))
+             (assert-equal 988888777743333210 (max-anagram-multiple 5 387908731873874328))
+             (assert-equal -1 (max-anagram-multiple 5 387481))
+             )
+
+(define-test max-anagram-multiple-of-5-strict
+             (assert-equal -1 (max-anagram-multiple 5 5 :strict t))
+             (assert-equal -1 (max-anagram-multiple 5 55555 :strict t))
+             (assert-equal 98670 (max-anagram-multiple 5 98760 :strict t))
+             )
+
+(define-test max-anagram-of-with-a-condition
+             (assert-equal 0 (max-anagram-of 0 0 4807 nil (lambda (n) (= (rem n 7) 0))))
+             (assert-equal 4809 (max-anagram-of 0 0 4809 nil (lambda (n) (= (rem n 7) 0))))
+             )
 ; (define-test max-anagram-multiple-of-6
 ;              (assert-equal 6 (max-anagram-multiple 6 6))
 ;              (assert-equal 12 (max-anagram-multiple 6 21))
@@ -208,7 +213,7 @@
 ;             (assert-equal 971614 (max-anagram-multiple 7 971614))
 ;             (assert-equal 976115 (max-anagram-multiple 7 971615))
 ;             )
-; 
+
 ; (define-test max-anagram-multiple-of-8
 ;              (assert-equal 8 (max-anagram-multiple 8 8))
 ;              (assert-equal -1 (max-anagram-multiple 8 131))
