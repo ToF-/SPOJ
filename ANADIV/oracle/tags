@@ -24,8 +24,10 @@ desc-prefix-partial-length	test/anadiv-test.lisp	/^(define-test desc-prefix-part
 digits	build/oracle.lisp	/^(defun digits (n)$/;"	f
 digits	build/random.lisp	/^(defun digits (n)$/;"	f
 digits	build/series.lisp	/^(defun digits (n)$/;"	f
-digits	src/anadiv.lisp	/^(defun digits (n)$/;"	f
+digits	src/anadiv.lisp	/^(defun digits (n &optional size)$/;"	f
 digits	test/anadiv-test.lisp	/^(define-test digits$/;"	f
+digits-with-zero-size	test/anadiv-test.lisp	/^(define-test digits-with-zero-size$/;"	f
+digits-within-size	test/anadiv-test.lisp	/^(define-test digits-within-size$/;"	f
 find-multiple-7	build/oracle.lisp	/^(defun find-multiple-7 (n)$/;"	f
 find-multiple-7	build/random.lisp	/^(defun find-multiple-7 (n)$/;"	f
 find-multiple-7	build/series.lisp	/^(defun find-multiple-7 (n)$/;"	f
@@ -55,7 +57,9 @@ max-anagram-multiple-of-7	test/anadiv-test.lisp	/^(define-test max-anagram-multi
 max-anagram-multiple-of-8	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-8$/;"	f
 max-anagram-multiple-of-9	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-9$/;"	f
 max-anagram-of	src/anadiv.lisp	/^(defun max-anagram-of (m s n st)$/;"	f
-max-anagram-of-no-prefix	test/anadiv-test.lisp	/^(define-test max-anagram-of-no-prefix$/;"	f
+max-anagram-of-no-prefix-no-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-no-prefix-no-strict$/;"	f
+max-anagram-of-no-prefix-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-no-prefix-strict$/;"	f
+max-anagram-of-single-digit-prefix-no-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-single-digit-prefix-no-strict$/;"	f
 max-subseq	build/oracle.lisp	/^(defun max-subseq (l n)$/;"	f
 max-subseq	build/random.lisp	/^(defun max-subseq (l n)$/;"	f
 max-subseq	build/series.lisp	/^(defun max-subseq (l n)$/;"	f
@@ -80,8 +84,6 @@ next-anagram-last-anagram	test/anadiv-test.lisp	/^(define-test next-anagram-last
 number-	build/oracle.lisp	/^(defun number- (d)$/;"	f
 number-	build/random.lisp	/^(defun number- (d)$/;"	f
 number-	build/series.lisp	/^(defun number- (d)$/;"	f
-number-	src/anadiv.lisp	/^(defun number- (d)$/;"	f
-number-	test/anadiv-test.lisp	/^(define-test number-$/;"	f
 print-all-anagrams	build/oracle.lisp	/^(defun print-all-anagrams (n)$/;"	f
 print-all-anagrams	build/random.lisp	/^(defun print-all-anagrams (n)$/;"	f
 print-all-anagrams	build/series.lisp	/^(defun print-all-anagrams (n)$/;"	f
@@ -101,9 +103,10 @@ random-	src/anadiv.lisp	/^(defun random- ()$/;"	f
 remove-digits	build/oracle.lisp	/^(defun remove-digits (target digits)$/;"	f
 remove-digits	build/random.lisp	/^(defun remove-digits (target digits)$/;"	f
 remove-digits	build/series.lisp	/^(defun remove-digits (target digits)$/;"	f
-remove-digits	src/anadiv.lisp	/^(defun remove-digits (target digits)$/;"	f
+remove-digits	src/anadiv.lisp	/^(defun remove-digits (tg l)$/;"	f
 remove-digits	test/anadiv-test.lisp	/^(define-test remove-digits$/;"	f
 remove-digits-missing-digit	test/anadiv-test.lisp	/^(define-test remove-digits-missing-digit$/;"	f
+remove-digits-no-digits-to-remove	test/anadiv-test.lisp	/^(define-test remove-digits-no-digits-to-remove$/;"	f
 scan-input	build/oracle.lisp	/^(defun scan-input (line)$/;"	f
 scan-input	build/random.lisp	/^(defun scan-input (line)$/;"	f
 scan-input	build/series.lisp	/^(defun scan-input (line)$/;"	f
@@ -122,6 +125,8 @@ swap	build/series.lisp	/^(defun swap (sp)$/;"	f
 swap	src/anadiv.lisp	/^(defun swap (sp)$/;"	f
 swap	test/anadiv-test.lisp	/^(define-test swap$/;"	f
 swap-nil	test/anadiv-test.lisp	/^(define-test swap-nil$/;"	f
+to-number	src/anadiv.lisp	/^(defun to-number (d)$/;"	f
+to-number	test/anadiv-test.lisp	/^(define-test to-number$/;"	f
 to-swap	build/oracle.lisp	/^(defun to-swap (sp)$/;"	f
 to-swap	build/random.lisp	/^(defun to-swap (sp)$/;"	f
 to-swap	build/series.lisp	/^(defun to-swap (sp)$/;"	f

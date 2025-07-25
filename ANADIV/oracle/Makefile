@@ -26,5 +26,8 @@ random-large: series
 	sed -E 's/^([0-9]+) ([0-9]+):.*/\1 \2/' result.txt > ../test/random-cases.txt
 	sed -E 's/^[0-9]+ [0-9]+://' result.txt > ../test/random-expected.txt
 
+tags: src/anadiv.lisp
+	ctags --recurse
+
 
 

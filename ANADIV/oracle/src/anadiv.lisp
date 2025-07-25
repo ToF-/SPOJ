@@ -5,6 +5,7 @@
 ; e.g. (digits 4807) → '(7 0 8 4)
 ; given an optional size, pads digits with zeroes
 ; e.g. (digits 4807 7) → '(7 0 8 4 0 0 0)
+; given a size of zero, gives an empty list
 (defun digits (n &optional size)
 
   (defun digits-aux (n)
@@ -15,8 +16,13 @@
         (cons r (digits-aux q)))))
 
   (let* ((r (if (= n 0) '(0) (digits-aux n)))
-         (s (if size (- size (length r)) 0)))
-    (append r (loop repeat s collect 0))))
+         (s (cond
+              ((not size) 0)
+              ((= size 0) nil)
+              (t (- size (length r))))))
+    (cond
+      ((not s) ())
+      (t (append r (loop repeat s collect 0))))))
 
 ; remove the digits in targets from the digit list
 ; e.g. (remove-digits '(4 7) '(4 8 0 7)) → '(8 0)
@@ -86,10 +92,12 @@
               (cons (car prefix) (cdr suffix))))))
 
 ; given a list of digits returns the number 
-(defun number- (d)
-  (if (null d)
-    0
-    (+ (car d) (* 10 (number- (cdr d))))))
+(defun to-number (d)
+  (progn 
+    (format t "(to-number ~A)~%" d)
+    (if (null d)
+      0
+      (+ (car d) (* 10 (to-number (cdr d)))))))
 
 ; given a prefix of a given size in digits, a number, and a strict boolean flag
 ; returns the max anagram of n with the same prefix as m if no strict 
@@ -104,23 +112,35 @@
 ;      (max-anagram-of 0 0 4807 nil) → 8740
 ;      (max-anagram-of 0 0 8740 t) → 8704
 (defun max-anagram-of (m s n st)
-  (let* ((r (number- (sort-all (digits n)))))
-    (cond
-      ((and (= r n) st) (number- (swap (to-swap (desc-prefix (digits n))))))
-      (t r)
-      )))
+  (let* ((ms (digits m s))
+         (ns (digits n))
+         (ss (remove-digits ms ns)))
+    (progn
+      (format t "(max-anagram-of (~A ~A ~A ~A)~%" m s n st)
+      (format t "ms:~A ns:~A ss:~A~%" ms ns ss)
+      (let ((r (to-number (append ms (sort-all ss)))))
+        (progn
+          (format t "ms:~A (sort-all ss):~A r:~A~%" ms (sort-all ss) r)
+          (cond
+            ((equal '(-1) ss) 0)
+            ((and st (= r n))
+             (let ((na (swap (to-swap (desc-prefix (sort-all ss))))))
+               (if na
+                 (to-number (append ms na))
+                 0)))
+            (t r)))))))
 
 (defun max-anagram (n &key (predicate #'(lambda (x) t)) strict)
   (let ((d (digits n)))
     (if (apply predicate (list d))
-      (let ((result (number- (sort-prefix d (length d)))))
+      (let ((result (to-number (sort-prefix d (length d)))))
         (if (and strict (= result n))
           (next-anagram result)
           result))
       0)))
 
 (defun next-anagram (n)
-  (number- (swap (to-swap (desc-prefix (digits n))))))
+  (to-number (swap (to-swap (desc-prefix (digits n))))))
 
 (defun print-all-anagrams (n)
   (defun process (n)
@@ -148,7 +168,7 @@
     (cond
       ((equal prefix '(-1)) 0)
       ((null prefix) (if (= f n) (if strict 0 f)))
-      (t (let ((result (number- (append tgt (sort-all prefix)))))
+      (t (let ((result (to-number (append tgt (sort-all prefix)))))
               (if (/= result n)
                 result
                 (if strict

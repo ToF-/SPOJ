@@ -20,6 +20,10 @@
              (assert-equal '(0 4) (digits 40 2))
              )
 
+(define-test digits-with-zero-size
+             (assert-equal '() (digits 4807 0))
+             )
+
 (define-test remove-digits
              (assert-equal '(0 7) (remove-digits '(4 8) '(4 8 0 7)))
              )
@@ -74,8 +78,8 @@
              (assert-equal nil (swap nil))
              )
 
-(define-test number-
-             (assert-equal 4807 (number- '(7 0 8 4)))
+(define-test to-number
+             (assert-equal 4807 (to-number '(7 0 8 4)))
              )
 
 (define-test max-anagram-of-no-prefix-no-strict
@@ -90,6 +94,19 @@
 
 (define-test max-anagram-of-single-digit-prefix-no-strict
              (assert-equal 28 (max-anagram-of 8 1 28 nil))
+             (assert-equal 84 (max-anagram-of 4 1 48 nil))
+             )
+
+(define-test max-anagram-of-multi-digit-prefix-no-strict
+             (assert-equal 7 (max-anagram-of 7 2 70 nil))
+             (assert-equal 4096 (max-anagram-of 96 3 9640 nil))
+             (assert-equal 8407 (max-anagram-of 7 2 4807 nil))
+             )
+
+(define-test max-anagram-of-multi-digit-prefix-strict
+             (assert-equal 0 (max-anagram-of 7 2 7 t))
+             (assert-equal 0 (max-anagram-of 7 1 7 t))
+             (assert-equal 4807 (max-anagram-of 7 2 8407 t))
              )
 
 (define-test max-anagram
@@ -233,6 +250,7 @@
 ; (run-tests :all)
 (run-tests '(digits
               digits-within-size
+              digits-with-zero-size
               remove-digits
               remove-digits-missing-digit
               remove-digits-no-digits-to-remove
@@ -245,9 +263,11 @@
               to-swap-full-length-prefix
               swap
               swap-nil
-              number-
+              to-number
               max-anagram-of-no-prefix-no-strict
               max-anagram-of-no-prefix-strict
               max-anagram-of-single-digit-prefix-no-strict
+              max-anagram-of-multi-digit-prefix-no-strict
+              max-anagram-of-multi-digit-prefix-strict
               ))
 (sb-ext:quit)
