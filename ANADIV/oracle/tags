@@ -4,10 +4,13 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+*multiples-10*	src/anadiv.lisp	/^(defparameter *multiples-10* '(0))$/;"	f
+*multiples-2*	src/anadiv.lisp	/^(defparameter *multiples-2* (loop for f from 0 to 4 collect (* f 2)))$/;"	f
 *multiples-4*	build/oracle.lisp	/^(defparameter *multiples-4* (loop for f from 0 to 24 collect (* f 4)))$/;"	f
 *multiples-4*	build/random.lisp	/^(defparameter *multiples-4* (loop for f from 0 to 24 collect (* f 4)))$/;"	f
 *multiples-4*	build/series.lisp	/^(defparameter *multiples-4* (loop for f from 0 to 24 collect (* f 4)))$/;"	f
 *multiples-4*	src/anadiv.lisp	/^(defparameter *multiples-4* (loop for f from 0 to 24 collect (* f 4)))$/;"	f
+*multiples-5*	src/anadiv.lisp	/^(defparameter *multiples-5* (loop for f from 0 to 1 collect (* f 5)))$/;"	f
 *multiples-8*	build/oracle.lisp	/^(defparameter *multiples-8* (loop for f from 0 to 124 collect (* f 8)))$/;"	f
 *multiples-8-2*	build/random.lisp	/^(defparameter *multiples-8-2* (loop for f from 0 to 12 collect (* f 8)))$/;"	f
 *multiples-8-2*	build/series.lisp	/^(defparameter *multiples-8-2* (loop for f from 0 to 12 collect (* f 8)))$/;"	f
@@ -36,27 +39,17 @@ max-anagram	build/oracle.lisp	/^(defun max-anagram (n &key (predicate #'(lambda 
 max-anagram	build/random.lisp	/^(defun max-anagram (n &key (predicate #'(lambda (x) t)))$/;"	f
 max-anagram	build/series.lisp	/^(defun max-anagram (n &key (predicate #'(lambda (x) t)))$/;"	f
 max-anagram	src/anadiv.lisp	/^(defun max-anagram (n &key (predicate #'(lambda (x) t)) strict)$/;"	f
-max-anagram	test/anadiv-test.lisp	/^(define-test max-anagram$/;"	f
 max-anagram-multiple	build/oracle.lisp	/^(defun max-anagram-multiple (f n)$/;"	f
 max-anagram-multiple	build/random.lisp	/^(defun max-anagram-multiple (f n)$/;"	f
 max-anagram-multiple	build/series.lisp	/^(defun max-anagram-multiple (f n)$/;"	f
 max-anagram-multiple	src/anadiv.lisp	/^(defun max-anagram-multiple (f n &key strict)$/;"	f
-max-anagram-multiple-of-1	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-1$/;"	f
-max-anagram-multiple-of-1-strict	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-1-strict$/;"	f
-max-anagram-multiple-of-10	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-10$/;"	f
-max-anagram-multiple-of-2	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-2$/;"	f
-max-anagram-multiple-of-2-strict	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-2-strict$/;"	f
-max-anagram-multiple-of-3	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-3$/;"	f
-max-anagram-multiple-of-3-strict	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-3-strict$/;"	f
-max-anagram-multiple-of-4	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-4$/;"	f
-max-anagram-multiple-of-4-strict	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-4-strict$/;"	f
-max-anagram-multiple-of-5	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-5$/;"	f
-max-anagram-multiple-of-5-strict	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-5-strict$/;"	f
-max-anagram-multiple-of-6	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-6$/;"	f
-max-anagram-multiple-of-7	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-7$/;"	f
-max-anagram-multiple-of-8	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-8$/;"	f
-max-anagram-multiple-of-9	test/anadiv-test.lisp	/^(define-test max-anagram-multiple-of-9$/;"	f
 max-anagram-of	src/anadiv.lisp	/^(defun max-anagram-of (m s n st)$/;"	f
+max-anagram-of-all	src/anadiv.lisp	/^(defun max-anagram-of-all (ms s n st)$/;"	f
+max-anagram-of-all-a-list-of-multiples-no-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-all-a-list-of-multiples-no-strict$/;"	f
+max-anagram-of-all-with-empty-multiples-no-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-all-with-empty-multiples-no-strict$/;"	f
+max-anagram-of-all-with-empty-multiples-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-all-with-empty-multiples-strict$/;"	f
+max-anagram-of-multi-digit-prefix-no-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-multi-digit-prefix-no-strict$/;"	f
+max-anagram-of-multi-digit-prefix-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-multi-digit-prefix-strict$/;"	f
 max-anagram-of-no-prefix-no-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-no-prefix-no-strict$/;"	f
 max-anagram-of-no-prefix-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-no-prefix-strict$/;"	f
 max-anagram-of-single-digit-prefix-no-strict	test/anadiv-test.lisp	/^(define-test max-anagram-of-single-digit-prefix-no-strict$/;"	f
@@ -67,20 +60,14 @@ max-suffix	build/oracle.lisp	/^(defun max-suffix (s f n)$/;"	f
 max-suffix	build/random.lisp	/^(defun max-suffix (s f n)$/;"	f
 max-suffix	build/series.lisp	/^(defun max-suffix (s f n)$/;"	f
 max-suffix	src/anadiv.lisp	/^(defun max-suffix (s f n &key strict)$/;"	f
-max-suffix	test/anadiv-test.lisp	/^(define-test max-suffix$/;"	f
-max-suffix-missing-digits	test/anadiv-test.lisp	/^(define-test max-suffix-missing-digits$/;"	f
 max-suffixes	build/oracle.lisp	/^(defun max-suffixes (s fs n)$/;"	f
 max-suffixes	build/random.lisp	/^(defun max-suffixes (s fs n)$/;"	f
 max-suffixes	build/series.lisp	/^(defun max-suffixes (s fs n)$/;"	f
 max-suffixes	src/anadiv.lisp	/^(defun max-suffixes (s fs n &key strict)$/;"	f
-max-suffixes	test/anadiv-test.lisp	/^(define-test max-suffixes$/;"	f
-max-suffixes-mising-digits	test/anadiv-test.lisp	/^(define-test max-suffixes-mising-digits$/;"	f
 next-anagram	build/oracle.lisp	/^(defun next-anagram (n)$/;"	f
 next-anagram	build/random.lisp	/^(defun next-anagram (n)$/;"	f
 next-anagram	build/series.lisp	/^(defun next-anagram (n)$/;"	f
 next-anagram	src/anadiv.lisp	/^(defun next-anagram (n)$/;"	f
-next-anagram	test/anadiv-test.lisp	/^(define-test next-anagram$/;"	f
-next-anagram-last-anagram	test/anadiv-test.lisp	/^(define-test next-anagram-last-anagram$/;"	f
 number-	build/oracle.lisp	/^(defun number- (d)$/;"	f
 number-	build/random.lisp	/^(defun number- (d)$/;"	f
 number-	build/series.lisp	/^(defun number- (d)$/;"	f
@@ -96,7 +83,6 @@ process-line	build/oracle.lisp	/^(defun process-line (line)$/;"	f
 process-line	build/random.lisp	/^(defun process-line (line)$/;"	f
 process-line	build/series.lisp	/^(defun process-line (line)$/;"	f
 process-line	src/anadiv.lisp	/^(defun process-line (line)$/;"	f
-process-line	test/anadiv-test.lisp	/^(define-test process-line$/;"	f
 random-	build/random.lisp	/^(defun random- ()$/;"	f
 random-	build/series.lisp	/^(defun random- ()$/;"	f
 random-	src/anadiv.lisp	/^(defun random- ()$/;"	f
@@ -111,7 +97,6 @@ scan-input	build/oracle.lisp	/^(defun scan-input (line)$/;"	f
 scan-input	build/random.lisp	/^(defun scan-input (line)$/;"	f
 scan-input	build/series.lisp	/^(defun scan-input (line)$/;"	f
 scan-input	src/anadiv.lisp	/^(defun scan-input (line)$/;"	f
-scan-input	test/anadiv-test.lisp	/^(define-test scan-input$/;"	f
 series	build/random.lisp	/^(defun series ()$/;"	f
 series	build/series.lisp	/^(defun series ()$/;"	f
 series	src/anadiv.lisp	/^(defun series ()$/;"	f

@@ -93,11 +93,9 @@
 
 ; given a list of digits returns the number 
 (defun to-number (d)
-  (progn 
-    (format t "(to-number ~A)~%" d)
     (if (null d)
       0
-      (+ (car d) (* 10 (to-number (cdr d)))))))
+      (+ (car d) (* 10 (to-number (cdr d))))))
 
 ; given a prefix of a given size in digits, a number, and a strict boolean flag
 ; returns the max anagram of n with the same prefix as m if no strict 
@@ -112,15 +110,12 @@
 ;      (max-anagram-of 0 0 4807 nil) → 8740
 ;      (max-anagram-of 0 0 8740 t) → 8704
 (defun max-anagram-of (m s n st)
+  (format t "(max-anagram-of ~A ~A ~A ~A)~%" m s n st) 
   (let* ((ms (digits m s))
          (ns (digits n))
          (ss (remove-digits ms ns)))
-    (progn
-      (format t "(max-anagram-of (~A ~A ~A ~A)~%" m s n st)
-      (format t "ms:~A ns:~A ss:~A~%" ms ns ss)
       (let ((r (to-number (append ms (sort-all ss)))))
         (progn
-          (format t "ms:~A (sort-all ss):~A r:~A~%" ms (sort-all ss) r)
           (cond
             ((equal '(-1) ss) 0)
             ((and st (= r n))
@@ -128,28 +123,19 @@
                (if na
                  (to-number (append ms na))
                  0)))
-            (t r)))))))
-
-(defun max-anagram (n &key (predicate #'(lambda (x) t)) strict)
-  (let ((d (digits n)))
-    (if (apply predicate (list d))
-      (let ((result (to-number (sort-prefix d (length d)))))
-        (if (and strict (= result n))
-          (next-anagram result)
-          result))
-      0)))
-
-(defun next-anagram (n)
-  (to-number (swap (to-swap (desc-prefix (digits n))))))
-
-(defun print-all-anagrams (n)
-  (defun process (n)
-    (if (= 0 n)
-      ()
-      (progn
-        (format t "~A " n)
-        (process (next-anagram n)))))
-  (process (max-anagram n)))
+            (t r))))))
+; given a list of prefixes of a given size in digits, a number, and a strict boolean flag
+; return the max anagram of all possible numbers with the same prefix as m
+; e.g. (max-anagram-of-all '(0 2 4 6 8) 2 4807 nil) → 8740
+; return the max anagram of 0 0 if list of multiples is empty
+(defun max-anagram-of-all (ms s n st)
+  (format t "(max-anagram-of-all ~A ~A ~A ~A)~%" ms s n st) 
+  (cond
+    ((= s 0) (max-anagram-of 0 0 n st))
+    (t (car
+         (sort
+           (mapcar #'(lambda (m) (max-anagram-of m s n st)) ms)
+           #'>)))))
 
 ; return the maximum anagram of n | f of size s is a suffix of n
 ; e.g (max-suffix (3 96 14069)) → 41096 because 096 is a suffix of n and 41096 > 14096
@@ -185,6 +171,9 @@
              suffixes)
          #'>))))
 
+(defparameter *multiples-2* (loop for f from 0 to 4 collect (* f 2)))
+(defparameter *multiples-5* (loop for f from 0 to 1 collect (* f 5)))
+(defparameter *multiples-10* '(0))
 (defparameter *multiples-4* (loop for f from 0 to 24 collect (* f 4)))
 (defparameter *multiples-8-2* (loop for f from 0 to 12 collect (* f 8)))
 (defparameter *multiples-8-3* (loop for f from 0 to 124 collect (* f 8)))
@@ -199,11 +188,8 @@
 
 (defun max-anagram-multiple (f n &key strict)
   (let ((result (cond
-                  ((= 1 f) (max-anagram n :strict strict))
-                  ((= 2 f) (let ((result (max-suffixes 1 '(0 2 4 6 8) n :strict strict)))
-                             (if (and strict (= n result))
-                               (next-anagram result)
-                               result)))
+                  ((= 1 f) (max-anagram-of 0 0 n strict))
+                  ((= 2 f) (max-anagram-of 0 0 n strict))
                   ((= 3 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 3) 0)) :strict strict))
                   ((= 4 f) (if (< n 10) (if (and (= (rem n 4) 0) (not strict)) n 0)
                              (max-suffixes 2 *multiples-4* n :strict strict)))
