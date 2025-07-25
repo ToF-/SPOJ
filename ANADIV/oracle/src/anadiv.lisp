@@ -182,6 +182,36 @@
 (defun find-multiple-7 (n strict)
   0)
 
+(defparameter *max-counter* 150)
+
+(defun find-anagram-multiple-of-7 (n strict)
+
+  (defun find-anagram-multiple-of-7-aux (na counter)
+    (format t "(find-anagram-multiple-of-7-aux ~A ~A)~%" na counter);
+    (cond
+      ((= counter 0) -1)
+      ((= na 0) -1)
+      ((and (= (rem na 7) 0) (or (not strict) (/= n na))) na)
+      (t (find-anagram-multiple-of-7-aux
+         (let ((na (swap (to-swap (desc-prefix (digits na))))))
+           (if na (to-number na) 0))
+         (- counter 1)))))
+  (find-anagram-multiple-of-7-aux (to-number (sort-all (digits n))) *max-counter*))
+         
+(defun max-anagram-of (m s n st)
+  (format t "(max-anagram-of ~A ~A ~A ~A)~%" m s n st) 
+  (let* ((ms (digits m s))
+         (ns (digits n))
+         (ss (remove-digits ms ns)))
+    (let ((r (to-number (append ms (sort-all ss)))))
+      (cond
+        ((equal '(-1) ss) 0)
+        ((and st (= r n))
+         (let ((na (swap (to-swap (desc-prefix (sort-all ss))))))
+           (if na
+             (to-number (append ms na))
+             0)))
+        (t r)))))
 (defun max-anagram-multiple (f n &key strict)
   (let ((result (cond
                   ((= 1 f) (max-anagram-of 0 0 n strict))
@@ -196,7 +226,7 @@
                   ((= 6 f) (if (= (rem (apply #'+ (digits n)) 3) 0)
                              (max-anagram-of-all *multiples-2* 1 n strict)
                              0))
-                  ((= 7 f) (find-multiple-7 n))
+                  ((= 7 f) (find-anagram-multiple-of-7 n strict))
                   ((= 8 f) (cond
                              ((< n 10) (if (= (rem n 8) 0) n 0))
                              ((< n 100) (max-suffixes 2 *multiples-8-2* n))
