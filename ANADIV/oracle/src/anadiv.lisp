@@ -110,7 +110,6 @@
 ;      (max-anagram-of 0 0 4807 nil) → 8740
 ;      (max-anagram-of 0 0 8740 t) → 8704
 (defun max-anagram-of (m s n st)
-  (format t "(max-anagram-of ~A ~A ~A ~A)~%" m s n st) 
   (let* ((ms (digits m s))
          (ns (digits n))
          (ss (remove-digits ms ns)))
@@ -129,7 +128,6 @@
 ; e.g. (max-anagram-of-all '(0 2 4 6 8) 2 4807 nil) → 8740
 ; return the max anagram of 0 0 if list of multiples is empty
 (defun max-anagram-of-all (ms s n st)
-  (format t "(max-anagram-of-all ~A ~A ~A ~A)~%" ms s n st) 
   (cond
     ((= s 0) (max-anagram-of 0 0 n st))
     (t (car
@@ -137,57 +135,20 @@
            (mapcar #'(lambda (m) (max-anagram-of m s n st)) ms)
            #'>)))))
 
-; return the maximum anagram of n | f of size s is a suffix of n
-; e.g (max-suffix (3 96 14069)) → 41096 because 096 is a suffix of n and 41096 > 14096
-; e.g (max-suffix (3 96 41096 :strict t)) → 14096 because 096 is a suffix of n and 14096 ≠ 14096
-(defun max-suffix (s f n &key strict)
-  (defun digits-aux (n c)
-    (if (= c 0)
-      ()
-      (multiple-value-bind (q r)
-        (truncate n 10)
-        (cons r (digits-aux q (- c 1))))))
-
-  (let* ((tgt (digits-aux f s))
-         (dgt (digits n))
-         (prefix (remove-digits tgt dgt)))
-    (cond
-      ((equal prefix '(-1)) 0)
-      ((null prefix) (if (= f n) (if strict 0 f)))
-      (t (let ((result (to-number (append tgt (sort-all prefix)))))
-              (if (/= result n)
-                result
-                (if strict
-                  0
-                  (next-anagram result))))))))
-
-(defun max-suffixes (s fs n &key strict)
-  (let ((suffixes (mapcar #'(lambda (f) (max-suffix s f n :strict strict)) fs)))
-    (format t "(max-suffixes (~A ~A ~A ~A)~%" s fs n strict)
-    (format t "~A~%" suffixes)
-    (car (sort
-           (if strict 
-             (remove-if #'(lambda (x) (= x n)) suffixes)
-             suffixes)
-         #'>))))
-
 (defparameter *multiples-2* (loop for f from 0 to 4 collect (* f 2)))
 (defparameter *multiples-5* (loop for f from 0 to 1 collect (* f 5)))
 (defparameter *multiples-10* '(0))
 (defparameter *multiples-4-1* (loop for f from 0 to 2 collect (* f 4)))
 (defparameter *multiples-4-2* (loop for f from 0 to 24 collect (* f 4)))
+(defparameter *multiples-8-1* (loop for f from 0 to 1 collect (* f 8)))
 (defparameter *multiples-8-2* (loop for f from 0 to 12 collect (* f 8)))
 (defparameter *multiples-8-3* (loop for f from 0 to 124 collect (* f 8)))
-
-(defun find-multiple-7 (n strict)
-  0)
 
 (defparameter *max-counter* 150)
 
 (defun find-anagram-multiple-of-7 (n strict)
 
   (defun find-anagram-multiple-of-7-aux (na counter)
-    (format t "(find-anagram-multiple-of-7-aux ~A ~A)~%" na counter);
     (cond
       ((= counter 0) -1)
       ((= na 0) -1)
@@ -197,9 +158,8 @@
            (if na (to-number na) 0))
          (- counter 1)))))
   (find-anagram-multiple-of-7-aux (to-number (sort-all (digits n))) *max-counter*))
-         
+
 (defun max-anagram-of (m s n st)
-  (format t "(max-anagram-of ~A ~A ~A ~A)~%" m s n st) 
   (let* ((ms (digits m s))
          (ns (digits n))
          (ss (remove-digits ms ns)))
@@ -228,11 +188,13 @@
                              0))
                   ((= 7 f) (find-anagram-multiple-of-7 n strict))
                   ((= 8 f) (cond
-                             ((< n 10) (if (= (rem n 8) 0) n 0))
-                             ((< n 100) (max-suffixes 2 *multiples-8-2* n))
-                             (t (max-suffixes 3 *multiples-8-3* n))))
-                  ((= 9 f) (max-anagram n :predicate #'(lambda (ds) (= (rem (apply #'+ ds) 9) 0))))
-                  ((= 10 f) (max-suffixes 1 '(0) n))
+                             ((< n 10) (max-anagram-of-all *multiples-8-1* 1 n strict))
+                             ((< n 100) (max-anagram-of-all *multiples-8-2* 2 n strict))
+                             (t (max-anagram-of-all *multiples-8-3* 3 n strict))))
+                  ((= 9 f) (if (= (rem (apply #'+ (digits n)) 9) 0)
+                             (max-anagram-of 0 0 n strict)
+                             0))
+                  ((= 10 f) (max-anagram-of-all *multiples-10* 1 n strict))
                   )))
     (if (> result 0) result -1)))
 
