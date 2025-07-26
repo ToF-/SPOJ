@@ -47,6 +47,58 @@ bool is_odd(char);
 bool is_multiple_of_4(char);
 bool same_number(struct number *, struct number *);
 
+bool check_multiple(struct number *n, int k) {
+    int l = n->length;
+    if (k == 1)
+        return true;
+    if (k == 2) {
+        return ( n->digits[l-1] % 2) == 0;
+    }
+    if (k == 3) {
+        int s = 0;
+        for (int i = 0; i < l; i++)
+            s+= n->digits[i];
+        return (s % 3) == 0;
+    }
+    if (k == 4) {
+        if (l == 1)
+            return (n->digits[0] % 4) == 0;
+        int s = n->digits[l-1] + n->digits[l-2] * 10;
+        return (s % 4) == 0;
+    }
+    if (k == 5) {
+        return (n->digits[l-1] % 5) == 0;
+    }
+    if (k == 6) {
+        int s = 0;
+        for (int i = 0; i < l; i++)
+            s+= n->digits[i];
+        return ((n->digits[l-1] % 2) == 0) && ((s % 3) == 0);
+    }
+    if (k == 7) {
+        int mod = 0;
+        for (int i = 0; i < l; i++)
+            mod = (mod * 10 + n->digits[i]) % 7;
+        return mod == 0;
+    }
+    if (k == 8) {
+        if (l < 2)
+            return (n->digits[0] % 8) == 0;
+        if (l < 3)
+            return (n->digits[l-1] + n->digits[l-2] * 10) % 8 == 0;
+        return (n->digits[l-1] + n->digits[l-2] * 10 + n->digits[l-3] * 100) % 8 == 0;
+    }
+    if (k == 9) {
+        int s = 0;
+        for (int i = 0; i < l; i++)
+            s+= n->digits[i];
+        return (s % 9) == 0;
+    }
+    if (k == 10) {
+        return n->digits[l-1] == 0;
+    }
+    return false;
+}
 bool scan_input(char *line, struct number *n, int *factor) {
     n->length = 0;
     *factor = 0;
@@ -188,8 +240,6 @@ bool next_subsequence(struct number *n, int length) {
     }
     swap_digits(n, next_pos, to_swap);
     sort_subsequence(n, next_pos+1, length-(next_pos+1));
-    if(n->digits[0] == 0)
-        return false;
     return true;
 }
 
@@ -207,15 +257,11 @@ bool next_anagram(struct number *n) {
     }
     swap_digits(n, next_pos, to_swap);
     sort_subsequence(n, next_pos+1, n->length - next_pos);
-    if (n->digits[0] == 0)
-        return false;
     return true;
 }
 
 bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {
     greatest_permutation(n);
-    if (n->digits[0] == 0)
-        return false;
     if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
@@ -258,9 +304,6 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
     if (found < nb_pos)
         return false;
     sort_subsequence(n, 0, n->length - nb_pos);
-    if (n->digits[0] == 0) {
-        return false;
-    }
     if (same_number(n, original)) {
         found = 0;
         if (n->length > nb_pos + 1) {
@@ -270,8 +313,6 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
             }
         }
     }
-    if (n->digits[0] == 0)
-        return false;
     return found == nb_pos;
     
 }
@@ -297,8 +338,6 @@ bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
-    if (n->digits[0] == 0)
-        return false;
     return found;
 }
 
@@ -312,8 +351,6 @@ bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
     if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
-    if (n->digits[0] == 0)
-        return false;
     return true;
 }
 
@@ -341,8 +378,6 @@ bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
-    if (n->digits[0] == 0)
-        return false;
     return found;
 }
 
@@ -368,8 +403,6 @@ bool largest_anagram_multiple_of_5(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
-    if (n->digits[0] == 0)
-        return false;
     return found;
 }
 
@@ -403,8 +436,6 @@ bool divisible_by_7(struct number *n) {
         i--;
     } while (i >= 0);
     sum_groups = sum_groups + group * group_sign;
-    if (n->digits[0] == 0)
-        return false;
     return sum_groups % 7 == 0;
 }
 
@@ -420,8 +451,6 @@ bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {
             return false;
         trials++;
     }
-    if (n->digits[0] == 0)
-        return false;
     return false;
 }
 
@@ -465,8 +494,6 @@ bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
-    if (n->digits[0] == 0)
-        return false;
     return found;
 }
 bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {
@@ -476,13 +503,9 @@ bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {
     if (sum_digits % 9 > 0)
         return false;
     greatest_permutation(n);
-    if (n->digits[0] == 0)
-        return false;
     if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
-    if (n->digits[0] == 0)
-        return false;
     return true;
 }
 
@@ -509,8 +532,6 @@ bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
-    if (n->digits[0] == 0)
-        return false;
     return found;
 }
 
@@ -558,17 +579,27 @@ bool largest_anagram(struct number *n, int k) {
 
 void process(bool strict) {
     Strict_Anagram = strict;
+    struct number *c = (struct number *)malloc(sizeof(struct number));
     char line[MAX_DIGITS];
+    bool last_result_different = true;
     struct number *n = (struct number *)malloc(sizeof(struct number));
     while(fgets(line, MAX_DIGITS+3, stdin)) {
         int factor;
+        // assert(last_result_different);
         scan_input(line, n, &factor);
+        assert(n->digits[0] > 0);
+        copy_number(n, c);
         if (largest_anagram(n, factor)) {
+            assert(n->digits[0] > 0);
+            assert(n->length == c->length);
             print_number(n);
+            assert(check_multiple(n, factor));
+            last_result_different = cmp_numbers(c, n) != 0;
             putchar('\n');
         } else
             printf("-1\n");
     }
+    free(c);
     free(n);
 }
 

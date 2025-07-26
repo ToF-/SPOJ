@@ -43,9 +43,11 @@ INC_DIRS	Makefile	/^INC_DIRS=-Isrc -I$(UNITY_ROOT)\/src -I$(UNITY_ROOT)\/extras\
 IsStringInBiggerString	unity/src/unity.c	/^int IsStringInBiggerString(const char* longstring, const char* shortstring)$/;"	f
 LONGS_EQUAL	unity/extras/fixture/src/unity_fixture.h	/^#define LONGS_EQUAL(/;"	d
 MALLOC_DONT_FAIL	unity/extras/memory/src/unity_memory.c	/^#define MALLOC_DONT_FAIL /;"	d	file:
+MAX_DIGITS	build/spoj-strict.c	/^#define MAX_DIGITS /;"	d	file:
 MAX_DIGITS	build/spoj.c	/^#define MAX_DIGITS /;"	d	file:
 MAX_DIGITS	src/anadiv.h	/^#define MAX_DIGITS /;"	d
 MAX_DIGITS	src/temp_scratch.c	/^#define MAX_DIGITS /;"	d	file:
+MAX_TRIALS	build/spoj-strict.c	/^#define MAX_TRIALS /;"	d	file:
 MAX_TRIALS	build/spoj.c	/^#define MAX_TRIALS /;"	d	file:
 MAX_TRIALS	src/anadiv.h	/^#define MAX_TRIALS /;"	d
 NameFilter	unity/extras/fixture/src/unity_fixture_internals.h	/^    const char* NameFilter;$/;"	m	struct:UNITY_FIXTURE_T
@@ -62,12 +64,14 @@ RepeatCount	unity/extras/fixture/src/unity_fixture_internals.h	/^    unsigned in
 RunAllTests	test/runner/all_tests.c	/^static void RunAllTests(void) {$/;"	f	file:
 SECOND_PARAM	unity/extras/memory/test/unity_memory_Test.c	/^#define SECOND_PARAM(/;"	d	file:
 SPOJ_FILES	Makefile	/^SPOJ_FILES=build\/spoj.c$/;"	m
+SPOJ_STRICT_FILES	Makefile	/^SPOJ_STRICT_FILES=build\/spoj-strict.c$/;"	m
 SRC	unity/extras/fixture/test/Makefile	/^SRC = ..\/src\/unity_fixture.c \\$/;"	m
 SRC	unity/extras/memory/test/Makefile	/^SRC = ..\/src\/unity_memory.c \\$/;"	m
 STRCMP_EQUAL	unity/extras/fixture/src/unity_fixture.h	/^#define STRCMP_EQUAL(/;"	d
-STRICT_ANAGRAM	build/spoj.c	/^#define STRICT_ANAGRAM /;"	d	file:
-STRICT_ANAGRAM	src/anadiv.h	/^#define STRICT_ANAGRAM /;"	d
 Silent	unity/extras/fixture/src/unity_fixture_internals.h	/^    int Silent;$/;"	m	struct:UNITY_FIXTURE_T
+Strict_Anagram	build/spoj-strict.c	/^bool Strict_Anagram = false;$/;"	v
+Strict_Anagram	build/spoj.c	/^bool Strict_Anagram = false;$/;"	v
+Strict_Anagram	src/anadiv.c	/^bool Strict_Anagram = false;$/;"	v
 TARGET	unity/extras/fixture/test/Makefile	/^TARGET = ..\/build\/fixture_tests.exe$/;"	m
 TARGET	unity/extras/memory/test/Makefile	/^TARGET = ..\/build\/memory_tests.exe$/;"	m
 TEST	src/temp_scratch.c	/^TEST(anadiv, anagram_with_repeated_digits) {$/;"	f
@@ -1072,14 +1076,19 @@ calloc	unity/extras/memory/src/unity_memory.c	/^#undef calloc$/;"	d	file:
 calloc	unity/extras/memory/src/unity_memory.h	/^#define calloc /;"	d
 check_largest_anagram	test/anadiv_tests.c	/^void check_largest_anagram(long long input, int factor, long long expected) {$/;"	f
 check_largest_anagram_ending_with	test/anadiv_tests.c	/^void check_largest_anagram_ending_with(long long input, int nb_pos, int suffix, long long expected) {$/;"	f
+check_multiple	build/spoj.c	/^bool check_multiple(struct number *n, int k) {$/;"	f
+check_multiple	src/anadiv.c	/^bool check_multiple(struct number *n, int k) {$/;"	f
 check_no_anagram_multiple	test/anadiv_tests.c	/^bool check_no_anagram_multiple(struct number *n, int k) {$/;"	f
 check_no_largest_anagram_ending_with	test/anadiv_tests.c	/^void check_no_largest_anagram_ending_with(long long input, int nb_pos, int suffix, long long expected) {$/;"	f
 check_no_solution	test/anadiv_tests.c	/^void check_no_solution(long long input, int factor) {$/;"	f
+cmp_char_desc	build/spoj-strict.c	/^int cmp_char_desc(const void *arg_a, const void *arg_b) {$/;"	f
 cmp_char_desc	build/spoj.c	/^int cmp_char_desc(const void *arg_a, const void *arg_b) {$/;"	f
 cmp_char_desc	src/anadiv.c	/^int cmp_char_desc(const void *arg_a, const void *arg_b) {$/;"	f
+cmp_numbers	build/spoj-strict.c	/^int cmp_numbers(struct number *a, struct number *b) {$/;"	f
 cmp_numbers	build/spoj.c	/^int cmp_numbers(struct number *a, struct number *b) {$/;"	f
 cmp_numbers	src/anadiv.c	/^int cmp_numbers(struct number *a, struct number *b) {$/;"	f
 compare_numbers	src/temp_scratch.c	/^int compare_numbers(struct number *a, struct number *b) {$/;"	f
+copy_number	build/spoj-strict.c	/^void copy_number(struct number *a, struct number *b) {$/;"	f
 copy_number	build/spoj.c	/^void copy_number(struct number *a, struct number *b) {$/;"	f
 copy_number	src/anadiv.c	/^void copy_number(struct number *a, struct number *b) {$/;"	f
 copy_number	src/temp_scratch.c	/^void copy_number(struct number *srce, struct number *dest) {$/;"	f
@@ -1087,9 +1096,11 @@ count	unity/extras/memory/test/unity_output_Spy.c	/^static int count;$/;"	v	file
 d	unity/src/unity.c	/^    double d;$/;"	m	union:__anon1	file:
 dashRNotLast	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* dashRNotLast[] = {$/;"	v	file:
 data	unity/extras/fixture/test/template_fixture_tests.c	/^static int data = -1;$/;"	v	file:
+digits	build/spoj-strict.c	/^    char digits[MAX_DIGITS];$/;"	m	struct:number	file:
 digits	build/spoj.c	/^    char digits[MAX_DIGITS];$/;"	m	struct:number	file:
 digits	src/anadiv.h	/^    char digits[MAX_DIGITS];$/;"	m	struct:number
 digits	src/temp_scratch.c	/^    int digits[MAX_DIGITS];$/;"	m	struct:number	file:
+divisible_by_7	build/spoj-strict.c	/^bool divisible_by_7(struct number *n) {$/;"	f
 divisible_by_7	build/spoj.c	/^bool divisible_by_7(struct number *n) {$/;"	f
 divisible_by_7	src/anadiv.c	/^bool divisible_by_7(struct number *n) {$/;"	f
 divisible_by_7	src/spike.c	/^int divisible_by_7(char *num_str) {$/;"	f
@@ -1097,6 +1108,7 @@ end	unity/extras/memory/src/unity_memory.c	/^static const char end[] = "END";$/;
 equal_numbers	src/temp_scratch.c	/^bool equal_numbers(struct number *number, struct number *other) {$/;"	f
 f	unity/src/unity.c	/^    float f;$/;"	m	union:__anon1	file:
 find_digit_equal_to	src/temp_scratch.c	/^bool find_digit_equal_to(struct number *number, int target, int *position) {$/;"	f
+find_digit_with_predicate	build/spoj-strict.c	/^bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(char), int *pos) {$/;"	f
 find_digit_with_predicate	build/spoj.c	/^bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(char), int *pos) {$/;"	f
 find_digit_with_predicate	src/anadiv.c	/^bool find_digit_with_predicate(struct number * n, int start, bool (*predicate)(char), int *pos) {$/;"	f
 find_largest_multiple_of_1	src/temp_scratch.c	/^bool find_largest_multiple_of_1(struct number *number) {$/;"	f
@@ -1104,6 +1116,7 @@ find_largest_multiple_of_2	src/temp_scratch.c	/^bool find_largest_multiple_of_2(
 free	unity/extras/memory/src/unity_memory.c	/^#undef free$/;"	d	file:
 free	unity/extras/memory/src/unity_memory.h	/^#define free /;"	d
 greater_digit_smaller_than	src/temp_scratch.c	/^int greater_digit_smaller_than(struct number *number, int len_prefix) {$/;"	f
+greatest_permutation	build/spoj-strict.c	/^void greatest_permutation(struct number *n) {$/;"	f
 greatest_permutation	build/spoj.c	/^void greatest_permutation(struct number *n) {$/;"	f
 greatest_permutation	src/anadiv.c	/^void greatest_permutation(struct number *n) {$/;"	f
 group	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* group[] = {$/;"	v	file:
@@ -1120,50 +1133,69 @@ int3	unity/extras/fixture/test/unity_fixture_Test.c	/^static int int3;$/;"	v	fil
 int4	unity/extras/fixture/test/unity_fixture_Test.c	/^static int int4;$/;"	v	file:
 int_compare_ascending	src/temp_scratch.c	/^int int_compare_ascending(const void *arg_a, const void *arg_b) {$/;"	f
 isOverrun	unity/extras/memory/src/unity_memory.c	/^static int isOverrun(void* mem)$/;"	f	file:
+is_even	build/spoj-strict.c	/^bool is_even(char c) {$/;"	f
 is_even	build/spoj.c	/^bool is_even(char c) {$/;"	f
 is_even	src/anadiv.c	/^bool is_even(char c) {$/;"	f
 is_even	src/temp_scratch.c	/^bool is_even(int digit) {$/;"	f
+is_multiple_of_4	build/spoj-strict.c	/^bool is_multiple_of_4(char c) {$/;"	f
 is_multiple_of_4	build/spoj.c	/^bool is_multiple_of_4(char c) {$/;"	f
 is_multiple_of_4	src/anadiv.c	/^bool is_multiple_of_4(char c) {$/;"	f
+is_odd	build/spoj-strict.c	/^bool is_odd(char c) {$/;"	f
 is_odd	build/spoj.c	/^bool is_odd(char c) {$/;"	f
 is_odd	src/anadiv.c	/^bool is_odd(char c) {$/;"	f
+is_zero	build/spoj-strict.c	/^bool is_zero(char c) {$/;"	f
 is_zero	build/spoj.c	/^bool is_zero(char c) {$/;"	f
 is_zero	src/anadiv.c	/^bool is_zero(char c) {$/;"	f
 isinf	unity/src/unity_internals.h	/^#define isinf(/;"	d
 isnan	unity/src/unity_internals.h	/^#define isnan(/;"	d
 k	test/anadiv_tests.c	/^int k;$/;"	v
+largest_anagram	build/spoj-strict.c	/^bool largest_anagram(struct number *n, int k) {$/;"	f
 largest_anagram	build/spoj.c	/^bool largest_anagram(struct number *n, int k) {$/;"	f
 largest_anagram	src/anadiv.c	/^bool largest_anagram(struct number *n, int k) {$/;"	f
+largest_anagram_ending_with	build/spoj-strict.c	/^bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct number *original) {$/;"	f
 largest_anagram_ending_with	build/spoj.c	/^bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct number *original) {$/;"	f
 largest_anagram_ending_with	src/anadiv.c	/^bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct number *original) {$/;"	f
+largest_anagram_multiple_of_1	build/spoj-strict.c	/^bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_1	build/spoj.c	/^bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_1	src/anadiv.c	/^bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_10	build/spoj-strict.c	/^bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_10	build/spoj.c	/^bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_10	src/anadiv.c	/^bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_2	build/spoj-strict.c	/^bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_2	build/spoj.c	/^bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_2	src/anadiv.c	/^bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_3	build/spoj-strict.c	/^bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_3	build/spoj.c	/^bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_3	src/anadiv.c	/^bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_4	build/spoj-strict.c	/^bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_4	build/spoj.c	/^bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_4	src/anadiv.c	/^bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_5	build/spoj-strict.c	/^bool largest_anagram_multiple_of_5(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_5	build/spoj.c	/^bool largest_anagram_multiple_of_5(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_5	src/anadiv.c	/^bool largest_anagram_multiple_of_5(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_6	build/spoj-strict.c	/^bool largest_anagram_multiple_of_6(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_6	build/spoj.c	/^bool largest_anagram_multiple_of_6(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_6	src/anadiv.c	/^bool largest_anagram_multiple_of_6(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_7	build/spoj-strict.c	/^bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_7	build/spoj.c	/^bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_7	src/anadiv.c	/^bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_8	build/spoj-strict.c	/^bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_8	build/spoj.c	/^bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_8	src/anadiv.c	/^bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {$/;"	f
+largest_anagram_multiple_of_9	build/spoj-strict.c	/^bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_9	build/spoj.c	/^bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {$/;"	f
 largest_anagram_multiple_of_9	src/anadiv.c	/^bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {$/;"	f
 largest_multiple	src/temp_scratch.c	/^bool largest_multiple(struct number *number, int k) {$/;"	f
+length	build/spoj-strict.c	/^    int length;$/;"	m	struct:number	file:
 length	build/spoj.c	/^    int length;$/;"	m	struct:number	file:
 length	src/anadiv.h	/^    int length;$/;"	m	struct:number
 length	src/temp_scratch.c	/^    int length;$/;"	m	struct:number	file:
 longest_descending_sequence	src/temp_scratch.c	/^int longest_descending_sequence(struct number *number) {$/;"	f
+longest_descending_subsequence	build/spoj-strict.c	/^int longest_descending_subsequence(struct number *n, int start, int *stop_pos) {$/;"	f
 longest_descending_subsequence	build/spoj.c	/^int longest_descending_subsequence(struct number *n, int start, int *stop_pos) {$/;"	f
 longest_descending_subsequence	src/anadiv.c	/^int longest_descending_subsequence(struct number *n, int start, int *stop_pos) {$/;"	f
-main	build/spoj.c	/^int main(int argc, char* argv[]) { process(); return 0; }$/;"	f
+main	build/spoj-strict.c	/^int main(int argc, char* argv[]) { process(true); return 0; }$/;"	f
+main	build/spoj.c	/^int main(int argc, char* argv[]) { process(false); return 0; }$/;"	f
 main	src/spike.c	/^int main(int argc, char *argv[]) {$/;"	f
 main	test/runner/all_tests.c	/^int main(int argc, const char *argv[]) {$/;"	f
 main	unity/extras/fixture/test/main/AllTests.c	/^int main(int argc, const char* argv[])$/;"	f
@@ -1178,18 +1210,22 @@ multiple	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* mul
 mygroup	unity/extras/fixture/test/template_fixture_tests.c	/^TEST_GROUP(mygroup);$/;"	v
 n	test/anadiv_tests.c	/^struct number *n;$/;"	v	typeref:struct:number
 name	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* name[] = {$/;"	v	file:
+next_anagram	build/spoj-strict.c	/^bool next_anagram(struct number *n) {$/;"	f
 next_anagram	build/spoj.c	/^bool next_anagram(struct number *n) {$/;"	f
 next_anagram	src/anadiv.c	/^bool next_anagram(struct number *n) {$/;"	f
 next_anagram	src/temp_scratch.c	/^bool next_anagram(struct number *number) {$/;"	f
+next_subsequence	build/spoj-strict.c	/^bool next_subsequence(struct number *n, int length) {$/;"	f
 next_subsequence	build/spoj.c	/^bool next_subsequence(struct number *n, int length) {$/;"	f
 next_subsequence	src/anadiv.c	/^bool next_subsequence(struct number *n, int length) {$/;"	f
 noOptions	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* noOptions[] = {$/;"	v	file:
 noreturn	unity/src/unity_internals.h	/^void UnityFail(const char* message, const UNITY_LINE_TYPE line) UNITY_FUNCTION_ATTR(noreturn);$/;"	v
 noreturn	unity/src/unity_internals.h	/^void UnityIgnore(const char* message, const UNITY_LINE_TYPE line) UNITY_FUNCTION_ATTR(noreturn);$/;"	v
+number	build/spoj-strict.c	/^struct number {$/;"	s	file:
 number	build/spoj.c	/^struct number {$/;"	s	file:
 number	src/anadiv.h	/^struct number {$/;"	s
 number	src/temp_scratch.c	/^struct number {$/;"	s	file:
 number_contains	src/temp_scratch.c	/^bool number_contains(struct number *number, bool (*predicate)(int)) {$/;"	f
+number_value	build/spoj-strict.c	/^long long number_value(struct number *n) {$/;"	f
 number_value	build/spoj.c	/^long long number_value(struct number *n) {$/;"	f
 number_value	src/anadiv.c	/^long long number_value(struct number *n) {$/;"	f
 number_value	src/temp_scratch.c	/^int number_value(struct number *number) {$/;"	f
@@ -1203,23 +1239,27 @@ pointer3	unity/extras/fixture/test/unity_fixture_Test.c	/^static int* pointer3 =
 pointer_index	unity/extras/fixture/src/unity_fixture.c	/^static int pointer_index = 0;$/;"	v	file:
 pointer_store	unity/extras/fixture/src/unity_fixture.c	/^static struct PointerPair pointer_store[UNITY_MAX_POINTERS];$/;"	v	typeref:struct:PointerPair	file:
 print_all_anagrams	src/temp_scratch.c	/^void print_all_anagrams(struct number *number) {$/;"	f
+print_number	build/spoj-strict.c	/^void print_number(struct number *n) {$/;"	f
 print_number	build/spoj.c	/^void print_number(struct number *n) {$/;"	f
 print_number	src/anadiv.c	/^void print_number(struct number *n) {$/;"	f
 print_number	src/temp_scratch.c	/^void print_number(struct number *number) {$/;"	f
-process	build/spoj.c	/^void process() {$/;"	f
-process	src/anadiv.c	/^void process() {$/;"	f
+process	build/spoj-strict.c	/^void process(bool strict) {$/;"	f
+process	build/spoj.c	/^void process(bool strict) {$/;"	f
+process	src/anadiv.c	/^void process(bool strict) {$/;"	f
 realloc	unity/extras/memory/src/unity_memory.c	/^#undef realloc$/;"	d	file:
 realloc	unity/extras/memory/src/unity_memory.h	/^#define realloc /;"	d
 release_memory	unity/extras/memory/src/unity_memory.c	/^static void release_memory(void* mem)$/;"	f	file:
 repeat	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* repeat[] = {$/;"	v	file:
 reverse_number	src/temp_scratch.c	/^void reverse_number(struct number *number) {$/;"	f
 runAllTests	unity/extras/fixture/test/main/AllTests.c	/^static void runAllTests(void)$/;"	f	file:
+same_number	build/spoj-strict.c	/^bool same_number(struct number *a, struct number *b) {$/;"	f
 same_number	build/spoj.c	/^bool same_number(struct number *a, struct number *b) {$/;"	f
 same_number	src/anadiv.c	/^bool same_number(struct number *a, struct number *b) {$/;"	f
 savedGroup	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* savedGroup;$/;"	v	file:
 savedName	unity/extras/fixture/test/unity_fixture_Test.c	/^static const char* savedName;$/;"	v	file:
 savedRepeat	unity/extras/fixture/test/unity_fixture_Test.c	/^static unsigned int savedRepeat;$/;"	v	file:
 savedVerbose	unity/extras/fixture/test/unity_fixture_Test.c	/^static int savedVerbose;$/;"	v	file:
+scan_input	build/spoj-strict.c	/^bool scan_input(char *line, struct number *n, int *factor) {$/;"	f
 scan_input	build/spoj.c	/^bool scan_input(char *line, struct number *n, int *factor) {$/;"	f
 scan_input	src/anadiv.c	/^bool scan_input(char *line, struct number *n, int *factor) {$/;"	f
 scan_number_and_divisor	src/temp_scratch.c	/^int scan_number_and_divisor(char *srce, struct number *number) {$/;"	f
@@ -1229,11 +1269,13 @@ setUp	unity/extras/memory/test/unity_memory_Test.c	/^void setUp(void) $/;"	f
 size	unity/extras/memory/src/unity_memory.c	/^    size_t size;$/;"	m	struct:GuardBytes	file:
 size	unity/extras/memory/test/unity_output_Spy.c	/^static int size;$/;"	v	file:
 sort_number_subsequence	src/temp_scratch.c	/^void sort_number_subsequence(struct number *number, int start_position, int length) {$/;"	f
+sort_subsequence	build/spoj-strict.c	/^void sort_subsequence(struct number *n, int pos, int len) {$/;"	f
 sort_subsequence	build/spoj.c	/^void sort_subsequence(struct number *n, int pos, int len) {$/;"	f
 sort_subsequence	src/anadiv.c	/^void sort_subsequence(struct number *n, int pos, int len) {$/;"	f
 spy_enable	unity/extras/memory/test/unity_output_Spy.c	/^static int spy_enable;$/;"	v	file:
 strip	gen_test_runner.awk	/^function strip(str) {$/;"	f
 swap	src/temp_scratch.c	/^void swap(int *a, int *b) {$/;"	f
+swap_digits	build/spoj-strict.c	/^void swap_digits(struct number *n, int pos_a, int pos_b) {$/;"	f
 swap_digits	build/spoj.c	/^void swap_digits(struct number *n, int pos_a, int pos_b) {$/;"	f
 swap_digits	src/anadiv.c	/^void swap_digits(struct number *n, int pos_a, int pos_b) {$/;"	f
 tearDown	unity/extras/fixture/src/unity_fixture.c	/^void tearDown(void) { \/*does nothing*\/ }$/;"	f
@@ -1256,6 +1298,7 @@ test_ReallocNullPointerIsLikeMalloc	unity/extras/memory/test/unity_memory_Test.c
 test_ReallocSameIsUnchanged	unity/extras/memory/test/unity_memory_Test.c	/^void test_ReallocSameIsUnchanged(void)$/;"	f
 test_ReallocSizeZeroFreesMemAndReturnsNullPointer	unity/extras/memory/test/unity_memory_Test.c	/^void test_ReallocSizeZeroFreesMemAndReturnsNullPointer(void)$/;"	f
 test_ReallocSmallerIsUnchanged	unity/extras/memory/test/unity_memory_Test.c	/^void test_ReallocSmallerIsUnchanged(void)$/;"	f
+uniform	build/spoj-strict.c	/^bool uniform(struct number *n, int length) {$/;"	f
 uniform	build/spoj.c	/^bool uniform(struct number *n, int length) {$/;"	f
 uniform	src/anadiv.c	/^bool uniform(struct number *n, int length) {$/;"	f
 unity_calloc	unity/extras/memory/src/unity_memory.c	/^void* unity_calloc(size_t num, size_t size)$/;"	f
