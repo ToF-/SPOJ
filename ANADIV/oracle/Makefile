@@ -41,6 +41,11 @@ series-large-strict: series-strict
 	sed -E 's/^([0-9]+) ([0-9]+):.*/\1 \2/' result.txt > ../test/series-strict-cases.txt
 	sed -E 's/^[0-9]+ [0-9]+://' result.txt > ../test/series-strict-expected.txt
 
+random-large: random
+	sbcl --noinform --load build/random-strict.lisp 1000 >result.txt
+	sed -E 's/^([0-9]+) ([0-9]+):.*/\1 \2/' result.txt > ../test/random-cases.txt
+	sed -E 's/^[0-9]+ [0-9]+://' result.txt > ../test/random-expected.txt
+
 random-large-strict: random-strict
 	sbcl --noinform --load build/random-strict.lisp 1000 >result.txt
 	sed -E 's/^([0-9]+) ([0-9]+):.*/\1 \2/' result.txt > ../test/random-strict-cases.txt

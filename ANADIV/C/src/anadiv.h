@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #define MAX_TRIALS 150
 #define MAX_DIGITS 1024
-#define STRICT_ANAGRAM false
 
 struct number {
     int length;
