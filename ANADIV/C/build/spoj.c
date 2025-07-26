@@ -188,6 +188,8 @@ bool next_subsequence(struct number *n, int length) {
     }
     swap_digits(n, next_pos, to_swap);
     sort_subsequence(n, next_pos+1, length-(next_pos+1));
+    if(n->digits[0] == 0)
+        return false;
     return true;
 }
 
@@ -205,11 +207,15 @@ bool next_anagram(struct number *n) {
     }
     swap_digits(n, next_pos, to_swap);
     sort_subsequence(n, next_pos+1, n->length - next_pos);
+    if (n->digits[0] == 0)
+        return false;
     return true;
 }
 
 bool largest_anagram_multiple_of_1(struct number *n, struct number *original) {
     greatest_permutation(n);
+    if (n->digits[0] == 0)
+        return false;
     if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
@@ -252,6 +258,9 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
     if (found < nb_pos)
         return false;
     sort_subsequence(n, 0, n->length - nb_pos);
+    if (n->digits[0] == 0) {
+        return false;
+    }
     if (same_number(n, original)) {
         found = 0;
         if (n->length > nb_pos + 1) {
@@ -261,11 +270,14 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
             }
         }
     }
+    if (n->digits[0] == 0)
+        return false;
     return found == nb_pos;
+    
 }
 bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     if (n->length == 1 && n->digits[0] == 0)
-        return ! Strict_Anagram;
+        return false;
     const int suffixes[] = { 0, 2, 4, 6, 8 };
     const int nb_pos = 1;
     const int nb_suffixes = 5;
@@ -285,6 +297,8 @@ bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
+    if (n->digits[0] == 0)
+        return false;
     return found;
 }
 
@@ -298,6 +312,8 @@ bool largest_anagram_multiple_of_3(struct number *n, struct number *original) {
     if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
+    if (n->digits[0] == 0)
+        return false;
     return true;
 }
 
@@ -325,6 +341,8 @@ bool largest_anagram_multiple_of_4(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
+    if (n->digits[0] == 0)
+        return false;
     return found;
 }
 
@@ -350,6 +368,8 @@ bool largest_anagram_multiple_of_5(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
+    if (n->digits[0] == 0)
+        return false;
     return found;
 }
 
@@ -383,6 +403,8 @@ bool divisible_by_7(struct number *n) {
         i--;
     } while (i >= 0);
     sum_groups = sum_groups + group * group_sign;
+    if (n->digits[0] == 0)
+        return false;
     return sum_groups % 7 == 0;
 }
 
@@ -398,6 +420,8 @@ bool largest_anagram_multiple_of_7(struct number *n, struct number *original) {
             return false;
         trials++;
     }
+    if (n->digits[0] == 0)
+        return false;
     return false;
 }
 
@@ -441,6 +465,8 @@ bool largest_anagram_multiple_of_8(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
+    if (n->digits[0] == 0)
+        return false;
     return found;
 }
 bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {
@@ -450,9 +476,13 @@ bool largest_anagram_multiple_of_9(struct number *n, struct number *original) {
     if (sum_digits % 9 > 0)
         return false;
     greatest_permutation(n);
+    if (n->digits[0] == 0)
+        return false;
     if (same_number(n, original)) {
         return next_subsequence(n, n->length);
     }
+    if (n->digits[0] == 0)
+        return false;
     return true;
 }
 
@@ -479,6 +509,8 @@ bool largest_anagram_multiple_of_10(struct number *n, struct number *original) {
     if(found)
         copy_number(accum, n);
     free(accum);
+    if (n->digits[0] == 0)
+        return false;
     return found;
 }
 
@@ -519,6 +551,8 @@ bool largest_anagram(struct number *n, int k) {
             break;
     }
     free(original);
+    if (n->digits[0] == 0)
+        return false;
     return result;
 }
 

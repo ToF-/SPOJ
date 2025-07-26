@@ -519,6 +519,7 @@ bool largest_anagram(struct number *n, int k) {
             break;
     }
     free(original);
+    assert(n->digits[0] > 0);
     return result;
 }
 
