@@ -267,7 +267,11 @@
 
 (define-test process-line
              (assert-equal nil (process-line "4807 3")) ; should print -1
-             (assert-equal nil (process-line "4807 7")) ; shourd print 8470
+             (assert-equal nil (process-line "4807 7")) ; should print 8470
+             )
+(define-test process-line-strict
+             (assert-equal nil (process-line "8740 2" nil)) ; should print 8740
+             (assert-equal nil (process-line "8740 2" t)) ; should print 8704
              )
 ; ******************************
 

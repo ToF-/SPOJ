@@ -206,43 +206,43 @@
           while j))
   (mapcar #'parse-integer (split-string line)))
 
-(defun process-line (line)
+(defun process-line (line &optional strict)
   (let* ((input (scan-input line))
          (n (car input))
          (f (cadr input))
-         (r (max-anagram-multiple f n)))
+         (r (max-anagram-multiple f n :strict strict)))
       (progn 
-        (princ (max-anagram-multiple f n))
+        (princ (max-anagram-multiple f n :strict strict))
         (terpri))))
 
-(defun process ()
+(defun process (&optional strict)
   (handler-case
     (let ((line (read-line)))
-      (process-line line)
-      (process))
+      (process-line line strict)
+      (process strict))
     (end-of-file () nil)))
 
-(defun series ()
+(defun series (&optional strict)
   (if (= (length *posix-argv*) 3)
     (let ((start (parse-integer (cadr *posix-argv*)))
           (end (parse-integer (caddr *posix-argv*))))
       (progn
         (loop for n from start to end
             do (loop for k from 1 to 10
-                     do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n))))
+                     do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n :strict strict))))
         (sb-ext:quit)))
     (progn
       (format  t "usage: sbcl --load series.lisp <start> <end>")
       (sb-ext:quit))))
 
-(defun random- ()
+(defun random- (&optional strict)
   (if (= (length *posix-argv*) 2)
     (let ((counter (parse-integer (cadr *posix-argv*))))
       (let ((n (random (expt 10 1000))))
         (progn
           (loop for i from 1 to counter
                 do (loop for k from 1 to 10
-                         do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n)))))
+                         do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n :strict strict)))))
         (sb-ext:quit)))
     (progn
       (format t "usage: sbcl -- load random.lisp <count>")
