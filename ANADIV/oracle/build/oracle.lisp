@@ -216,7 +216,10 @@
       (progn
         (loop for n from start to end
             do (loop for k from 1 to 10
-                     do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n :strict strict))))
+                     do (let* ((r (max-anagram-multiple k n :strict strict))
+                               (ln (length (format nil "~A" n)))
+                               (lr (length (format nil "~A" r))))
+                              (format t "~A ~A:~A ~A~%" n k (max-anagram-multiple k n :strict strict) (- ln lr)))))
         (sb-ext:quit)))
     (progn
       (format  t "usage: sbcl --load series.lisp <start> <end>")

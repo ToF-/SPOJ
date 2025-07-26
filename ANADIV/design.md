@@ -95,6 +95,29 @@ Write assertions about what is assumed for each procedure to work.
 
 Do not write print statements to test values. Write unit tests instead.
 
+### How did I not pay attention to a certain part of the spec?
+
+> Two positive integers (without any leading zeroes) are said to be anagrams of each other if the digits in one integer (in decimal notation) can be rearranged to form the other.
+
+Thus 0420 *is not* an anagram of 4200 because it has a leading zero
+
+examples:
+
+100000:1 10000
+100000:10 10000
+100000:2 10000
+100000:4 10000
+100000:5 10000
+100000:8 10000
+100100:7 10010
+101010:7 10101
+200000:1 20000
+200000:10 20000
+200000:2 20000
+200000:4 20000
+200000:5 20000
+200000:8 20000
+
 △
 
 largest anagram multiple of 7
