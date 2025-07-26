@@ -16,6 +16,7 @@ TEST_FILES=test/*.c test/runner/*.c
 APP_FILES=src/anadiv.c
 
 SPOJ_FILES=build/spoj.c
+SPOJ_STRICT_FILES=build/spoj-strict.c
 
 UNITY_FILES=$(UNITY_ROOT)/src/unity.c $(UNITY_ROOT)/extras/memory/src/unity_memory.c $(UNITY_ROOT)/extras/fixture/src/unity_fixture.c  $(TEST_FILES)
 
@@ -34,8 +35,16 @@ spoj: src/anadiv.c src/anadiv.h
 	mkdir -p bin
 	cat src/anadiv.h         >build/spoj.c
 	tail -n +2 src/anadiv.c >>build/spoj.c
-	echo "int main(int argc, char* argv[]) { process(); return 0; }" >>build/spoj.c
+	echo "int main(int argc, char* argv[]) { process(false); return 0; }" >>build/spoj.c
 	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SPOJ_FILES) -o bin/spoj
+
+spoj-strict: src/anadiv.c src/anadiv.h
+	mkdir -p build
+	mkdir -p bin
+	cat src/anadiv.h         >build/spoj-strict.c
+	tail -n +2 src/anadiv.c >>build/spoj-strict.c
+	echo "int main(int argc, char* argv[]) { process(true); return 0; }" >>build/spoj-strict.c
+	$(C_COMPILER) $(CFLAGS) $(INC_DIRS) $(SYMBOLS) $(SPOJ_STRICT_FILES) -o bin/spoj-strict
 
 tests: spoj
 	bin/spoj
@@ -60,3 +69,6 @@ series: spoj
 	bin/spoj <../test/series-cases.txt >result.txt
 	diff ../test/series-expected.txt result.txt
 
+series-strict: spoj-strict
+	bin/spoj-strict <../test/series-strict-cases.txt >result.txt
+	diff ../test/series-strict-expected.txt result.txt

@@ -159,19 +159,6 @@
          (- counter 1)))))
   (find-anagram-multiple-of-7-aux (to-number (sort-all (digits n))) *max-counter*))
 
-(defun max-anagram-of (m s n st)
-  (let* ((ms (digits m s))
-         (ns (digits n))
-         (ss (remove-digits ms ns)))
-    (let ((r (to-number (append ms (sort-all ss)))))
-      (cond
-        ((equal '(-1) ss) 0)
-        ((and st (= r n))
-         (let ((na (swap (to-swap (desc-prefix (sort-all ss))))))
-           (if na
-             (to-number (append ms na))
-             0)))
-        (t r)))))
 (defun max-anagram-multiple (f n &key strict)
   (let ((result (cond
                   ((= 1 f) (max-anagram-of 0 0 n strict))

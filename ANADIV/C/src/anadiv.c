@@ -59,8 +59,13 @@ long long number_value(struct number *n) {
 }
 
 void print_number(struct number *n) {
-    for (int i = 0; i < n->length; i++)
-        putchar(n->digits[i] + '0');
+    bool in_number = false;
+    for (int i = 0; i < n->length; i++) {
+        if (n->digits[i] != 0)
+            in_number = true;
+        if (in_number)
+            putchar(n->digits[i] + '0');
+    }
 }
 
 bool uniform(struct number *n, int length) {
@@ -497,8 +502,8 @@ bool largest_anagram(struct number *n, int k) {
     return result;
 }
 
-void process() {
-    Strict_Anagram = true;
+void process(bool strict) {
+    Strict_Anagram = strict;
     char line[MAX_DIGITS];
     struct number *n = (struct number *)malloc(sizeof(struct number));
     while(fgets(line, MAX_DIGITS+3, stdin)) {

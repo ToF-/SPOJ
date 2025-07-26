@@ -538,4 +538,4 @@ void process(bool strict) {
     free(n);
 }
 
-int main(int argc, char* argv[]) { process(false); return 0; }
+int main(int argc, char* argv[]) { process(true); return 0; }
