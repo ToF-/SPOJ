@@ -47,6 +47,58 @@ bool is_odd(char);
 bool is_multiple_of_4(char);
 bool same_number(struct number *, struct number *);
 
+bool check_multiple(struct number *n, int k) {
+    int l = n->length;
+    if (k == 1)
+        return true;
+    if (k == 2) {
+        return ( n->digits[l-1] % 2) == 0;
+    }
+    if (k == 3) {
+        int s = 0;
+        for (int i = 0; i < l; i++)
+            s+= n->digits[i];
+        return (s % 3) == 0;
+    }
+    if (k == 4) {
+        if (l == 1)
+            return (n->digits[0] % 4) == 0;
+        int s = n->digits[l-1] + n->digits[l-2] * 10;
+        return (s % 4) == 0;
+    }
+    if (k == 5) {
+        return (n->digits[l-1] % 5) == 0;
+    }
+    if (k == 6) {
+        int s = 0;
+        for (int i = 0; i < l; i++)
+            s+= n->digits[i];
+        return ((n->digits[l-1] % 2) == 0) && ((s % 3) == 0);
+    }
+    if (k == 7) {
+        int mod = 0;
+        for (int i = 0; i < l; i++)
+            mod = (mod * 10 + n->digits[i]) % 7;
+        return mod == 0;
+    }
+    if (k == 8) {
+        if (l < 2)
+            return (n->digits[0] % 8) == 0;
+        if (l < 3)
+            return (n->digits[l-1] + n->digits[l-2] * 10) % 8 == 0;
+        return (n->digits[l-1] + n->digits[l-2] * 10 + n->digits[l-3] * 100) % 8 == 0;
+    }
+    if (k == 9) {
+        int s = 0;
+        for (int i = 0; i < l; i++)
+            s+= n->digits[i];
+        return (s % 9) == 0;
+    }
+    if (k == 10) {
+        return n->digits[l-1] == 0;
+    }
+    return false;
+}
 bool scan_input(char *line, struct number *n, int *factor) {
     n->length = 0;
     *factor = 0;
@@ -262,10 +314,11 @@ bool largest_anagram_ending_with(struct number *n, int nb_pos, int s, struct num
         }
     }
     return found == nb_pos;
+    
 }
 bool largest_anagram_multiple_of_2(struct number *n, struct number *original) {
     if (n->length == 1 && n->digits[0] == 0)
-        return ! Strict_Anagram;
+        return false;
     const int suffixes[] = { 0, 2, 4, 6, 8 };
     const int nb_pos = 1;
     const int nb_suffixes = 5;
@@ -519,23 +572,34 @@ bool largest_anagram(struct number *n, int k) {
             break;
     }
     free(original);
-    assert(n->digits[0] > 0);
+    if (n->digits[0] == 0)
+        return false;
     return result;
 }
 
 void process(bool strict) {
     Strict_Anagram = strict;
+    struct number *c = (struct number *)malloc(sizeof(struct number));
     char line[MAX_DIGITS];
+    bool last_result_different = true;
     struct number *n = (struct number *)malloc(sizeof(struct number));
     while(fgets(line, MAX_DIGITS+3, stdin)) {
         int factor;
+        // assert(last_result_different);
         scan_input(line, n, &factor);
+        assert(n->digits[0] > 0);
+        copy_number(n, c);
         if (largest_anagram(n, factor)) {
+            assert(n->digits[0] > 0);
+            assert(n->length == c->length);
             print_number(n);
+            assert(check_multiple(n, factor));
+            last_result_different = cmp_numbers(c, n) != 0;
             putchar('\n');
         } else
             printf("-1\n");
     }
+    free(c);
     free(n);
 }
 

@@ -99,9 +99,10 @@
              )
 
 (define-test max-anagram-of-multi-digit-prefix-no-strict
-             (assert-equal 40 (max-anagram-of 4 2 40 nil))
-             ;(assert-equal 4096 (max-anagram-of 96 3 9640 nil))
-             ;(assert-equal 8407 (max-anagram-of 7 2 4807 nil))
+             (assert-equal 40 (max-anagram-of 40 2 40 nil))
+             (assert-equal 0 (max-anagram-of 4 1 40 nil))
+             (assert-equal 4096 (max-anagram-of 96 3 9640 nil))
+             (assert-equal 8407 (max-anagram-of 7 2 4807 nil))
              )
 
 (define-test max-anagram-of-multi-digit-prefix-strict
@@ -213,12 +214,15 @@
             (assert-equal -1 (max-anagram-multiple 7 131))
             (assert-equal 971614 (max-anagram-multiple 7 971614))
             (assert-equal 976115 (max-anagram-multiple 7 971615))
+            (assert-equal 8050 (max-anagram-multiple 7 8050))
             )
 
 (define-test max-anagram-multiple-of-7-strict
               (assert-equal -1 (max-anagram-multiple 7 7 :strict t))
               (assert-equal -1 (max-anagram-multiple 7 14 :strict t))
               (assert-equal 707 (max-anagram-multiple 7 770 :strict t))
+              (assert-equal -1 (max-anagram-multiple 7 8070 :strict t)) 
+              (assert-equal -1 (max-anagram-multiple 7 8050 :strict t))
              )
 (define-test max-anagram-multiple-of-8
              (assert-equal 8 (max-anagram-multiple 8 8))
@@ -273,44 +277,6 @@
              (assert-equal nil (process-line "8740 2" nil)) ; should print 8740
              (assert-equal nil (process-line "8740 2" t)) ; should print 8704
              )
-; ******************************
-
-; (define-test max-anagram
-;              (assert-equal 98740 (max-anagram 48097))
-;              )
-; 
-; (define-test next-anagram
-;              (assert-equal 4780 (next-anagram 4807))
-;              (assert-equal 4708 (next-anagram 4780))
-;              (assert-equal 4087 (next-anagram 4708))
-;              (assert-equal 212 (next-anagram 221))
-;              )
-; 
-; (define-test next-anagram-last-anagram
-;              (assert-equal 0 (next-anagram 123456789))
-;              (assert-equal 0 (next-anagram 478))
-;              )
-; 
-; (define-test max-suffix
-;              (assert-equal 7048 (max-suffix 2 48 4807))
-;              (assert-equal 70048 (max-suffix 3 48 48007))
-;              (assert-equal 87640351 (max-suffix 3 351 56148307))
-;              )
-; 
-; (define-test max-suffix-missing-digits
-;              (assert-equal 0 (max-suffix 3 48 4817))
-;              )
-; (define-test max-suffixes
-;              (assert-equal 8740 (max-suffixes 1 '(0 2 4 6 8) 4807))
-;              (assert-equal 874 (max-suffixes 1 '(0 2 4 6 8) 487))
-;              (assert-equal 86 (max-suffixes 1 '(0 2 4 6 8) 68))
-;              (assert-equal 9877263 (max-suffixes 2 '(0 12 42 63 87) 6798732))
-;              (assert-equal 8 (max-suffixes 1 '(0 2 4 6 8) 8))
-;              )
-; (define-test max-suffixes-mising-digits
-;              (assert-equal 0 (max-suffixes 1 '(0 2 4 6 8) 13579))
-;              )
-; 
-;(run-tests :all)
-(run-tests '(max-anagram-of-multi-digit-prefix-no-strict))
+(run-tests :all)
+;(run-tests '(MAX-ANAGRAM-OF-MULTI-DIGIT-PREFIX-NO-STRICT))
 (sb-ext:quit)

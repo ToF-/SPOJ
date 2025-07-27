@@ -69,6 +69,14 @@ series: spoj
 	bin/spoj <../test/series-cases.txt >result.txt
 	diff ../test/series-expected.txt result.txt
 
+series-small: spoj
+	bin/spoj <../test/series-small-cases.txt >result.txt
+	diff ../test/series-small-expected.txt result.txt
+
+series-strict-small: spoj-strict
+	bin/spoj-strict <../test/series-strict-small-cases.txt >result.txt
+	diff ../test/series-strict-small-expected.txt result.txt
+
 series-strict: spoj-strict
 	bin/spoj-strict <../test/series-strict-cases.txt >result.txt
 	diff ../test/series-strict-expected.txt result.txt
