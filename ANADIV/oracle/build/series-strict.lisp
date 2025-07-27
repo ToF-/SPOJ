@@ -159,6 +159,19 @@
          (- counter 1)))))
   (find-anagram-multiple-of-7-aux (to-number (sort-all (digits n))) *max-counter*))
 
+(defun max-anagram-of (m s n st)
+  (let* ((ms (digits m s))
+         (ns (digits n))
+         (ss (remove-digits ms ns)))
+    (let ((r (to-number (append ms (sort-all ss)))))
+      (cond
+        ((equal '(-1) ss) 0)
+        ((and st (= r n))
+         (let ((na (swap (to-swap (desc-prefix (sort-all ss))))))
+           (if na
+             (to-number (append ms na))
+             0)))
+        (t r)))))
 (defun max-anagram-multiple (f n &key strict)
   (let ((result (cond
                   ((= 1 f) (max-anagram-of 0 0 n strict))
@@ -216,8 +229,12 @@
       (progn
         (loop for n from start to end
             do (loop for k from 1 to 10
+<<<<<<< HEAD
                      do (let* ((r (max-anagram-multiple k n :strict strict)))
                               (format t "~A ~A:~A~%" n k (max-anagram-multiple k n :strict strict)))))
+=======
+                     do (format t "~A ~A:~A~%" n k (max-anagram-multiple k n :strict strict))))
+>>>>>>> parent of 00b185d (improving tests)
         (sb-ext:quit)))
     (progn
       (format  t "usage: sbcl --load series.lisp <start> <end>")
