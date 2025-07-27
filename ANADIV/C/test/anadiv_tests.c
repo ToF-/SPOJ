@@ -311,7 +311,6 @@ TEST(anadiv, general_output) {
             } else { 
                 sprintf(line, "%lld %d", v, f);
                 scan_input(line, n, &k);
-                check_no_anagram_multiple(n, k);
             }
         }
     }

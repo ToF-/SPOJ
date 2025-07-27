@@ -1,5 +1,5 @@
 #include <stdbool.h>
-#define MAX_TRIALS 150
+#define MAX_TRIALS 1000
 #define MAX_DIGITS 1024
 
 struct number {
