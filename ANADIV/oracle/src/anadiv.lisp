@@ -92,10 +92,16 @@
               (cons (car prefix) (cdr suffix))))))
 
 ; given a list of digits returns the number 
-(defun to-number (d)
+; return 0 if the digits have a leading zero and nlz is t
+(defun to-number (d &optional nlz)
+  (defun to-number-aux (d)
     (if (null d)
       0
-      (+ (car d) (* 10 (to-number (cdr d))))))
+      (+ (car d) (* 10 (to-number-aux (cdr d))))))
+  (cond
+    ((null d) 0)
+    ((and nlz (= (car (last d)) 0)) 0)
+    (t (to-number-aux d))))
 
 ; given a prefix of a given size in digits, a number, and a strict boolean flag
 ; returns the max anagram of n with the same prefix as m if no strict 
@@ -110,10 +116,12 @@
 ;      (max-anagram-of 0 0 4807 nil) → 8740
 ;      (max-anagram-of 0 0 8740 t) → 8704
 (defun max-anagram-of (m s n st)
+  (format t "(max-anagram-of (~A ~A ~A ~A)~%" m s n st)
   (let* ((ms (digits m s))
          (ns (digits n))
          (ss (remove-digits ms ns)))
     (let ((r (to-number (append ms (sort-all ss)))))
+      (format t "r:~A ms:~A ns:~A ss:~A~%" r ms ns ss)
       (cond
         ((equal '(-1) ss) 0)
         ((and st (= r n))
@@ -156,7 +164,7 @@
       (t (find-anagram-multiple-of-7-aux
          (let ((na (swap (to-swap (desc-prefix (digits na))))))
            (if na (to-number na) 0))
-         (- counter 1)))))
+           (- counter 1)))))
   (find-anagram-multiple-of-7-aux (to-number (sort-all (digits n))) *max-counter*))
 
 (defun max-anagram-multiple (f n &key strict)

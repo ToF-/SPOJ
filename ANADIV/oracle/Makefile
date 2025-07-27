@@ -31,6 +31,16 @@ random-strict:
 	cat src/anadiv.lisp >build/random-strict.lisp
 	echo "(random- t)" >>build/random-strict.lisp
 
+series-small: series
+	sbcl --noinform --load build/series.lisp 1 10000 >result.txt
+	sed -E 's/^([0-9]+) ([0-9]+):.*/\1 \2/' result.txt > ../test/series-small-cases.txt
+	sed -E 's/^[0-9]+ [0-9]+://' result.txt > ../test/series-small-expected.txt
+
+series-small-strict: series-strict
+	sbcl --noinform --load build/series-strict.lisp 1 10000 >result.txt
+	sed -E 's/^([0-9]+) ([0-9]+):.*/\1 \2/' result.txt > ../test/series-strict-small-cases.txt
+	sed -E 's/^[0-9]+ [0-9]+://' result.txt > ../test/series-strict-small-expected.txt
+
 series-large: series
 	sbcl --noinform --load build/series.lisp 100000 200000 >result.txt
 	sed -E 's/^([0-9]+) ([0-9]+):.*/\1 \2/' result.txt > ../test/series-cases.txt
